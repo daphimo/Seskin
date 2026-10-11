@@ -158,8 +158,15 @@
     {
       "type": "checkbox",
       "id": "enable_infinite_scroll",
-      "label": "t:settings.auto_load_products",
+      "label": "t:settings.view_more_show",
       "default": true
+    },
+    {
+      "type": "text",
+      "id": "load_more_label",
+      "label": "t:settings.button",
+      "default": "View more products",
+      "visible_if": "{{ section.settings.enable_infinite_scroll }}"
     },
     {
       "type": "range",

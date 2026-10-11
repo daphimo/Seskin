@@ -398,6 +398,11 @@
           {%- capture attributes -%}on:click="#zoom-dialog-{{ block_id }}/open/{{ forloop.index0 }}"{% if settings.transition_to_main_product and forloop.first %} data-view-transition-type="product-image-transition"{% endif %}{% endcapture -%}
         {% endif %}
 
+        {% if media.preview_image.alt != blank %}
+          {% assign gallery_card_image_id = closest.product.id | append: '-' | append: media.preview_image.alt | handleize %}
+          {% assign attributes = attributes | append: ' data-cardimage-id="' | append: gallery_card_image_id | append: '"' %}
+        {% endif %}
+
         {% render 'slideshow-slide',
           index: forloop.index0,
           children: children,

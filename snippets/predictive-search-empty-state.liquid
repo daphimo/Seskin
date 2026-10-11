@@ -18,6 +18,55 @@
 >
   {% if load_empty_state %}
     <div class="predictive-search-results__inner">
+      {% if settings.show_common_searches and settings.common_search_terms != blank %}
+        <section class="predictive-search-empty__common" aria-labelledby="predictive-search-common-heading">
+          <h3 id="predictive-search-common-heading" class="predictive-search-empty__heading">
+            {{ settings.search_suggestion_heading | default: 'Common searches' | escape }}
+          </h3>
+          <ul class="predictive-search-empty__terms list-unstyled" role="list">
+            {% assign common_terms = settings.common_search_terms | split: ',' %}
+            {% for term in common_terms limit: 8 %}
+              {% assign clean_term = term | strip %}
+              {% if clean_term != blank %}
+                <li>
+                  <a class="predictive-search-empty__term" href="{{ routes.search_url }}?q={{ clean_term | url_encode }}">
+                    {{ clean_term | escape }}
+                    <span aria-hidden="true">→</span>
+                  </a>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </section>
+      {% endif %}
+
+      {% if settings.show_search_collections and settings.search_collections != blank %}
+        <section class="predictive-search-empty__collections" aria-labelledby="predictive-search-collections-heading">
+          <h3 id="predictive-search-collections-heading" class="predictive-search-empty__heading">
+            {{ 'content.search_results_resource_collections' | t }}
+          </h3>
+          <ul class="predictive-search-empty__collection-list list-unstyled" role="list">
+            {% for search_collection in settings.search_collections %}
+              <li class="predictive-search-empty__collection">
+                <a href="{{ search_collection.url }}">
+                  {% if search_collection.featured_image != blank %}
+                    {{ search_collection.featured_image
+                      | image_url: width: 480
+                      | image_tag:
+                        class: 'predictive-search-empty__collection-image',
+                        widths: '160, 240, 320, 480',
+                        sizes: '(min-width: 750px) 180px, 42vw',
+                        loading: 'lazy'
+                    }}
+                  {% endif %}
+                  <span>{{ search_collection.title | escape }}</span>
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </section>
+      {% endif %}
+
       {% liquid
         assign collection = settings.empty_state_collection | default: collections.all
         assign default_title = 'content.search_results_resource_products' | t
@@ -42,3 +91,62 @@
     </div>
   {% endif %}
 </div>
+
+{% stylesheet %}
+  .predictive-search-empty__common,
+  .predictive-search-empty__collections {
+    padding: var(--padding-lg) var(--padding-xl) 0;
+  }
+
+  .predictive-search-empty__heading {
+    margin: 0 0 var(--padding-sm);
+    font-size: var(--font-size--xs);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .predictive-search-empty__terms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--padding-xs);
+  }
+
+  .predictive-search-empty__term {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--padding-sm);
+    min-height: var(--minimum-touch-target);
+    padding-inline: var(--padding-sm);
+    color: inherit;
+    border: 1px solid var(--color-border);
+    text-decoration: none;
+  }
+
+  .predictive-search-empty__collection-list {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(150px, 1fr);
+    gap: 1px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline proximity;
+  }
+
+  .predictive-search-empty__collection {
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  .predictive-search-empty__collection a {
+    display: grid;
+    gap: var(--padding-xs);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .predictive-search-empty__collection-image {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+{% endstylesheet %}

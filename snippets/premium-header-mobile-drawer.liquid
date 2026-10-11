@@ -1,0 +1,79 @@
+{% doc %}
+  Renders the premium header mobile navigation dialog.
+
+  @param {linklist} menu - Shopify navigation menu.
+  @param {section} section - Premium header section with promotion blocks.
+
+  @example
+  {% render 'premium-header-mobile-drawer', menu: section.settings.menu, section: section %}
+{% enddoc %}
+
+<dialog class="premium-header-drawer" data-mobile-drawer ref="mobileDrawer" aria-label="{{ 'accessibility.menu' | t }}">
+  <div class="premium-header-drawer__header">
+    <span>{{ 'accessibility.menu' | t }}</span>
+    <button type="button" data-close-drawer aria-label="{{ 'actions.close' | t }}">{{ 'icon-close.svg' | inline_asset_content }}</button>
+  </div>
+  <nav aria-label="{{ 'accessibility.header_navigation_label' | t }}">
+    <ul class="premium-header-drawer__menu list-unstyled" role="list">
+      {% for link in menu.links %}
+        {% liquid
+          assign menu_key = link.title | strip | handleize
+          assign promotion_count = 0
+          for promotion in section.blocks
+            assign promotion_key = promotion.settings.menu_label | strip | handleize
+            if promotion.type == 'promotion' and promotion_key == menu_key and promotion_count < 2
+              assign promotion_count = promotion_count | plus: 1
+            endif
+          endfor
+        %}
+        <li>
+          {% if link.links != blank or promotion_count > 0 %}
+            <details>
+              <summary><span>{{ link.title | escape }}</span>{{ 'icon-caret.svg' | inline_asset_content }}</summary>
+              <a class="premium-header-drawer__all" href="{{ link.url }}">{{ link.title | escape }}</a>
+              {% if link.links != blank %}
+                <ul class="list-unstyled" role="list">
+                  {% for child_link in link.links %}
+                    <li>
+                      {% if child_link.links != blank %}
+                        <details>
+                          <summary><span>{{ child_link.title | escape }}</span>{{ 'icon-plus.svg' | inline_asset_content }}</summary>
+                          <a href="{{ child_link.url }}">{{ child_link.title | escape }}</a>
+                          <ul class="list-unstyled" role="list">
+                            {% for grandchild_link in child_link.links %}<li><a href="{{ grandchild_link.url }}">{{ grandchild_link.title | escape }}</a></li>{% endfor %}
+                          </ul>
+                        </details>
+                      {% else %}
+                        <a href="{{ child_link.url }}">{{ child_link.title | escape }}</a>
+                      {% endif %}
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+              {% if promotion_count > 0 %}
+                <div class="premium-header-drawer__promos">
+                  {% assign rendered_promotions = 0 %}
+                  {% for promotion in section.blocks %}
+                    {% assign promotion_key = promotion.settings.menu_label | strip | handleize %}
+                    {% if promotion.type == 'promotion' and promotion_key == menu_key and rendered_promotions < 2 %}
+                      {% render 'premium-header-promotion', promotion: promotion, sizes: '70vw' %}
+                      {% assign rendered_promotions = rendered_promotions | plus: 1 %}
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </details>
+          {% else %}
+            <a href="{{ link.url }}">{{ link.title | escape }}</a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+  <div class="premium-header-drawer__utilities">
+    {% if section.settings.show_account and shop.customer_accounts_enabled %}<a href="{{ routes.account_url }}">{{ 'content.account_title' | t }}</a>{% endif %}
+    {% if section.settings.utility_menu != blank %}
+      {% for utility_link in section.settings.utility_menu.links %}<a href="{{ utility_link.url }}">{{ utility_link.title | escape }}</a>{% endfor %}
+    {% endif %}
+  </div>
+</dialog>

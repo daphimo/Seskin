@@ -180,6 +180,7 @@
                           </li>
                         {%- endfor -%}
                       </ul>
+                      {% render 'header-menu-promotions', section: section, menu_label: link.title %}
                     </details>
                   {% endcapture %}
                   {% render 'accordion-custom-component',
@@ -240,6 +241,7 @@
                       </li>
                     {%- endfor -%}
                   </ul>
+                  {% render 'header-menu-promotions', section: section, menu_label: link.title %}
                 {% else %}
                   {%- comment -%}
                     Simple links for links with no children (regardless of accordion setting), in menus with fewer than 3 levels of links
@@ -254,6 +256,7 @@
                   >
                     <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
                   </a>
+                  {% render 'header-menu-promotions', section: section, menu_label: link.title %}
                 {% endif %}
               </li>
             {%- endfor -%}
@@ -514,6 +517,7 @@
                             </li>
                           {%- endfor -%}
                         </ul>
+                        {% render 'header-menu-promotions', section: section, menu_label: link.title %}
                         {% liquid
                           if eager_loading
                             if block_settings.menu_style == 'featured_collections'

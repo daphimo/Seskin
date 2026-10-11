@@ -1,0 +1,208 @@
+.product-card {
+  --premium-card-control-size: 44px;
+  --premium-product-card-swatch-radius: 50%;
+}
+
+.product-card-swatches-square .product-card {
+  --premium-product-card-swatch-radius: 0;
+}
+
+.product-card__content {
+  overflow: visible;
+}
+
+.product-card .card-gallery {
+  background: rgb(var(--color-foreground-rgb) / var(--opacity-5));
+}
+
+.product-card .premium-product-card__highlight,
+.quick-add-modal .premium-product-card__highlight {
+  margin: 0;
+  color: rgb(var(--color-foreground-rgb) / var(--opacity-70));
+  font-size: var(--font-size--xs);
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.product-card swatches-variant-picker-component overflow-list::part(list) {
+  gap: 8px;
+}
+
+.product-card .variant-option__button-label--has-swatch,
+.product-card .swatch {
+  border-radius: var(--premium-product-card-swatch-radius);
+}
+
+.product-card .swatch {
+  width: 24px;
+  height: 24px;
+}
+
+.product-card .variant-option__button-label--has-swatch:has(input:checked) {
+  outline: 1px solid currentColor;
+  outline-offset: 3px;
+}
+
+.product-card .quick-add {
+  inset-inline-end: 12px;
+  bottom: 12px;
+}
+
+.product-card .quick-add__button {
+  width: var(--premium-card-control-size);
+  height: var(--premium-card-control-size);
+  min-width: var(--premium-card-control-size);
+  padding: 0;
+  color: #171717;
+  background: rgb(255 255 255 / 72%);
+  border: 1px solid rgb(255 255 255 / 55%);
+  border-radius: 999px;
+  box-shadow: none;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.product-card .quick-add__button .add-to-cart-icon {
+  margin: 0;
+}
+
+.product-card .quick-add__button .add-to-cart-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.product-card .quick-add__button .quick-add__label,
+.product-card .quick-add__button > :not(.add-to-cart-icon, .loading-spinner) {
+  display: none;
+}
+
+.product-card .product-badges__badge {
+  padding: 5px 8px;
+  font-size: var(--font-size--2xs);
+}
+
+.custom-quick-add__details {
+  color: inherit;
+  font-size: var(--font-size--sm);
+  text-align: center;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media screen and (min-width: 750px) {
+  .quick-add-modal {
+    width: min(1120px, 92vw);
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0 auto 0 0;
+    border-block: 0;
+    border-inline-start: 0;
+    border-radius: 0;
+  }
+
+  [dir='rtl'] .quick-add-modal {
+    margin: 0 0 0 auto;
+  }
+
+  .quick-add-modal[open] {
+    animation: premiumQuickAddIn 280ms var(--animation-easing) both;
+  }
+
+  .quick-add-modal.dialog-closing {
+    animation: premiumQuickAddOut 220ms var(--animation-easing) both;
+  }
+
+  .quick-add-modal__content {
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.95fr);
+    grid-template-rows: 100%;
+  }
+
+  .quick-add-modal__content .product-information__media {
+    grid-column: 1;
+    width: 100%;
+  }
+
+  .quick-add-modal__content .product-information__media slideshow-slide[hidden] {
+    display: none;
+  }
+
+  .quick-add-modal__content .product-details {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .quick-add-modal__content .view-product-title {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .quick-add-modal__content .view-more-details__wrapper {
+    display: flex;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .product-card {
+    --premium-card-control-size: 40px;
+  }
+
+  .quick-add-modal {
+    width: 100%;
+    max-height: min(86dvh, 760px);
+  }
+
+  .quick-add-modal__content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px 12px max(16px, var(--safe-area-inset-bottom));
+  }
+
+  .quick-add-modal__content .product-header {
+    display: flex;
+    grid-column: auto;
+    grid-row: auto;
+    padding-inline-end: 40px;
+  }
+
+  .quick-add-modal__content .product-header .premium-product-card__highlight {
+    order: -1;
+    margin-block-end: 4px;
+  }
+
+  .quick-add-modal__content variant-picker,
+  .quick-add-modal__content product-form-component,
+  .quick-add-modal__content .custom-quick-add__details {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quick-add-modal[open],
+  .quick-add-modal.dialog-closing {
+    animation-duration: 1ms;
+  }
+}
+
+@keyframes premiumQuickAddIn {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes premiumQuickAddOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+}

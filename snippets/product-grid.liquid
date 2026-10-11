@@ -6,7 +6,7 @@
   @param {object} products - Array of product objects
   @param {string} [title] - Header of the collection or search results
   @param {string} children - List or grid of product cards
-  @param {boolean} [enable_infinite_scroll] - Whether to enable infinite scroll (default: true)
+  @param {boolean} [enable_infinite_scroll] - Whether to show click-driven incremental loading instead of pagination
 {%- enddoc -%}
 
 {%- liquid
@@ -116,10 +116,6 @@
         </p>
       </div>
     {% else %}
-      {% if enable_infinite_scroll %}
-        <span ref="viewMorePrevious"></span>
-      {% endif %}
-
       {% if title %}
         <h4 class="main-collection-grid__title">{{ title }}</h4>
       {% endif %}
@@ -166,7 +162,19 @@
         {{ children }}
       </ul>
       {% if enable_infinite_scroll != false %}
-        <span ref="viewMoreNext"></span>
+        {% if paginate.next %}
+          <div class="main-collection-grid__load-more">
+            <button
+              type="button"
+              class="button main-collection-grid__load-more-button"
+              ref="viewMoreNext"
+              on:click="/loadMore"
+            >
+              <span class="main-collection-grid__load-more-label">{{ section.settings.load_more_label | escape }}</span>
+              <span class="loading-spinner" aria-hidden="true"></span>
+            </button>
+          </div>
+        {% endif %}
       {% else %}
         {% render 'pagination-controls', paginate: paginate %}
       {% endif %}
@@ -355,5 +363,50 @@
 
   .main-collection-grid__empty-title {
     margin: 0;
+  }
+
+  .main-collection-grid__load-more {
+    display: flex;
+    justify-content: center;
+    padding-block: clamp(48px, 7vw, 96px);
+  }
+
+  .main-collection-grid__load-more-button {
+    position: relative;
+    min-width: 208px;
+    min-height: 52px;
+    border-radius: 0;
+    text-transform: uppercase;
+  }
+
+  .main-collection-grid__load-more-button .loading-spinner {
+    display: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid currentcolor;
+    border-inline-end-color: transparent;
+    border-radius: 50%;
+    animation: collection-load-more-spin 700ms linear infinite;
+  }
+
+  .main-collection-grid__load-more-button[aria-busy='true'] .main-collection-grid__load-more-label {
+    visibility: hidden;
+  }
+
+  .main-collection-grid__load-more-button[aria-busy='true'] .loading-spinner {
+    position: absolute;
+    display: block;
+  }
+
+  @keyframes collection-load-more-spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .main-collection-grid__load-more-button .loading-spinner {
+      animation-duration: 1.4s;
+    }
   }
 {% endstylesheet %}

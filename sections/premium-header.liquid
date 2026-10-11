@@ -1,0 +1,210 @@
+{% comment %}
+  Independent premium storefront header with desktop navigation, mobile drawer,
+  localization, cart utilities, and Shopify predictive search.
+  @example
+  Add this section to the header group and select the primary navigation menu.
+{% endcomment %}
+
+{{ 'premium-header.css' | asset_url | stylesheet_tag }}
+<link rel="stylesheet" href="{{ 'premium-header-desktop.css' | asset_url }}" media="(min-width: 750px)">
+<link rel="stylesheet" href="{{ 'premium-header-mobile.css' | asset_url }}" media="(max-width: 749px)">
+
+{% liquid
+  assign transparent_enabled = false
+  if section.settings.transparent_home and request.page_type == 'index'
+    assign transparent_enabled = true
+  endif
+  assign solid_logo = section.settings.logo | default: settings.logo
+  assign mobile_logo = section.settings.mobile_logo | default: solid_logo
+  assign transparent_logo = section.settings.transparent_logo | default: solid_logo
+%}
+
+<premium-header
+  class="premium-header{% if transparent_enabled %} premium-header--transparent{% endif %}{% if section.settings.sticky %} premium-header--sticky{% endif %}"
+  data-section-id="{{ section.id }}"
+  data-scroll-threshold="{{ section.settings.scroll_threshold }}"
+  data-search-error="{{ 'content.no_results_found' | t | escape }}"
+  style="--premium-bg: {{ section.settings.background }}; --premium-fg: {{ section.settings.foreground }}; --premium-transparent-fg: {{ section.settings.transparent_foreground }}; --premium-border: {{ section.settings.border_color }}; --premium-desktop-logo-width: {{ section.settings.desktop_logo_width }}px; --premium-mobile-logo-width: {{ section.settings.mobile_logo_width }}px; --premium-row-padding: {{ section.settings.row_padding }}px;"
+>
+  <div class="premium-header__shell" data-header-shell>
+    <div class="premium-header__utility">
+      <a class="premium-header__logo" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
+        {% if solid_logo != blank %}
+          {{ solid_logo | image_url: width: 600 | image_tag: class: 'premium-header__logo-image premium-header__logo-image--solid', widths: '120, 180, 240, 360, 600', sizes: '240px', loading: 'eager', fetchpriority: 'high' }}
+          {{ transparent_logo | image_url: width: 600 | image_tag: class: 'premium-header__logo-image premium-header__logo-image--transparent', widths: '120, 180, 240, 360, 600', sizes: '240px', loading: 'eager' }}
+          {{ mobile_logo | image_url: width: 360 | image_tag: class: 'premium-header__logo-image premium-header__logo-image--mobile', widths: '100, 140, 180, 240, 360', sizes: '180px', loading: 'eager' }}
+        {% else %}
+          <span>{{ shop.name | escape }}</span>
+        {% endif %}
+      </a>
+
+      {% if section.settings.show_announcement and section.settings.announcement != blank %}
+        <p class="premium-header__announcement">{{ section.settings.announcement | escape }}</p>
+      {% endif %}
+
+      {% if section.settings.show_localization and localization.available_countries.size > 1 %}
+        <details class="premium-header__localization">
+          <summary>
+            <span class="premium-header__flag" style="background-image:url({{ localization.country | image_url: width: 32 }})"></span>
+            {{ localization.country.currency.iso_code }}
+            {{ 'icon-caret.svg' | inline_asset_content }}
+          </summary>
+          <div class="premium-header__localization-panel">
+            {% render 'localization-form', show_country: true, show_language: false, localization_style: 'dropdown', form_id: section.id %}
+          </div>
+        </details>
+      {% endif %}
+    </div>
+
+    <div class="premium-header__main">
+      <button class="premium-header__menu-button" type="button" data-open-drawer aria-expanded="false" aria-controls="PremiumDrawer-{{ section.id }}" aria-label="{{ 'accessibility.menu' | t }}">
+        {{ 'icon-menu.svg' | inline_asset_content }}
+      </button>
+
+      <div class="premium-header__mobile-logo">
+        <a href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
+          {% if mobile_logo != blank %}{{ mobile_logo | image_url: width: 360 | image_tag: widths: '100, 140, 180, 240, 360', sizes: '180px', loading: 'eager' }}{% else %}{{ shop.name | escape }}{% endif %}
+        </a>
+      </div>
+
+      <button class="premium-header__mobile-search-trigger" type="button" data-open-search aria-expanded="false" aria-controls="PremiumSearch-{{ section.id }}">
+        {{ 'icon-search.svg' | inline_asset_content }}<span>{{ section.settings.search_placeholder | escape }}</span>
+      </button>
+
+      <div class="premium-header__desktop-nav">
+        {% render 'premium-header-navigation', menu: section.settings.menu, section: section %}
+      </div>
+
+      <div class="premium-header__actions">
+        <button type="button" class="premium-header__search-trigger" data-open-search aria-expanded="false" aria-controls="PremiumSearch-{{ section.id }}">
+          {{ 'icon-search.svg' | inline_asset_content }}
+          <span>{{ section.settings.search_label | escape }}</span>
+        </button>
+        {% if section.settings.show_wishlist and section.settings.wishlist_url != blank %}
+          <a href="{{ section.settings.wishlist_url }}" aria-label="{{ section.settings.wishlist_label | escape }}">
+            <svg viewBox="0 0 20 20" aria-hidden="true">{% render 'icon', icon: 'heart' %}</svg>
+          </a>
+        {% endif %}
+        {% if section.settings.show_account and shop.customer_accounts_enabled %}
+          <a class="premium-header__account" href="{{ routes.account_url }}" aria-label="{{ 'accessibility.account' | t }}">{{ 'icon-account.svg' | inline_asset_content }}</a>
+        {% endif %}
+        {% if section.settings.show_cart %}
+          <a href="{{ routes.cart_url }}" aria-label="{{ 'accessibility.cart' | t }}" class="premium-header__cart">
+            {{ 'icon-cart.svg' | inline_asset_content }}
+            {% if cart.item_count > 0 %}<span>{{ cart.item_count }}</span>{% endif %}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="premium-header__shell-spacer" aria-hidden="true"></div>
+
+  <div id="PremiumDrawer-{{ section.id }}">
+    {% render 'premium-header-mobile-drawer', menu: section.settings.menu, section: section %}
+  </div>
+
+  <dialog id="PremiumSearch-{{ section.id }}" class="premium-search" ref="searchDialog" data-search-dialog aria-label="{{ section.settings.search_label | escape }}">
+    <form action="{{ routes.search_url }}" method="get" role="search" class="premium-search__form" ref="searchForm">
+      <div class="premium-search__header">
+        <label class="visually-hidden" for="PremiumSearchInput-{{ section.id }}">{{ section.settings.search_label | escape }}</label>
+        <div class="premium-search__input-wrap">
+          <span aria-hidden="true">{{ 'icon-search.svg' | inline_asset_content }}</span>
+          <input id="PremiumSearchInput-{{ section.id }}" type="search" name="q" placeholder="{{ section.settings.search_placeholder | escape }}" autocomplete="off" ref="searchInput" data-search-input aria-controls="PremiumSearchResults-{{ section.id }}" aria-expanded="false">
+        </div>
+        <button type="button" data-close-search>{{ 'content.cancel' | t }}</button>
+      </div>
+      <div class="premium-search__body">
+        <div id="PremiumSearchResults-{{ section.id }}" class="premium-search__results" ref="searchResults" aria-live="polite"></div>
+        <div class="premium-search__empty" ref="searchEmpty">
+          {% if section.settings.common_searches != blank %}
+            <section>
+              <h2>{{ section.settings.suggestion_heading | escape }}</h2>
+              <ul class="premium-search__terms list-unstyled" role="list">
+                {% assign search_terms = section.settings.common_searches | split: ',' %}
+                {% for term in search_terms limit: 8 %}
+                  {% assign clean_term = term | strip %}
+                  {% if clean_term != blank %}
+                    <li>
+                      <a href="{{ routes.search_url }}?q={{ clean_term | url_encode }}">
+                        {{ clean_term | escape }}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"></path></svg>
+                      </a>
+                    </li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            </section>
+          {% endif %}
+          {% if section.settings.search_collections != blank %}
+            <section>
+              <h2>{{ 'content.search_results_resource_collections' | t }}</h2>
+              <ul class="premium-search__collections list-unstyled" role="list">
+                {% for search_collection in section.settings.search_collections %}
+                  <li><a href="{{ search_collection.url }}">
+                    {% if search_collection.featured_image != blank %}{{ search_collection.featured_image | image_url: width: 480 | image_tag: widths: '160, 240, 320, 480', sizes: '(min-width: 750px) 180px, 42vw', loading: 'lazy' }}{% endif %}
+                    <span>{{ search_collection.title | escape }}</span>
+                  </a></li>
+                {% endfor %}
+              </ul>
+            </section>
+          {% endif %}
+        </div>
+      </div>
+    </form>
+  </dialog>
+</premium-header>
+
+<script src="{{ 'premium-header.js' | asset_url }}" type="module"></script>
+
+{% schema %}
+{
+  "name": "t:names.header",
+  "tag": "header",
+  "class": "premium-header-section",
+  "settings": [
+    { "type": "image_picker", "id": "logo", "label": "t:settings.logo" },
+    { "type": "image_picker", "id": "transparent_logo", "label": "t:settings.logo" },
+    { "type": "image_picker", "id": "mobile_logo", "label": "t:settings.logo" },
+    { "type": "range", "id": "desktop_logo_width", "label": "t:settings.width", "min": 60, "max": 300, "step": 5, "unit": "px", "default": 130 },
+    { "type": "range", "id": "mobile_logo_width", "label": "t:settings.width", "min": 50, "max": 200, "step": 5, "unit": "px", "default": 100 },
+    { "type": "checkbox", "id": "show_announcement", "label": "t:names.announcement", "default": true },
+    { "type": "text", "id": "announcement", "label": "t:names.announcement", "default": "International shipping available" },
+    { "type": "link_list", "id": "menu", "label": "t:settings.menu", "default": "main-menu" },
+    { "type": "link_list", "id": "utility_menu", "label": "t:settings.menu" },
+    { "type": "checkbox", "id": "transparent_home", "label": "t:settings.transparent_background", "default": false },
+    { "type": "checkbox", "id": "sticky", "label": "t:settings.sticky_header", "default": true },
+    { "type": "range", "id": "scroll_threshold", "label": "t:settings.scroll_speed", "min": 0, "max": 400, "step": 10, "unit": "px", "default": 50 },
+    { "type": "color", "id": "background", "label": "t:settings.background", "default": "#ffffff" },
+    { "type": "color", "id": "foreground", "label": "t:settings.text_color", "default": "#171717" },
+    { "type": "color", "id": "transparent_foreground", "label": "t:settings.text_color_transparent", "default": "#ffffff" },
+    { "type": "color", "id": "border_color", "label": "t:settings.border_color", "default": "#e8e8e8" },
+    { "type": "range", "id": "row_padding", "label": "t:settings.padding", "min": 8, "max": 28, "step": 2, "unit": "px", "default": 14 },
+    { "type": "checkbox", "id": "show_localization", "label": "t:settings.country_region", "default": true },
+    { "type": "checkbox", "id": "show_wishlist", "label": "t:options.heart", "default": false },
+    { "type": "url", "id": "wishlist_url", "label": "t:settings.link", "visible_if": "{{ section.settings.show_wishlist }}" },
+    { "type": "text", "id": "wishlist_label", "label": "t:settings.heading", "default": "Wishlist", "visible_if": "{{ section.settings.show_wishlist }}" },
+    { "type": "checkbox", "id": "show_account", "label": "t:settings.account", "default": true },
+    { "type": "checkbox", "id": "show_cart", "label": "t:settings.cart_title", "default": true },
+    { "type": "text", "id": "search_label", "label": "t:names.search", "default": "Search" },
+    { "type": "text", "id": "search_placeholder", "label": "t:names.search_input", "default": "Search" },
+    { "type": "text", "id": "suggestion_heading", "label": "t:settings.heading", "default": "Common searches" },
+    { "type": "textarea", "id": "common_searches", "label": "t:settings.search", "default": "Bodysuits, Bras, Pajamas" },
+    { "type": "collection_list", "id": "search_collections", "label": "t:settings.collection_list", "limit": 8 }
+  ],
+  "blocks": [
+    {
+      "type": "promotion",
+      "name": "t:names.image",
+      "limit": 20,
+      "settings": [
+        { "type": "text", "id": "menu_label", "label": "t:settings.menu" },
+        { "type": "image_picker", "id": "image", "label": "t:settings.image" },
+        { "type": "text", "id": "title", "label": "t:settings.title" },
+        { "type": "textarea", "id": "description", "label": "t:names.description" },
+        { "type": "url", "id": "url", "label": "t:settings.link" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "t:names.header" }]
+}
+{% endschema %}

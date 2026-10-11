@@ -1,0 +1,92 @@
+{% doc %}
+  Renders hierarchy-aware desktop navigation for the premium header.
+
+  @param {linklist} menu - Shopify navigation menu.
+  @param {section} section - Premium header section with promotion blocks.
+
+  @example
+  {% render 'premium-header-navigation', menu: section.settings.menu, section: section %}
+{% enddoc %}
+
+<nav class="premium-header-nav" aria-label="{{ 'accessibility.header_navigation_label' | t }}">
+  <ul class="premium-header-nav__list list-unstyled" role="list">
+    {% for link in menu.links %}
+      {% liquid
+        assign has_grandchildren = false
+        for child_link in link.links
+          if child_link.links != blank
+            assign has_grandchildren = true
+            break
+          endif
+        endfor
+        assign menu_key = link.title | strip | handleize
+        assign promotion_count = 0
+        for promotion in section.blocks
+          assign promotion_key = promotion.settings.menu_label | strip | handleize
+          if promotion.type == 'promotion' and promotion_key == menu_key and promotion_count < 2
+            assign promotion_count = promotion_count | plus: 1
+          endif
+        endfor
+        assign has_panel = false
+        if link.links != blank or promotion_count > 0
+          assign has_panel = true
+        endif
+        assign is_mega = false
+        if has_grandchildren or promotion_count > 0
+          assign is_mega = true
+        endif
+        assign panel_id = 'PremiumMenu-' | append: section.id | append: '-' | append: forloop.index
+      %}
+      <li class="premium-header-nav__item{% if is_mega %} is-mega{% endif %}" data-menu-item>
+        <div class="premium-header-nav__trigger">
+          <a href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+          {% if has_panel %}
+            <button type="button" aria-expanded="false" aria-controls="{{ panel_id }}" data-menu-toggle>
+              <span class="visually-hidden">{{ 'accessibility.show_submenu' | t: title: link.title }}</span>
+              <svg viewBox="0 0 10 6" aria-hidden="true"><path d="m1 1 4 4 4-4" fill="none" stroke="currentColor"/></svg>
+            </button>
+          {% endif %}
+        </div>
+        {% if has_panel %}
+          <div id="{{ panel_id }}" class="premium-header-nav__panel{% unless is_mega %} premium-header-nav__panel--dropdown{% endunless %}" hidden data-menu-panel>
+            <div class="premium-header-nav__panel-inner">
+              {% if is_mega %}
+                <div class="premium-header-nav__groups">
+                  {% if link.links == blank %}<a class="premium-header-nav__destination" href="{{ link.url }}">{{ link.title | escape }}</a>{% endif %}
+                  {% for child_link in link.links %}
+                    <div class="premium-header-nav__group">
+                      <a href="{{ child_link.url }}">{{ child_link.title | escape }}</a>
+                      {% if child_link.links != blank %}
+                        <ul class="list-unstyled" role="list">
+                          {% for grandchild_link in child_link.links %}
+                            <li><a href="{{ grandchild_link.url }}">{{ grandchild_link.title | escape }}</a></li>
+                          {% endfor %}
+                        </ul>
+                      {% endif %}
+                    </div>
+                  {% endfor %}
+                </div>
+                {% if promotion_count > 0 %}
+                  <div class="premium-header-nav__promos">
+                    {% assign rendered_promotions = 0 %}
+                    {% for promotion in section.blocks %}
+                      {% assign promotion_key = promotion.settings.menu_label | strip | handleize %}
+                      {% if promotion.type == 'promotion' and promotion_key == menu_key and rendered_promotions < 2 %}
+                        {% render 'premium-header-promotion', promotion: promotion, sizes: '(min-width: 990px) 220px, 25vw' %}
+                        {% assign rendered_promotions = rendered_promotions | plus: 1 %}
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              {% else %}
+                <ul class="premium-header-nav__dropdown list-unstyled" role="list">
+                  {% for child_link in link.links %}<li><a href="{{ child_link.url }}">{{ child_link.title | escape }}</a></li>{% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</nav>

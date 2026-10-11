@@ -1,0 +1,348 @@
+{% comment %}
+  Premium editorial hero slider powered by the shared Splide foundation.
+  Each block owns its responsive media, content, colors, overlay, and links.
+  @example
+  Add “Premium hero slider” and configure one or more slide blocks.
+{% endcomment %}
+
+{{ 'splide.min.css' | asset_url | stylesheet_tag }}
+{{ 'custom-splide.css' | asset_url | stylesheet_tag }}
+{{ 'premium-hero-slider.css' | asset_url | stylesheet_tag }}
+
+{% liquid
+  case section.settings.desktop_height
+    when 'small'
+      assign desktop_height = '480px'
+    when 'medium'
+      assign desktop_height = '600px'
+    when 'large'
+      assign desktop_height = '720px'
+    when 'extra_large'
+      assign desktop_height = '840px'
+    when 'viewport'
+      assign desktop_height = '100dvh'
+    else
+      assign desktop_height = 'auto'
+  endcase
+
+  case section.settings.mobile_height
+    when 'small'
+      assign mobile_height = '360px'
+    when 'medium'
+      assign mobile_height = '440px'
+    when 'large'
+      assign mobile_height = '520px'
+    when 'extra_large'
+      assign mobile_height = '620px'
+    when 'viewport'
+      assign mobile_height = '100svh'
+    else
+      assign mobile_height = 'auto'
+  endcase
+
+  assign slide_count = section.blocks.size
+  assign has_controls = false
+  if slide_count > 1
+    if section.settings.show_arrows or section.settings.show_pagination or section.settings.autoplay
+      assign has_controls = true
+    endif
+  endif
+
+  assign section_label = section.settings.accessibility_label
+  if section_label == blank
+    assign section_label = 'accessibility.slideshow' | t
+  endif
+%}
+
+<div
+  class="premium-hero-section premium-hero-section--{{ section.settings.section_width }}"
+  style="--premium-hero-padding-top: {{ section.settings.padding_top }}px; --premium-hero-padding-bottom: {{ section.settings.padding_bottom }}px;"
+>
+  <premium-hero-slider
+    class="premium-hero premium-hero--{{ section.settings.section_width }}"
+    style="--premium-hero-height-desktop: {{ desktop_height }}; --premium-hero-height-mobile: {{ mobile_height }};"
+    {% if section.settings.desktop_height == 'auto' %}data-desktop-adapt{% endif %}
+    {% if section.settings.mobile_height == 'auto' %}data-mobile-adapt{% endif %}
+    {% if section.settings.pause_when_out_of_view %}data-pause-when-out-of-view{% endif %}
+  >
+    <section
+      class="splide premium-hero__slider"
+      data-custom-splide
+      data-splide-transition="{{ section.settings.transition }}"
+      data-splide-loop="{{ section.settings.loop }}"
+      data-splide-autoplay="{% if slide_count > 1 %}{{ section.settings.autoplay }}{% else %}false{% endif %}"
+      data-splide-interval="{{ section.settings.autoplay_interval | times: 1000 }}"
+      data-splide-speed="{{ section.settings.transition_speed }}"
+      data-splide-pause-on-hover="{{ section.settings.pause_on_hover }}"
+      data-splide-arrows="{{ section.settings.show_arrows }}"
+      data-splide-previous-label="{{ 'accessibility.slideshow_previous' | t | escape }}"
+      data-splide-next-label="{{ 'accessibility.slideshow_next' | t | escape }}"
+      data-splide-play-label="{{ 'accessibility.slideshow_play' | t | escape }}"
+      data-splide-pause-label="{{ 'accessibility.slideshow_pause' | t | escape }}"
+      aria-label="{{ section_label | escape }}"
+    >
+      <div class="splide__track premium-hero__track">
+        <ul class="splide__list premium-hero__list" role="list">
+          {% for block in section.blocks %}
+            {% liquid
+              assign desktop_image = block.settings.desktop_media | default: block.settings.mobile_media
+              assign mobile_image = block.settings.mobile_media | default: desktop_image
+              assign image_alt = block.settings.image_alt | default: desktop_image.alt
+              assign loading = 'lazy'
+              assign fetchpriority = 'auto'
+              if forloop.first and section.index == 1
+                assign loading = 'eager'
+                assign fetchpriority = 'high'
+              endif
+
+              assign desktop_ratio = 1.777777
+              if desktop_image != blank
+                assign desktop_ratio = desktop_image.aspect_ratio
+              endif
+              assign mobile_ratio = desktop_ratio
+              if mobile_image != blank
+                assign mobile_ratio = mobile_image.aspect_ratio
+              endif
+
+              assign slide_link_label = block.settings.title | default: image_alt | default: shop.name
+            %}
+            <li
+              class="splide__slide premium-hero__slide"
+              data-premium-hero-slide
+              data-desktop-ratio="{{ desktop_ratio }}"
+              data-mobile-ratio="{{ mobile_ratio }}"
+              data-position="{{ block.settings.content_position }}"
+              data-alignment="{{ block.settings.content_alignment }}"
+              style="--premium-hero-title-color: {{ block.settings.heading_color }}; --premium-hero-text-color: {{ block.settings.description_color }}; --premium-hero-button-text: {{ block.settings.button_text_color }}; --premium-hero-button-background: {{ block.settings.button_background_color }}; --premium-hero-button-border: {{ block.settings.button_border_color }}; --premium-hero-overlay: {{ block.settings.overlay_color }}; --premium-hero-overlay-opacity: {% if block.settings.enable_overlay %}{{ block.settings.overlay_opacity | divided_by: 100.0 }}{% else %}0{% endif %};"
+              {{ block.shopify_attributes }}
+            >
+              {% if desktop_image != blank %}
+                <div class="premium-hero__media">
+                  <picture>
+                    {% if mobile_image != blank %}
+                      <source
+                        media="(max-width: 749px)"
+                        srcset="{{ mobile_image | image_url: width: 375 }} 375w, {{ mobile_image | image_url: width: 550 }} 550w, {{ mobile_image | image_url: width: 750 }} 750w, {{ mobile_image | image_url: width: 1100 }} 1100w"
+                        sizes="100vw"
+                      >
+                    {% endif %}
+                    {{ desktop_image | image_url: width: 2400 | image_tag: widths: '750, 1100, 1500, 2000, 2400', sizes: '100vw', loading: loading, fetchpriority: fetchpriority, alt: image_alt }}
+                  </picture>
+                </div>
+              {% else %}
+                {{ 'lifestyle-1' | placeholder_svg_tag: 'premium-hero__placeholder' }}
+              {% endif %}
+
+              <div class="premium-hero__overlay" aria-hidden="true"></div>
+
+              {% if block.settings.slide_url != blank %}
+                <a class="premium-hero__slide-link" href="{{ block.settings.slide_url }}" aria-label="{{ slide_link_label | escape }}"></a>
+              {% endif %}
+
+              {% if block.settings.title != blank or block.settings.content != blank or block.settings.button_label != blank %}
+                <div class="premium-hero__content-wrap">
+                  <div class="premium-hero__content">
+                    {% if block.settings.title != blank %}
+                      <h2 class="premium-hero__title">{{ block.settings.title | escape }}</h2>
+                    {% endif %}
+                    {% if block.settings.content != blank %}
+                      <div class="premium-hero__text rte">{{ block.settings.content }}</div>
+                    {% endif %}
+                    {% if block.settings.button_label != blank and block.settings.button_url != blank %}
+                      <a class="premium-hero__button premium-hero__button--{{ block.settings.button_style }}" href="{{ block.settings.button_url }}">
+                        {{ block.settings.button_label | escape }}
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      {% if has_controls %}
+        <div class="premium-hero__controls">
+          {% if section.settings.autoplay and slide_count > 1 %}
+            <button type="button" class="splide__toggle premium-hero__autoplay-toggle">
+              <span class="splide__toggle__play">
+                {{ 'icon-play.svg' | inline_asset_content }}
+                <span class="visually-hidden">{{ 'accessibility.slideshow_play' | t }}</span>
+              </span>
+              <span class="splide__toggle__pause">
+                {{ 'icon-pause.svg' | inline_asset_content }}
+                <span class="visually-hidden">{{ 'accessibility.slideshow_pause' | t }}</span>
+              </span>
+            </button>
+          {% endif %}
+          {% if section.settings.show_pagination %}
+            <div class="premium-hero__pagination" role="group" aria-label="{{ 'accessibility.slideshow' | t }}">
+              {% for block in section.blocks %}
+                <button
+                  type="button"
+                  class="premium-hero__pagination-button{% if forloop.first %} is-active{% endif %}"
+                  data-hero-pagination="{{ forloop.index0 }}"
+                  aria-label="{{ 'accessibility.slide_status' | t: index: forloop.index, length: slide_count }}"
+                  aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+                >
+                  <span class="premium-hero__pagination-track" aria-hidden="true"></span>
+                  <span class="premium-hero__pagination-progress" data-hero-progress aria-hidden="true"></span>
+                </button>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          {% if section.settings.show_arrows %}
+            <div class="splide__arrows premium-hero__arrows">
+              <button type="button" class="splide__arrow splide__arrow--prev premium-hero__arrow" aria-label="{{ 'accessibility.slideshow_previous' | t }}">
+                {{ 'icon-chevron-left.svg' | inline_asset_content }}
+              </button>
+              <button type="button" class="splide__arrow splide__arrow--next premium-hero__arrow" aria-label="{{ 'accessibility.slideshow_next' | t }}">
+                {{ 'icon-chevron-right.svg' | inline_asset_content }}
+              </button>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </section>
+  </premium-hero-slider>
+</div>
+
+<script src="{{ 'premium-hero-slider.js' | asset_url }}" type="module"></script>
+
+{% schema %}
+{
+  "name": "Premium hero slider",
+  "disabled_on": { "groups": ["header", "footer"] },
+  "settings": [
+    {
+      "type": "select",
+      "id": "desktop_height",
+      "label": "t:settings.desktop_height",
+      "options": [
+        { "value": "auto", "label": "t:options.auto" },
+        { "value": "small", "label": "t:options.small" },
+        { "value": "medium", "label": "t:options.medium" },
+        { "value": "large", "label": "t:options.large" },
+        { "value": "extra_large", "label": "t:options.extra_large" },
+        { "value": "viewport", "label": "t:options.full_screen" }
+      ],
+      "default": "large"
+    },
+    {
+      "type": "select",
+      "id": "mobile_height",
+      "label": "t:settings.mobile_height",
+      "options": [
+        { "value": "auto", "label": "t:options.auto" },
+        { "value": "small", "label": "t:options.small" },
+        { "value": "medium", "label": "t:options.medium" },
+        { "value": "large", "label": "t:options.large" },
+        { "value": "extra_large", "label": "t:options.extra_large" },
+        { "value": "viewport", "label": "t:options.full_screen" }
+      ],
+      "default": "large"
+    },
+    { "type": "checkbox", "id": "autoplay", "label": "t:settings.autoplay", "default": true },
+    { "type": "range", "id": "autoplay_interval", "label": "Autoplay interval", "min": 3, "max": 10, "step": 1, "unit": "s", "default": 5, "visible_if": "{{ section.settings.autoplay }}" },
+    { "type": "range", "id": "transition_speed", "label": "Transition speed", "min": 200, "max": 1500, "step": 100, "unit": "ms", "default": 700 },
+    { "type": "checkbox", "id": "pause_on_hover", "label": "Pause on hover", "default": true, "visible_if": "{{ section.settings.autoplay }}" },
+    { "type": "checkbox", "id": "pause_when_out_of_view", "label": "Pause when out of view", "default": true, "visible_if": "{{ section.settings.autoplay }}" },
+    { "type": "checkbox", "id": "show_arrows", "label": "t:content.arrows", "default": true },
+    { "type": "checkbox", "id": "show_pagination", "label": "t:settings.pagination", "default": true },
+    {
+      "type": "select",
+      "id": "transition",
+      "label": "t:settings.animation",
+      "options": [
+        { "value": "slide", "label": "t:names.slide" },
+        { "value": "fade", "label": "Fade" }
+      ],
+      "default": "fade"
+    },
+    { "type": "checkbox", "id": "loop", "label": "t:settings.loop", "default": true },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        { "value": "full-width", "label": "t:options.full" },
+        { "value": "page-width", "label": "t:options.page" }
+      ],
+      "default": "full-width"
+    },
+    { "type": "text", "id": "accessibility_label", "label": "Accessibility label" },
+    { "type": "range", "id": "padding_top", "label": "t:settings.padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 },
+    { "type": "range", "id": "padding_bottom", "label": "t:settings.padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 0 }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "t:names.slide",
+      "settings": [
+        { "type": "image_picker", "id": "desktop_media", "label": "t:settings.image" },
+        { "type": "image_picker", "id": "mobile_media", "label": "t:content.mobile_media" },
+        { "type": "text", "id": "image_alt", "label": "t:settings.video_alt_text" },
+        { "type": "url", "id": "slide_url", "label": "t:content.block_link" },
+        { "type": "text", "id": "title", "label": "t:settings.heading", "default": "Elevated essentials" },
+        { "type": "richtext", "id": "content", "label": "t:settings.text", "default": "<p>Considered pieces designed for everyday rituals.</p>" },
+        { "type": "text", "id": "button_label", "label": "t:settings.button", "default": "Shop the collection" },
+        { "type": "url", "id": "button_url", "label": "t:settings.link" },
+        {
+          "type": "select",
+          "id": "button_style",
+          "label": "t:settings.style",
+          "options": [
+            { "value": "primary", "label": "t:options.primary" },
+            { "value": "secondary", "label": "t:options.secondary" },
+            { "value": "link", "label": "t:options.link" }
+          ],
+          "default": "primary"
+        },
+        {
+          "type": "select",
+          "id": "content_position",
+          "label": "t:settings.content_position",
+          "options": [
+            { "value": "top-left", "label": "t:options.top_left" },
+            { "value": "top-center", "label": "Top center" },
+            { "value": "top-right", "label": "t:options.top_right" },
+            { "value": "center-left", "label": "Center left" },
+            { "value": "center", "label": "t:options.center" },
+            { "value": "center-right", "label": "Center right" },
+            { "value": "bottom-left", "label": "t:options.bottom_left" },
+            { "value": "bottom-center", "label": "Bottom center" },
+            { "value": "bottom-right", "label": "t:options.bottom_right" }
+          ],
+          "default": "center-left"
+        },
+        {
+          "type": "text_alignment",
+          "id": "content_alignment",
+          "label": "t:settings.content_alignment",
+          "default": "left"
+        },
+        { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#ffffff" },
+        { "type": "color", "id": "description_color", "label": "Description color", "default": "#ffffff" },
+        { "type": "color", "id": "button_text_color", "label": "t:settings.primary_button_text", "default": "#111111" },
+        { "type": "color", "id": "button_background_color", "label": "t:settings.primary_button_background", "default": "#ffffff" },
+        { "type": "color", "id": "button_border_color", "label": "t:settings.primary_button_border", "default": "#ffffff" },
+        { "type": "checkbox", "id": "enable_overlay", "label": "t:settings.overlay", "default": true },
+        { "type": "color", "id": "overlay_color", "label": "t:settings.overlay_color", "default": "#000000", "visible_if": "{{ block.settings.enable_overlay }}" },
+        { "type": "range", "id": "overlay_opacity", "label": "t:settings.overlay_opacity", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 20, "visible_if": "{{ block.settings.enable_overlay }}" }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Premium hero slider",
+      "category": "t:categories.banners",
+      "blocks": [
+        { "type": "slide" },
+        { "type": "slide", "settings": { "title": "New season, softly stated" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

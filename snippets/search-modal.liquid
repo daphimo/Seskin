@@ -9,6 +9,17 @@
 {% render 'dialog-styles' %}
 {% render 'predictive-search-styles' %}
 
+{% liquid
+  assign search_input_label = settings.search_input_label
+  if search_input_label == blank
+    assign search_input_label = 'content.search_input_label' | t
+  endif
+  assign search_input_placeholder = settings.search_input_placeholder
+  if search_input_placeholder == blank
+    assign search_input_placeholder = 'content.search_input_placeholder' | t
+  endif
+%}
+
 <script
   src="{{ 'dialog.js' | asset_url }}"
   type="module"
@@ -45,7 +56,7 @@
       data-section-id="predictive-search"
       data-testid="{{ 'search-component--modal' }}"
       role="search"
-      aria-label="{{ 'content.search_input_label' | t }}"
+      aria-label="{{ search_input_label | escape }}"
     >
       <form
         action="{{ routes.search_url }}"
@@ -63,7 +74,7 @@
               for="{{ 'cmdk-input' | default: 'Search' }}"
               class="visually-hidden"
             >
-              {{- 'content.search_input_label' | t -}}
+              {{- search_input_label | escape -}}
             </label>
             <input
               class="search-input"
@@ -77,7 +88,7 @@
               aria-haspopup="listbox"
               aria-autocomplete="list"
               autocomplete="off"
-              placeholder="{{ 'content.search_input_placeholder' | t }}"
+              placeholder="{{ search_input_placeholder | escape }}"
               ref="searchInput"
               on:input="/search"
               on:keydown="/onSearchKeyDown"
@@ -159,6 +170,55 @@
       width: var(--modal-width);
       margin-block-start: var(--modal-top-margin);
       overflow: hidden;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .search-modal__content {
+      width: min(50rem, 50vw);
+      max-width: none;
+      height: 100dvh;
+      max-height: none;
+      margin: 0 0 0 auto;
+      border-block: 0;
+      border-inline-end: 0;
+      border-radius: 0;
+    }
+
+    .dialog-modal[open].search-modal__content {
+      animation-name: premium-search-slide-in-inline;
+    }
+
+    .dialog-modal.search-modal__content.dialog-closing {
+      animation-name: premium-search-slide-out-inline;
+    }
+  }
+
+  @keyframes premium-search-slide-in-inline {
+    from { transform: translateX(100%); opacity: 0.9; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes premium-search-slide-out-inline {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0.9; }
+  }
+
+  @media screen and (max-width: 749px) {
+    .search-modal__content {
+      inset: 0;
+      width: 100%;
+      max-width: none;
+      max-height: 100dvh;
+      margin: 0;
+      border-radius: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dialog-modal[open].search-modal__content,
+    .dialog-modal.search-modal__content.dialog-closing {
+      animation-duration: 1ms;
     }
   }
 
@@ -515,5 +575,32 @@
   .predictive-search__close-modal-button:hover {
     --button-color: var(--color-foreground);
     --button-background-color: transparent;
+  }
+
+  @media screen and (min-width: 750px) {
+    .dialog-modal[open].search-modal__content {
+      margin: 0 0 0 auto;
+      border-radius: 0;
+      box-shadow: none;
+      animation: premium-search-slide-in-inline 300ms var(--ease-out-quad) forwards;
+    }
+
+    .dialog-modal.search-modal__content.dialog-closing {
+      animation: premium-search-slide-out-inline 200ms var(--ease-out-quad) forwards;
+    }
+
+    .predictive-search-form,
+    .predictive-search-form__content-wrapper,
+    .predictive-search-form__content {
+      height: 100%;
+      max-height: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dialog-modal[open].search-modal__content,
+    .dialog-modal.search-modal__content.dialog-closing {
+      animation-duration: 1ms;
+    }
   }
 {% endstylesheet %}

@@ -239,6 +239,10 @@ export class ProductCard extends ProductCardLink {
    * @param {ProductSelectEvent} event - The product select event.
    */
   #handleProductSelect = (event) => {
+    const selectedSwatch = event.target instanceof Element ? event.target.closest('[data-cardswatch-id]') : null;
+    const cardSwatchId = selectedSwatch?.getAttribute('data-cardswatch-id');
+    if (cardSwatchId) this.selectImagesForSwatch(cardSwatchId);
+
     // Update variant picker when variant:selected event fires
     const { optionValueId, variantId, connectedProductUrl } = event.detail ?? {};
     if (optionValueId && event.target !== this.variantPicker) {
@@ -268,6 +272,7 @@ export class ProductCard extends ProductCardLink {
         }
 
         this.#updateVariantImages();
+        if (cardSwatchId) this.selectImagesForSwatch(cardSwatchId);
         this.#previousSlideIndex = null;
 
         // Remove attribute after re-rendering since a variant selection has been made
@@ -280,6 +285,29 @@ export class ProductCard extends ProductCardLink {
         if (error?.name !== 'AbortError') console.warn('[product-card] Event promise rejected:', error);
       });
   };
+
+  /**
+   * Selects the first card image whose normalized alt text matches a color swatch.
+   * Falls back to the theme's variant-media behavior when no alt match exists.
+   * @param {string} cardSwatchId
+   */
+  selectImagesForSwatch(cardSwatchId) {
+    const { slideshow } = this.refs;
+    if (!slideshow || !cardSwatchId) return;
+
+    const matchingSlides = slideshow.slides?.filter(
+      (slide) => slide.getAttribute('data-cardimage-id') === cardSwatchId
+    );
+    if (!matchingSlides?.length) return;
+
+    for (const slide of slideshow.slides ?? []) {
+      const imageId = slide.getAttribute('data-cardimage-id');
+      if (imageId) slide.hidden = imageId !== cardSwatchId;
+    }
+
+    const firstMatchId = matchingSlides[0]?.getAttribute('slide-id');
+    if (firstMatchId) slideshow.select({ id: firstMatchId }, undefined, { animate: false });
+  }
 
   /**
    * Forces the overflow list to recalculate by dispatching a reflow event.

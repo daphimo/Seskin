@@ -1889,6 +1889,69 @@
         "id": "product_card_carousel",
         "label": "t:settings.product_card_carousel",
         "default": true
+      },
+      {
+        "type": "header",
+        "content": "t:settings.swatches"
+      },
+      {
+        "type": "select",
+        "id": "product_card_swatch_type",
+        "label": "t:settings.type",
+        "options": [
+          {
+            "value": "color",
+            "label": "t:options.solid"
+          },
+          {
+            "value": "image",
+            "label": "t:options.image"
+          }
+        ],
+        "default": "color"
+      },
+      {
+        "type": "select",
+        "id": "product_card_swatch_shape",
+        "label": "t:settings.shape",
+        "options": [
+          {
+            "value": "round",
+            "label": "t:options.rounded"
+          },
+          {
+            "value": "square",
+            "label": "t:options.square"
+          }
+        ],
+        "default": "round"
+      },
+      {
+        "type": "header",
+        "content": "t:names.badges"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_product_card_savings",
+        "label": "t:settings.show",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "product_card_savings_format",
+        "label": "t:settings.type",
+        "options": [
+          {
+            "value": "percentage",
+            "label": "t:options.percent"
+          },
+          {
+            "value": "amount",
+            "label": "t:options.price"
+          }
+        ],
+        "default": "percentage",
+        "visible_if": "{{ settings.show_product_card_savings }}"
       }
     ]
   },
@@ -1900,6 +1963,49 @@
         "id": "empty_state_collection",
         "label": "t:settings.empty_state_collection",
         "info": "t:settings.empty_state_collection_info"
+      },
+      {
+        "type": "text",
+        "id": "search_input_label",
+        "label": "t:names.search",
+        "default": "Search"
+      },
+      {
+        "type": "text",
+        "id": "search_input_placeholder",
+        "label": "t:names.search_input",
+        "default": "Search"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_common_searches",
+        "label": "t:names.predictive_search",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "search_suggestion_heading",
+        "label": "t:settings.heading",
+        "default": "Common searches",
+        "visible_if": "{{ settings.show_common_searches }}"
+      },
+      {
+        "type": "textarea",
+        "id": "common_search_terms",
+        "label": "t:settings.search",
+        "default": "Bodysuits, Bras, Pajamas"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_search_collections",
+        "label": "t:settings.collection_list",
+        "default": true
+      },
+      {
+        "type": "collection_list",
+        "id": "search_collections",
+        "label": "t:settings.collection_list",
+        "limit": 8
       },
       {
         "type": "header",

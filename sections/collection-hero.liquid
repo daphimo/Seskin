@@ -1,0 +1,159 @@
+{% comment %}
+  Collection-page hero sourced from the current collection and its
+  custom.related_collections list-of-collection-references metafield.
+  @example
+  Add to a collection template after defining custom.related_collections.
+{% endcomment %}
+
+{{ 'collection-hero.css' | asset_url | stylesheet_tag }}
+
+{% liquid
+  assign related_collections = collection.metafields.custom.related_collections.value
+%}
+
+{% if collection != blank %}
+  <div class="section-background"></div>
+  <div class="section section--page-width">
+    <section
+      class="collection-hero"
+      style="--collection-hero-desktop-padding-top: {{ section.settings.desktop_padding_top }}px; --collection-hero-desktop-padding-bottom: {{ section.settings.desktop_padding_bottom }}px; --collection-hero-mobile-padding-top: {{ section.settings.mobile_padding_top }}px; --collection-hero-mobile-padding-bottom: {{ section.settings.mobile_padding_bottom }}px; --collection-hero-desktop-gap: {{ section.settings.desktop_card_gap }}px; --collection-hero-mobile-gap: {{ section.settings.mobile_card_gap }}px;"
+    >
+      <header class="collection-hero__header">
+        <h1 class="collection-hero__title">{{ collection.title | escape }}</h1>
+        {% if collection.description != blank %}
+          <div class="collection-hero__description rte">{{ collection.description }}</div>
+        {% endif %}
+      </header>
+
+      {% if related_collections != blank %}
+        <div class="collection-hero__track-wrapper">
+          <div class="collection-hero__track">
+            {% for related_collection in related_collections %}
+              {% if related_collection != blank %}
+                {% liquid
+                  assign related_image = related_collection.featured_image
+                  assign related_image_alt = related_image.alt | default: related_collection.title
+                %}
+                <a
+                  class="collection-hero__item"
+                  href="{{ related_collection.url }}"
+                  aria-label="{{ related_collection.title | escape }}"
+                >
+                  <span class="collection-hero__item-media">
+                    {% if related_image != blank %}
+                      {{ related_image | image_url: width: 640 | image_tag: class: 'collection-hero__item-image', widths: '160, 240, 320, 480, 640', sizes: '(min-width: 750px) 12vw, 40vw', loading: 'lazy', alt: related_image_alt }}
+                    {% endif %}
+                  </span>
+                  <span class="collection-hero__item-title">{{ related_collection.title | escape }}</span>
+                </a>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      <nav class="collection-hero__breadcrumbs" aria-label="Breadcrumb">
+        <ol class="collection-hero__breadcrumb-list">
+          <li>
+            <a class="collection-hero__breadcrumb-link" href="{{ routes.root_url }}">
+              {{ section.settings.home_label | escape }}
+            </a>
+          </li>
+          <li class="collection-hero__breadcrumb-separator" aria-hidden="true">/</li>
+          <li aria-current="page">{{ collection.title | escape }}</li>
+        </ol>
+      </nav>
+    </section>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Collection hero",
+  "enabled_on": {
+    "templates": ["collection"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "home_label",
+      "label": "Home breadcrumb label",
+      "default": "Home"
+    },
+    {
+      "type": "header",
+      "content": "Desktop spacing"
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_top",
+      "label": "t:settings.top_padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_bottom",
+      "label": "t:settings.bottom_padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "desktop_card_gap",
+      "label": "t:settings.horizontal_gap",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Mobile spacing"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "t:settings.top_padding",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "t:settings.bottom_padding",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_gap",
+      "label": "t:settings.horizontal_gap",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection hero",
+      "category": "t:categories.collections"
+    }
+  ]
+}
+{% endschema %}

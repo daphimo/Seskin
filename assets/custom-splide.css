@@ -1,0 +1,15 @@
+[data-custom-splide] {
+  min-width: 0;
+}
+
+[data-custom-splide] .splide__track,
+[data-custom-splide] .splide__list,
+[data-custom-splide] .splide__slide {
+  min-width: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-custom-splide] .splide__list {
+    transition-duration: 0.01ms !important;
+  }
+}

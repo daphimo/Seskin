@@ -1,0 +1,25 @@
+{% doc %}
+  Renders the global floating control that scrolls the active page container to the top.
+
+  @example
+  {% render 'back-to-top' %}
+{% enddoc %}
+
+{{ 'back-to-top.css' | asset_url | stylesheet_tag }}
+
+<back-to-top class="back-to-top">
+  <button
+    type="button"
+    class="back-to-top__button"
+    ref="button"
+    on:click="/scrollToTop"
+    aria-label="{{ 'actions.back_to' | t: title: 'top' }}"
+    hidden
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M11.9999 10.8284L7.0502 15.7782L5.63599 14.364L11.9999 8L18.3639 14.364L16.9497 15.7782L11.9999 10.8284Z"></path>
+    </svg>
+  </button>
+</back-to-top>
+
+<script src="{{ 'back-to-top.js' | asset_url }}" type="module"></script>

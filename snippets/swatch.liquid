@@ -5,6 +5,7 @@
   @param {object} [variant_image] - an alternate image when there is no swatch value
   @param {string} [mode] - one of 'unscaled', 'filter', 'pill'
   @param {string} [label] - visually-hidden accessible label for the swatch (e.g. the color name)
+  @param {boolean} [card_swatch] - Whether the swatch is rendered on a product card.
 
   @example
   {% render 'swatch', swatch: swatch, variant_image: variant_image, mode: 'unscaled', label: option_value.name %}
@@ -13,7 +14,14 @@
 {% liquid
   assign swatch_value = null
   assign extra_classes = ''
-  if settings.show_variant_image and variant_image
+  assign use_variant_image = settings.show_variant_image
+  if card_swatch and settings.product_card_swatch_type == 'image'
+    assign use_variant_image = true
+  elsif card_swatch and settings.product_card_swatch_type == 'color'
+    assign use_variant_image = false
+  endif
+
+  if use_variant_image and variant_image
     assign swatch_image_width = settings.variant_swatch_width | times: 2
     assign swatch_image_url = variant_image | image_url: width: swatch_image_width
     assign swatch_value = 'url(' | append: swatch_image_url | append: ')'
@@ -43,7 +51,7 @@
   "
   style="
     --swatch-background: {{ swatch_value }};
-    {% if swatch.image and settings.show_variant_image == false %} --swatch-focal-point: {{ swatch.image.presentation.focal_point }};{% endif %}
+    {% if swatch.image and use_variant_image == false %} --swatch-focal-point: {{ swatch.image.presentation.focal_point }};{% endif %}
   "
 >
 </span>

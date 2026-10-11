@@ -106,10 +106,41 @@
 %}
 
 {% if block_settings.enable_filtering or block_settings.enable_sorting or block_settings.enable_grid_density %}
+  {% if request.page_type == 'collection' %}
+    <div class="premium-collection-toolbar{% if has_custom_color %} color-custom-{{ block.id }}{% endif %}">
+      {% if block_settings.enable_filtering %}
+        <button
+          class="button-unstyled premium-collection-toolbar__button"
+          type="button"
+          on:click="#filters-drawer/open"
+          aria-haspopup="dialog"
+        >
+          <span aria-hidden="true">+</span>
+          <span>{{ 'blocks.filter' | t }}</span>
+          {% if total_active_values > 0 %}
+            <span class="premium-collection-toolbar__count">{{ total_active_values }}</span>
+          {% endif %}
+        </button>
+      {% endif %}
+
+      {% if block_settings.enable_sorting %}
+        <button
+          class="button-unstyled premium-collection-toolbar__button premium-collection-toolbar__button--sort"
+          type="button"
+          on:click="#filters-drawer/open"
+          aria-haspopup="dialog"
+        >
+          <span aria-hidden="true">⇅</span>
+          <span>{{ 'actions.sort' | t }}</span>
+        </button>
+      {% endif %}
+    </div>
+  {% endif %}
+
   {% if block_settings.filter_style == 'vertical' %}
     {% # These elements are always rendered in the horizontal bar that's why we apply the .facets--horizontal class %}
     <div
-      class="facets facets--horizontal facets-controls-wrapper spacing-style{% if has_custom_color %} color-custom-{{ block.id }}{% endif %}"
+      class="facets facets--horizontal facets-controls-wrapper spacing-style{% if request.page_type == 'collection' %} premium-collection-facets__legacy{% endif %}{% if has_custom_color %} color-custom-{{ block.id }}{% endif %}"
       style="{% render 'spacing-style', settings: block_settings %}{% if block_settings.text_label_case == 'uppercase' %} --facet-label-transform: uppercase;{% endif %}"
     >
       {% if block_settings.enable_filtering %}
@@ -154,6 +185,7 @@
       {% endif %}
       facets-block-wrapper
       facets-block-wrapper--{{ block_settings.filter_style }}
+      {%- if request.page_type == 'collection' %} premium-collection-facets__legacy{% endif %}
       {%- if has_custom_color %} color-custom-{{ block.id }}{% endif %}
       {%- if block_settings.filter_width == 'full-width' %} facets-block-wrapper--full-width{% endif %}
     "
@@ -316,6 +348,7 @@
   <div
     class="
       facets-toggle
+      {%- if request.page_type == 'collection' %} premium-collection-facets__legacy{% endif %}
       {%- if block_settings.enable_filtering == false %} facets-toggle--no-filters{% endif %}
       {%- if has_custom_color %} color-custom-{{ block.id }}{% endif %}
     "
@@ -405,7 +438,7 @@
   <div></div>
 {% endif %}
 
-{% if block_settings.enable_filtering %}
+{% if block_settings.enable_filtering or block_settings.enable_sorting %}
   <theme-drawer
     id="filters-drawer"
     data-skip-node-update
@@ -449,7 +482,13 @@
               </span>
             {% endif %}
           {% endcapture %}
-          {% assign filters_drawer_title = 'blocks.filter' | t %}
+          {% liquid
+            if block_settings.enable_filtering
+              assign filters_drawer_title = 'blocks.filter' | t
+            else
+              assign filters_drawer_title = 'actions.sort' | t
+            endif
+          %}
           {% render 'theme-drawer-header',
             title: filters_drawer_title,
             drawer_id: 'filters-drawer',
@@ -481,7 +520,7 @@
                           assign is_active = true
                         endif
 
-                        render 'price-filter', filter: filter, filter_style: 'vertical', should_render_clear: false, id_prefix: 'dialog'
+                        render 'price-filter', filter: filter, filter_style: 'vertical', should_render_clear: false, id_prefix: 'dialog', in_drawer: true
                       -%}
                     {% else %}
                       {% liquid
@@ -502,9 +541,9 @@
               {% render 'sorting',
                 results: results,
                 sort_by: sort_by,
-                filter_style: block_settings.filter_style,
+                filter_style: 'vertical',
                 suffix: 'overflow',
-                should_use_select_on_mobile: should_use_select_on_mobile,
+                should_use_select_on_mobile: false,
                 section_id: section.id
               %}
             {% endif %}
@@ -545,6 +584,80 @@
 {% endif %}
 
 {% stylesheet %}
+  .premium-collection-toolbar {
+    grid-column: var(--full-width);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 56px;
+    padding-inline: 24px;
+    border-block: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-10-25));
+    background: var(--color-background);
+  }
+
+  .premium-collection-toolbar__button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0;
+    color: var(--color-foreground);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .premium-collection-toolbar__button--sort {
+    margin-inline-start: auto;
+  }
+
+  .premium-collection-toolbar__count {
+    display: grid;
+    place-items: center;
+    min-width: 20px;
+    height: 20px;
+    padding-inline: 5px;
+    border-radius: 999px;
+    background: var(--color-foreground);
+    color: var(--color-background);
+    font-size: var(--font-size--2xs);
+  }
+
+  .premium-collection-facets__legacy {
+    display: none !important;
+  }
+
+  #filters-drawer .theme-drawer__dialog {
+    --theme-drawer-width: min(430px, 100vw);
+  }
+
+  #filters-drawer .facets__panel {
+    border-block-end: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-10-25));
+  }
+
+  #filters-drawer .facets__summary {
+    min-height: 58px;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  #filters-drawer .facets__summary .icon-animated svg {
+    width: 20px;
+    height: 20px;
+    transition: transform var(--animation-speed-slow) var(--animation-easing);
+  }
+
+  #filters-drawer .sorting-filter {
+    display: block;
+  }
+
+  #filters-drawer .sorting-filter__options {
+    position: static;
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
   .facets-block-wrapper {
     @media screen and (min-width: 750px) {
       margin: var(--facets-margin);

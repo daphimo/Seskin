@@ -1,0 +1,53 @@
+{% doc %}
+  Renders up to two promotional cards assigned to a menu label.
+
+  @param {section} section - The header section containing promotion blocks.
+  @param {string} menu_label - The top-level navigation label to match.
+  @param {string} [class] - Additional wrapper class.
+
+  @example
+  {% render 'header-menu-promotions', section: section, menu_label: link.title %}
+{% enddoc %}
+
+{% liquid
+  assign normalized_menu_label = menu_label | strip | handleize
+  assign promotion_count = 0
+  capture promotion_cards
+    for promotion in section.blocks
+      assign normalized_promotion_label = promotion.settings.menu_label | strip | handleize
+      if promotion.type == 'header_promotion' and normalized_promotion_label == normalized_menu_label and promotion_count < 2
+        render 'header-promotion-card', promotion: promotion, sizes: '(min-width: 750px) 240px, 70vw'
+        assign promotion_count = promotion_count | plus: 1
+      endif
+    endfor
+  endcapture
+%}
+
+{% if promotion_count > 0 %}
+  <div class="header-menu-promotions{% if class != blank %} {{ class | escape }}{% endif %}">
+    {{ promotion_cards }}
+  </div>
+{% endif %}
+
+{% stylesheet %}
+  .header-menu-promotions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gap-md);
+    padding: var(--padding-md) var(--padding-lg) var(--padding-xl);
+  }
+
+  @media screen and (max-width: 749px) {
+    .header-menu-promotions {
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(12rem, 70vw);
+      grid-template-columns: none;
+      overflow-x: auto;
+      scroll-snap-type: inline proximity;
+    }
+
+    .header-menu-promotions > * {
+      scroll-snap-align: start;
+    }
+  }
+{% endstylesheet %}

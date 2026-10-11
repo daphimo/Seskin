@@ -117,6 +117,9 @@
       {%- if product.media.size == 1 -%}
         <div
           class="{{ featured_media_class }}"
+          {% if featured_media.preview_image.alt != blank %}
+            data-cardimage-id="{{ product.id }}-{{ featured_media.preview_image.alt | handleize }}"
+          {% endif %}
           style="--product-media-fit: {{ media_fit | default: 'cover' }};"
         >
           {% render 'product-media',
@@ -184,6 +187,11 @@
               endif
 
               assign class = media_class | replace: '[media_type]', media.media_type | append: media_class_suffix
+
+              if media.preview_image.alt != blank
+                assign card_image_id = product.id | append: '-' | append: media.preview_image.alt | handleize
+                assign attributes = attributes | append: ' data-cardimage-id="' | append: card_image_id | append: '"'
+              endif
 
               capture slideshow_children
                 render 'product-media', media: media, sizes: sizes, loading: loading, preview_image_only: true

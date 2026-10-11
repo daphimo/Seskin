@@ -94,13 +94,40 @@
 
     {% capture children %}
       {% for link in block_settings.menu.links %}
+        {% liquid
+          assign has_grandchildren = false
+          for child_link in link.links
+            if child_link.links != blank
+              assign has_grandchildren = true
+              break
+            endif
+          endfor
+
+          assign normalized_menu_label = link.title | strip | handleize
+          assign promotion_count = 0
+          for promotion in section.blocks
+            assign normalized_promotion_label = promotion.settings.menu_label | strip | handleize
+            if promotion.type == 'header_promotion' and normalized_promotion_label == normalized_menu_label and promotion_count < 2
+              assign promotion_count = promotion_count | plus: 1
+            endif
+          endfor
+
+          assign has_submenu = false
+          if link.links != blank or promotion_count > 0
+            assign has_submenu = true
+          endif
+          assign use_mega_menu = false
+          if has_grandchildren or promotion_count > 0
+            assign use_mega_menu = true
+          endif
+        %}
         <li
-          class="menu-list__list-item"
+          class="menu-list__list-item{% if use_mega_menu %} menu-list__list-item--mega{% elsif has_submenu %} menu-list__list-item--dropdown{% endif %}"
           on:blur="/deactivate"
           on:pointerenter="/activate"
           on:pointerleave="/deactivate"
         >
-          {%- if link.links != blank -%}
+          {%- if has_submenu -%}
             <span class="menu-list__trigger">
           {%- endif -%}
           <a
@@ -114,7 +141,7 @@
           >
             <span class="menu-list__link-title">{{- link.title -}}</span>
           </a>
-          {%- if link.links != blank -%}
+          {%- if has_submenu -%}
             <button
               type="button"
               class="menu-list__disclosure button-unstyled"
@@ -146,24 +173,45 @@
                 style="{% render 'submenu-font-styles', settings: block_settings %}"
               >
                 {% assign list_id = 'MegaMenuList-' | append: forloop.index %}
-                <div class="mega-menu section section--full-width-margin section--{{ section.settings.section_width }}">
-                  <div
-                    class="mega-menu__grid"
-                    data-menu-grid-id="{{ list_id }}"
-                  >
-                    {% render 'mega-menu-list',
-                      parent_link: link,
-                      id: list_id,
-                      section: section,
-                      grid_columns_count: 6,
-                      grid_columns_count_tablet: 4,
-                      grid_columns_count_collection_images: 8,
-                      menu_content_type: menu_content_type,
-                      content_aspect_ratio: ratio,
-                      image_border_radius: image_border_radius
-                    %}
+                {% if use_mega_menu %}
+                  <div class="mega-menu section section--full-width-margin section--{{ section.settings.section_width }}">
+                    <div class="mega-menu__grid{% if promotion_count > 0 %} mega-menu__grid--with-promotions{% endif %}" data-menu-grid-id="{{ list_id }}">
+                      {% if link.links != blank %}
+                        {% render 'mega-menu-list',
+                          parent_link: link,
+                          id: list_id,
+                          section: section,
+                          grid_columns_count: 6,
+                          grid_columns_count_tablet: 4,
+                          grid_columns_count_collection_images: 8,
+                          menu_content_type: menu_content_type,
+                          content_aspect_ratio: ratio,
+                          image_border_radius: image_border_radius
+                        %}
+                      {% else %}
+                        <a class="mega-menu__destination" href="{{ link.url }}">{{ link.title | escape }}</a>
+                      {% endif %}
+                      {% if promotion_count > 0 %}
+                        <div class="mega-menu__promotions">
+                          {% assign rendered_promotions = 0 %}
+                          {% for promotion in section.blocks %}
+                            {% assign normalized_promotion_label = promotion.settings.menu_label | strip | handleize %}
+                            {% if promotion.type == 'header_promotion' and normalized_promotion_label == normalized_menu_label and rendered_promotions < 2 %}
+                              {% render 'header-promotion-card', promotion: promotion, sizes: '(min-width: 990px) 240px, 25vw' %}
+                              {% assign rendered_promotions = rendered_promotions | plus: 1 %}
+                            {% endif %}
+                          {% endfor %}
+                        </div>
+                      {% endif %}
+                    </div>
                   </div>
-                </div>
+                {% else %}
+                  <ul class="menu-list__dropdown list-unstyled" role="list">
+                    {% for child_link in link.links %}
+                      <li><a class="menu-list__dropdown-link" href="{{ child_link.url }}">{{ child_link.title | escape }}</a></li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
               </div>
             </div>
           {%- endif -%}
@@ -401,6 +449,28 @@
 
   .menu-list__link-title {
     padding-inline: var(--gap-sm);
+    position: relative;
+  }
+
+  .menu-list__link-title::after {
+    content: '';
+    position: absolute;
+    inset-inline: var(--gap-sm);
+    inset-block-end: -0.35rem;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 180ms var(--ease-out-quad);
+  }
+
+  .menu-list__list-item:is(:hover, :focus-within) .menu-list__link-title::after,
+  .menu-list__link--active .menu-list__link-title::after {
+    transform: scaleX(1);
+  }
+
+  [dir='rtl'] .menu-list__link-title::after {
+    transform-origin: right;
   }
   [slot='overflow'] .menu-list__link-title {
     padding-inline: 0;
@@ -713,6 +783,49 @@
 
     @media screen and (min-width: 990px) {
       grid-template-columns: repeat(var(--menu-columns-desktop), minmax(0, 1fr));
+    }
+  }
+
+  .mega-menu__grid--with-promotions {
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 38%);
+  }
+
+  .mega-menu__grid--with-promotions > .mega-menu__list {
+    grid-column: 1;
+  }
+
+  .mega-menu__promotions {
+    grid-column: 2;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gap-lg);
+  }
+
+  .mega-menu__destination {
+    align-self: start;
+    color: inherit;
+  }
+
+  .menu-list__list-item--dropdown .menu-list__submenu {
+    inset-inline: auto;
+    width: max-content;
+    min-width: 220px;
+  }
+
+  .menu-list__dropdown {
+    display: grid;
+    gap: var(--padding-xs);
+    padding: var(--padding-lg);
+  }
+
+  .menu-list__dropdown-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menu-list__link-title::after {
+      transition: none;
     }
   }
 

@@ -172,6 +172,11 @@ class HeaderComponent extends Component {
   };
 
   #updateScrollState = () => {
+    if (this.hasAttribute('transparent')) {
+      const threshold = Number.parseInt(this.dataset.transparentThreshold || '48', 10);
+      this.toggleAttribute('data-transparent-solid', getScrollTop() > threshold);
+    }
+
     const stickyMode = this.getAttribute('sticky');
     if (!this.#offscreen && stickyMode !== 'always') return;
 
@@ -227,13 +232,14 @@ class HeaderComponent extends Component {
     this.addEventListener('overflowMinimum', this.#handleOverflowMinimum);
 
     const stickyMode = this.getAttribute('sticky');
+    if (stickyMode || this.hasAttribute('transparent')) {
+      this.#updateScrollState();
+      this.#scrollContainer = getScrollEventTarget();
+      this.#scrollContainer.addEventListener('scroll', this.#handleWindowScroll, { passive: true });
+    }
+
     if (stickyMode) {
       this.#observeStickyPosition(stickyMode === 'always');
-
-      if (stickyMode === 'scroll-up' || stickyMode === 'always') {
-        this.#scrollContainer = getScrollEventTarget();
-        this.#scrollContainer.addEventListener('scroll', this.#handleWindowScroll);
-      }
 
       scrollContainerMediaQuery.addEventListener('change', this.#handleBreakpointChange);
     }

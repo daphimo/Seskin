@@ -1,0 +1,86 @@
+{% comment %}
+  Brand Color System — Women's Innerwear
+  Palette direction: Soft Luxury × Modern Femininity
+
+  Add this file to your Shopify theme's snippets folder as:
+  snippets/brand-colors.liquid
+
+  Render it where you want these global CSS variables available, usually in
+  layout/theme.liquid inside the <head>:
+  {% render 'brand-colors' %}
+
+  The colors are exposed as CSS custom properties so they can be reused in
+  theme CSS, sections, and snippets with var(--color-name).
+{% endcomment %}
+
+<style>
+  :root {
+    /* Core brand colors */
+    --brand-primary: #262321;
+    {% comment %}Soft Charcoal (#262321): Main brand color. Use for primary text, navigation, dark backgrounds, footer, and primary buttons.{% endcomment %}
+
+    --brand-secondary: #F5F2EF;
+    {% comment %}Warm Ivory (#F5F2EF): Main light background. Use for page backgrounds, product-card surfaces, and spacious editorial sections.{% endcomment %}
+
+    --brand-tertiary: #FFFFFF;
+    {% comment %}Pure White (#FFFFFF): Clean contrast color. Use for text on dark surfaces, product photography backgrounds, and white cards or sections.{% endcomment %}
+
+    /* Accent and supporting colors */
+    --brand-accent: #A77D78;
+    {% comment %}Dusty Rose (#A77D78): Signature feminine accent. Use sparingly for selected variant states, subtle highlights, campaign details, and decorative accents. Avoid using it for small text on light backgrounds because contrast may be insufficient.{% endcomment %}
+
+    --brand-accent-strong: #795652;
+    {% comment %}Deep Rose (#795652): Darker, more readable version of the accent. Use for small accent text, links, and icons on light backgrounds when stronger contrast is needed.{% endcomment %}
+
+    --brand-nude: #DED3CB;
+    {% comment %}Nude Sand (#DED3CB): Soft skin-tone-inspired neutral. Use for size-selector backgrounds, inactive swatches, borders, and secondary panels.{% endcomment %}
+
+    /* Text colors */
+    --color-text: #262321;
+    {% comment %}Primary Text (#262321): Default headings, body text, prices, and labels on light backgrounds.{% endcomment %}
+
+    --color-text-muted: #625A55;
+    {% comment %}Muted Text (#625A55): Supporting descriptions, secondary labels, captions, and less prominent product information on light backgrounds.{% endcomment %}
+
+    --color-text-inverse: #FFFFFF;
+    {% comment %}Inverse Text (#FFFFFF): Text and icons placed on dark charcoal backgrounds or buttons.{% endcomment %}
+
+    /* UI and interaction colors */
+    --color-border: #DED3CB;
+    {% comment %}Soft Border (#DED3CB): Subtle dividers, input outlines, card borders, and separators on light surfaces.{% endcomment %}
+
+    --color-surface: #FFFFFF;
+    {% comment %}Surface (#FFFFFF): Default surface for product cards, drawers, modal windows, and form fields.{% endcomment %}
+
+    --color-surface-soft: #F5F2EF;
+    {% comment %}Soft Surface (#F5F2EF): Alternate surface for collection sections, filters, and gentle background contrast.{% endcomment %}
+
+    --color-button-primary-bg: #262321;
+    {% comment %}Primary Button Background (#262321): Main call-to-action background, such as Add to cart and Shop now.{% endcomment %}
+
+    --color-button-primary-text: #FFFFFF;
+    {% comment %}Primary Button Text (#FFFFFF): Text and icons inside primary dark buttons.{% endcomment %}
+
+    --color-button-secondary-bg: #F5F2EF;
+    {% comment %}Secondary Button Background (#F5F2EF): Background for secondary or less prominent actions.{% endcomment %}
+
+    --color-button-secondary-text: #262321;
+    {% comment %}Secondary Button Text (#262321): Text and icons inside light secondary buttons.{% endcomment %}
+
+    --color-focus: #795652;
+    {% comment %}Focus Indicator (#795652): Visible keyboard-focus outline for interactive elements. Keep the focus indicator clear and do not remove it for accessibility.{% endcomment %}
+
+    /* Status colors */
+    --color-success: #356B50;
+    {% comment %}Success Green (#356B50): Use for in-stock confirmation, successful form submissions, and positive status messages.{% endcomment %}
+
+    --color-warning: #8A5A20;
+    {% comment %}Warning Amber (#8A5A20): Use for low-stock notices and caution messages that need attention.{% endcomment %}
+
+    --color-error: #B42318;
+    {% comment %}Error Red (#B42318): Use for validation errors, failed actions, and unavailable or invalid form states.{% endcomment %}
+
+    --color-info: #355C7D;
+    {% comment %}Information Blue (#355C7D): Use for neutral informational notices, delivery updates, and helpful messages.{% endcomment %}
+  }
+</style>

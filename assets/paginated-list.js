@@ -11,7 +11,7 @@ import { getScrollTop, scrollTo } from '@theme/scroll-container';
  * @typedef {object} Refs
  * @property {HTMLUListElement} [grid] - The grid element.
  * @property {HTMLSpanElement} [viewMorePrevious] - The view more previous button.
- * @property {HTMLSpanElement} [viewMoreNext] - The view more next button.
+ * @property {HTMLButtonElement} [viewMoreNext] - The view more next button.
  * @property {HTMLElement[]} [cards] - The cards elements.
  *
  * @extends Component<Refs>
@@ -54,6 +54,27 @@ export default class PaginatedList extends Component {
     document.addEventListener(StandardEvents.collectionUpdate, this.#handleFilterUpdate);
   }
 
+  /**
+   * Loads the next result page after explicit customer interaction.
+   * @param {Event} event
+   */
+  async loadMore(event) {
+    const button = event.currentTarget;
+    if (!(button instanceof HTMLButtonElement) || button.disabled) return;
+
+    button.disabled = true;
+    button.setAttribute('aria-busy', 'true');
+
+    try {
+      await this.#renderNextPage();
+      const nextPage = this.#getPage('next');
+      if (!this.#shouldUsePage(nextPage)) button.closest('.main-collection-grid__load-more')?.remove();
+    } finally {
+      button.disabled = false;
+      button.removeAttribute('aria-busy');
+    }
+  }
+
   disconnectedCallback() {
     super.disconnectedCallback();
     if (this.infinityScrollObserver) {
@@ -65,6 +86,8 @@ export default class PaginatedList extends Component {
   }
 
   #observeViewMore() {
+    if (this.querySelector('.main-collection-grid__load-more-button')) return;
+
     const { viewMorePrevious, viewMoreNext } = this.refs;
 
     // Return if neither element exists

@@ -1,0 +1,33 @@
+{% doc %}
+  Renders the current product's optional merchandising highlight.
+
+  @example
+  {% content_for 'block', type: 'product-highlight', id: 'product-highlight' %}
+{% enddoc %}
+
+{% liquid
+  assign highlight = closest.product.metafields.custom.product_highlight.value
+  if highlight == blank
+    assign highlight = closest.product.metafields.custom.product_highlight
+  endif
+%}
+
+{% if highlight != blank %}
+  <p class="premium-product-card__highlight" {{ block.shopify_attributes }}>
+    {{ highlight | escape }}
+  </p>
+{% endif %}
+
+{% schema %}
+{
+  "name": "t:names.product_information",
+  "tag": null,
+  "settings": [],
+  "presets": [
+    {
+      "name": "t:names.product_information",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

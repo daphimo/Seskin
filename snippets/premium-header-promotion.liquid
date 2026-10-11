@@ -1,0 +1,28 @@
+{% doc %}
+  Renders one promotion assigned to a premium header navigation item.
+
+  @param {block} promotion - Promotion block from the premium header section.
+  @param {string} [sizes] - Responsive sizes value.
+
+  @example
+  {% render 'premium-header-promotion', promotion: block, sizes: '240px' %}
+{% enddoc %}
+
+{% if promotion.settings.image != blank or promotion.settings.title != blank or promotion.settings.description != blank %}
+  <article class="premium-header-promo" {{ promotion.shopify_attributes }}>
+    {% if promotion.settings.url != blank %}<a href="{{ promotion.settings.url }}">{% endif %}
+      {% if promotion.settings.image != blank %}
+        {{ promotion.settings.image
+          | image_url: width: 720
+          | image_tag:
+            class: 'premium-header-promo__image',
+            widths: '180, 240, 360, 480, 720',
+            sizes: sizes,
+            loading: 'lazy'
+        }}
+      {% endif %}
+      {% if promotion.settings.title != blank %}<strong>{{ promotion.settings.title | escape }}</strong>{% endif %}
+      {% if promotion.settings.description != blank %}<p>{{ promotion.settings.description | escape }}</p>{% endif %}
+    {% if promotion.settings.url != blank %}</a>{% endif %}
+  </article>
+{% endif %}

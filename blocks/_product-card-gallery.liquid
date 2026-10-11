@@ -21,7 +21,21 @@
           {%- if product.available == false -%}
             {{ 'content.product_badge_sold_out' | t }}
           {%- elsif product.compare_at_price > product.price -%}
-            {{ 'content.product_badge_sale' | t }}
+            {% liquid
+              assign savings_variant = product.selected_or_first_available_variant
+              assign savings_price = savings_variant.price
+              assign savings_compare_at = savings_variant.compare_at_price
+            %}
+            {% if settings.show_product_card_savings and savings_compare_at > savings_price %}
+              {% if settings.product_card_savings_format == 'amount' %}
+                {% assign savings_value = savings_compare_at | minus: savings_price | money %}
+              {% else %}
+                {% assign savings_value = savings_compare_at | minus: savings_price | times: 100.0 | divided_by: savings_compare_at | round | append: '%' %}
+              {% endif %}
+              {{ 'content.product_badge_sale' | t }} {{ savings_value }}
+            {% else %}
+              {{ 'content.product_badge_sale' | t }}
+            {% endif %}
           {%- endif -%}
         </div>
       </div>

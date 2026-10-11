@@ -235,6 +235,16 @@ export class QuickAddComponent extends Component {
 
     if (!productGrid || !modalContent) return;
 
+    if (!isMobileBreakpoint() && this.dataset.productHighlight) {
+      const viewProductTitle = productGrid.querySelector('.view-product-title');
+      if (viewProductTitle) {
+        const productHighlight = document.createElement('p');
+        productHighlight.classList.add('premium-product-card__highlight');
+        productHighlight.textContent = this.dataset.productHighlight;
+        viewProductTitle.prepend(productHighlight);
+      }
+    }
+
     if (isMobileBreakpoint()) {
       const productDetails = productGrid.querySelector('.product-details');
       const productFormComponent = productGrid.querySelector('product-form-component');
@@ -249,6 +259,13 @@ export class QuickAddComponent extends Component {
       const productHeader = document.createElement('div');
       productHeader.classList.add('product-header');
 
+      if (this.dataset.productHighlight) {
+        const productHighlight = document.createElement('p');
+        productHighlight.classList.add('premium-product-card__highlight');
+        productHighlight.textContent = this.dataset.productHighlight;
+        productHeader.appendChild(productHighlight);
+      }
+
       productHeader.appendChild(productTitle);
       if (productPrice) {
         productHeader.appendChild(productPrice);
@@ -261,6 +278,12 @@ export class QuickAddComponent extends Component {
       if (productFormComponent) {
         productGrid.appendChild(productFormComponent);
       }
+
+      const viewDetails = document.createElement('a');
+      viewDetails.classList.add('custom-quick-add__details');
+      viewDetails.href = this.productPageUrl;
+      viewDetails.textContent = this.dataset.viewDetailsLabel || '';
+      productGrid.appendChild(viewDetails);
 
       productDetails?.remove();
     }
@@ -336,6 +359,8 @@ class QuickAddDialog extends DialogComponent {
 
   /** @param {ProductSelectEvent} event - The product select event */
   #handleProductSelect = (event) => {
+    this.#filterGalleryToSelectedSwatch();
+
     // Wait for variant update data
     event.promise
       .then(({ detail }) => {
@@ -350,11 +375,29 @@ class QuickAddDialog extends DialogComponent {
 
         if (viewMoreDetailsLink) viewMoreDetailsLink.href = anchorElement.href;
         if (mobileProductTitle) mobileProductTitle.href = anchorElement.href;
+        this.#filterGalleryToSelectedSwatch();
       })
       .catch((error) => {
         if (error?.name !== 'AbortError') console.warn('[quick-add] Event promise rejected:', error);
       });
   };
+
+  #filterGalleryToSelectedSwatch() {
+    const selectedSwatch = this.querySelector('label[data-cardswatch-id]:has(input:checked)');
+    const swatchId = selectedSwatch?.getAttribute('data-cardswatch-id');
+    const slides = [...this.querySelectorAll('.product-information__media slideshow-slide')];
+    if (!slides.length) return;
+
+    for (const slide of slides) slide.removeAttribute('hidden');
+    if (!swatchId) return;
+
+    const matchingSlides = slides.filter((slide) => slide.getAttribute('data-cardimage-id') === swatchId);
+    if (!matchingSlides.length) return;
+
+    for (const slide of slides) {
+      slide.toggleAttribute('hidden', !matchingSlides.includes(slide));
+    }
+  }
 
   #handleDialogClose = () => {
     const iosVersion = getIOSVersion();
