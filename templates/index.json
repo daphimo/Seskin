@@ -15,7 +15,8 @@
         "slide_zUjP6b": {
           "type": "slide",
           "settings": {
-            "desktop_media": "shopify://shop_images/bb7a28bc60bf5efc6a500b9160af96bfc7c7927f-1080x1404_1.jpg",
+            "desktop_media": "shopify://shop_images/40952b4e3fa7643dd2200cd36d84d85eab95a22a-4092x1785.png",
+            "mobile_media": "shopify://shop_images/bb7a28bc60bf5efc6a500b9160af96bfc7c7927f-1080x1404_2.jpg",
             "image_alt": "",
             "slide_url": "",
             "title": "Just Dropped: The Alpine Collection",
@@ -38,7 +39,8 @@
         "slide_pedUdg": {
           "type": "slide",
           "settings": {
-            "desktop_media": "shopify://shop_images/bb7a28bc60bf5efc6a500b9160af96bfc7c7927f-1080x1404_1.jpg",
+            "desktop_media": "shopify://shop_images/40952b4e3fa7643dd2200cd36d84d85eab95a22a-4092x1785.png",
+            "mobile_media": "shopify://shop_images/bb7a28bc60bf5efc6a500b9160af96bfc7c7927f-1080x1404_2.jpg",
             "image_alt": "",
             "slide_url": "",
             "title": "Elevated essentials",
@@ -65,7 +67,7 @@
       ],
       "name": "Premium hero slider",
       "settings": {
-        "desktop_height": "medium",
+        "desktop_height": "auto",
         "mobile_height": "auto",
         "autoplay": true,
         "autoplay_interval": 5,
@@ -85,83 +87,12 @@
     "collection_list_Qmt7f4": {
       "type": "collection-list",
       "blocks": {
-        "group_HTB6L9": {
-          "type": "group",
-          "name": "t:names.header",
-          "settings": {
-            "content_direction": "column",
-            "vertical_on_mobile": true,
-            "horizontal_alignment": "flex-start",
-            "vertical_alignment": "center",
-            "align_baseline": false,
-            "horizontal_alignment_flex_direction_column": "flex-start",
-            "vertical_alignment_flex_direction_column": "center",
-            "gap": 12,
-            "width": "fill",
-            "custom_width": 100,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fit",
-            "custom_height": 100,
-            "background_media": "none",
-            "background_color": "",
-            "video_position": "cover",
-            "background_image_position": "cover",
-            "toggle_overlay": false,
-            "overlay_color": "#00000026",
-            "overlay_style": "solid",
-            "gradient_direction": "to top",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0,
-            "link": "",
-            "open_in_new_tab": false,
-            "placeholder": "",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "text_TCKnmj": {
-              "type": "text",
-              "name": "t:names.text",
-              "settings": {
-                "text": "<h3>Shop by collection</h3>",
-                "width": "fit-content",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 16,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "text_TCKnmj"
-          ]
-        },
         "static-collection-card": {
           "type": "_collection-card",
           "name": "t:names.collection_card",
           "static": true,
           "settings": {
-            "placement": "on_image",
+            "placement": "below_image",
             "horizontal_alignment": "flex-start",
             "vertical_alignment": "flex-start",
             "collection_card_gap": 8,
@@ -180,9 +111,9 @@
                 "width": "fit-content",
                 "max_width": "normal",
                 "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "",
+                "type_preset": "custom",
+                "font": "var(--font-heading--family)",
+                "font_size": "1rem",
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
@@ -203,7 +134,7 @@
               "name": "t:names.collection_card_image",
               "static": true,
               "settings": {
-                "image_ratio": "adapt",
+                "image_ratio": "portrait",
                 "toggle_overlay": false,
                 "overlay_color": "#00000026",
                 "overlay_style": "solid",
@@ -222,15 +153,18 @@
           ]
         }
       },
-      "block_order": [
-        "group_HTB6L9"
-      ],
       "name": "t:names.collections_grid",
       "settings": {
-        "collection_list": [],
-        "layout_type": "grid",
+        "collection_list": [
+          "bras-tops",
+          "butt-hip-enhancers",
+          "fashion-body-tape",
+          "leggings-thermals",
+          "shapewear-body-sculpting"
+        ],
+        "layout_type": "carousel",
         "carousel_on_mobile": false,
-        "columns": 3,
+        "columns": 4,
         "mobile_columns": "2",
         "mobile_card_size": "60cqw",
         "columns_gap": 8,
@@ -245,10 +179,176 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "premium_hero_slider_VxLkrp": {
+      "type": "premium-hero-slider",
+      "blocks": {
+        "slide_pNPYci": {
+          "type": "slide",
+          "settings": {
+            "desktop_media": "shopify://shop_images/37d5f3d1781ebac5c1187e489082728cfdd3ac53-4098x1920.png",
+            "mobile_media": "shopify://shop_images/335c43337ea5625921d75f2cd3e1832c50df0b6e-1080x1450.png",
+            "image_alt": "",
+            "slide_url": "",
+            "title": "Matching Sets",
+            "content": "<p>The sets you'll live in—your most effortless outfits start here&nbsp;</p>",
+            "button_label": "Shop Now",
+            "button_url": "shopify://collections/bras-tops",
+            "button_style": "link",
+            "content_position": "bottom-left",
+            "content_alignment": "left",
+            "heading_color": "#ffffff",
+            "description_color": "#ffffff",
+            "button_text_color": "{{ settings.color_palette.background }}",
+            "button_background_color": "#ffffff",
+            "button_border_color": "#ffffff",
+            "enable_overlay": true,
+            "overlay_color": "#000000",
+            "overlay_opacity": 5
+          }
+        }
+      },
+      "block_order": [
+        "slide_pNPYci"
+      ],
+      "name": "Premium hero slider",
+      "settings": {
+        "desktop_height": "auto",
+        "mobile_height": "auto",
+        "autoplay": true,
+        "autoplay_interval": 5,
+        "transition_speed": 700,
+        "pause_on_hover": true,
+        "pause_when_out_of_view": true,
+        "show_arrows": true,
+        "show_pagination": true,
+        "transition": "fade",
+        "loop": true,
+        "section_width": "full-width",
+        "accessibility_label": "",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "premium_hero_slider_b7gWbQ": {
+      "type": "premium-hero-slider",
+      "blocks": {
+        "slide_GBwXj6": {
+          "type": "slide",
+          "settings": {
+            "desktop_media": "shopify://shop_images/3d4519841bba9a10404a1ebd995b6fdeeae8fe29-4098x1920.jpg",
+            "mobile_media": "shopify://shop_images/d5aaafeaf7f3a1a6c6b97bcd64c16b07849c7c9c-780x1387.jpg",
+            "image_alt": "",
+            "slide_url": "",
+            "title": "MEN'S NEW ARRIVALS",
+            "content": "<p>Shop the latest mens collections and must-have styles from SKIMS</p>",
+            "button_label": "Shop Now",
+            "button_url": "shopify://collections/bras-tops",
+            "button_style": "link",
+            "content_position": "bottom-left",
+            "content_alignment": "left",
+            "heading_color": "#ffffff",
+            "description_color": "#ffffff",
+            "button_text_color": "{{ settings.color_palette.background }}",
+            "button_background_color": "#ffffff",
+            "button_border_color": "#ffffff",
+            "enable_overlay": true,
+            "overlay_color": "#000000",
+            "overlay_opacity": 5
+          }
+        }
+      },
+      "block_order": [
+        "slide_GBwXj6"
+      ],
+      "name": "Premium hero slider",
+      "settings": {
+        "desktop_height": "auto",
+        "mobile_height": "auto",
+        "autoplay": true,
+        "autoplay_interval": 5,
+        "transition_speed": 700,
+        "pause_on_hover": true,
+        "pause_when_out_of_view": true,
+        "show_arrows": true,
+        "show_pagination": true,
+        "transition": "fade",
+        "loop": true,
+        "section_width": "full-width",
+        "accessibility_label": "",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "section_4BdXky": {
+      "type": "section",
+      "blocks": {
+        "text_8E9DFr": {
+          "type": "text",
+          "name": "t:names.heading",
+          "settings": {
+            "text": "<p>SESKIN is a solutions oriented brand creating the next generation of underwear, clothing and shapewear.</p>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "h2",
+            "font": "var(--font-body--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "text_color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "text_8E9DFr"
+      ],
+      "name": "t:names.rich_text_section",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 25,
+        "section_width": "page-width",
+        "section_height": "small",
+        "section_height_custom": 50,
+        "background_media": "none",
+        "background_color": "",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_color": "",
+        "border_radius": 0,
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
     }
   },
   "order": [
     "premium_hero_slider_dN8Qca",
-    "collection_list_Qmt7f4"
+    "collection_list_Qmt7f4",
+    "premium_hero_slider_VxLkrp",
+    "premium_hero_slider_b7gWbQ",
+    "section_4BdXky"
   ]
 }
