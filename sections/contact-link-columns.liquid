@@ -1,0 +1,25 @@
+{% comment %}Four-column contact resource navigation.{% endcomment %}
+{{ 'contact-page.css' | asset_url | stylesheet_tag }}
+<section class="contact-page contact-link-columns color-{{ section.settings.color_scheme }}" style="--contact-links-padding-top: {{ section.settings.padding_top }}px; --contact-links-padding-bottom: {{ section.settings.padding_bottom }}px;">
+  <div class="contact-page__inner contact-link-columns__grid">
+    {% for block in section.blocks %}
+      <nav class="contact-link-column" aria-label="{{ block.settings.heading | escape }}" {{ block.shopify_attributes }}>
+        <h2 class="contact-link-column__heading">{{ block.settings.heading | escape }}</h2>
+        <ul class="contact-link-column__list">
+          {% for index in (1..4) %}
+            {% liquid
+              assign label_key = 'label_' | append: index
+              assign url_key = 'url_' | append: index
+              assign link_label = block.settings[label_key]
+              assign link_url = block.settings[url_key]
+            %}
+            {% if link_label != blank and link_url != blank %}<li><a class="contact-link-column__link" href="{{ link_url }}">{{ link_label | escape }}</a></li>{% endif %}
+          {% endfor %}
+        </ul>
+      </nav>
+    {% endfor %}
+  </div>
+</section>
+{% schema %}
+{"name":"Contact link columns","tag":"section","class":"section-wrapper","max_blocks":4,"settings":[{"type":"color_scheme","id":"color_scheme","label":"Color scheme","default":"scheme-1"},{"type":"range","id":"padding_top","label":"Top padding","min":24,"max":120,"step":4,"unit":"px","default":44},{"type":"range","id":"padding_bottom","label":"Bottom padding","min":24,"max":120,"step":4,"unit":"px","default":44}],"blocks":[{"type":"column","name":"Link column","settings":[{"type":"text","id":"heading","label":"Heading","default":"Help"},{"type":"text","id":"label_1","label":"Link 1 label"},{"type":"url","id":"url_1","label":"Link 1 destination"},{"type":"text","id":"label_2","label":"Link 2 label"},{"type":"url","id":"url_2","label":"Link 2 destination"},{"type":"text","id":"label_3","label":"Link 3 label"},{"type":"url","id":"url_3","label":"Link 3 destination"},{"type":"text","id":"label_4","label":"Link 4 label"},{"type":"url","id":"url_4","label":"Link 4 destination"}]}],"presets":[{"name":"Contact link columns","blocks":[{"type":"column"},{"type":"column"},{"type":"column"},{"type":"column"}]}]}
+{% endschema %}

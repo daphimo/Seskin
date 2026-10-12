@@ -1,0 +1,8 @@
+{% comment %}Plain contact-page heading region.{% endcomment %}
+{{ 'contact-page.css' | asset_url | stylesheet_tag }}
+<section class="contact-page contact-page-heading color-{{ section.settings.color_scheme }}" style="--contact-heading-padding-top: {{ section.settings.padding_top }}px; --contact-heading-padding-bottom: {{ section.settings.padding_bottom }}px;">
+  <div class="contact-page__inner"><h1 class="contact-page-heading__title">{{ section.settings.heading | escape }}</h1></div>
+</section>
+{% schema %}
+{"name":"Contact page heading","tag":"section","class":"section-wrapper","settings":[{"type":"text","id":"heading","label":"Heading","default":"Contact us"},{"type":"color_scheme","id":"color_scheme","label":"Color scheme","default":"scheme-1"},{"type":"range","id":"padding_top","label":"Top padding","min":24,"max":120,"step":4,"unit":"px","default":48},{"type":"range","id":"padding_bottom","label":"Bottom padding","min":24,"max":120,"step":4,"unit":"px","default":56}],"presets":[{"name":"Contact page heading"}]}
+{% endschema %}

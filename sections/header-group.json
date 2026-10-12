@@ -13,8 +13,6 @@
   "sections": {
     "premium_header": {
       "type": "premium-header",
-      "blocks": {},
-      "block_order": [],
       "settings": {
         "desktop_logo_width": 130,
         "mobile_logo_width": 100,
@@ -30,7 +28,7 @@
         "border_color": "#e8e8e8",
         "row_padding": 14,
         "show_localization": true,
-        "show_wishlist": false,
+        "show_wishlist": true,
         "wishlist_label": "Wishlist",
         "show_account": true,
         "show_cart": true,

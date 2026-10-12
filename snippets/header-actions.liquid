@@ -63,6 +63,11 @@
   {% endif %}
   {{- block.shopify_attributes -}}
 >
+  {% if settings.wishlist_enabled %}
+    <a class="wishlist-link header-actions__action" href="/pages/wishlist" aria-label="{{ 'wishlist.title' | t }}">
+      {% render 'wishlist-icon' %}<span class="wishlist-count" data-wishlist-count hidden>0</span>
+    </a>
+  {% endif %}
   {% if shop.customer_accounts_enabled %}
     {% liquid
       assign account_actions_style = ''

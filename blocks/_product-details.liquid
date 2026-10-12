@@ -27,6 +27,7 @@
       </a>
     </div>
     {% content_for 'blocks' %}
+    {% if settings.wishlist_enabled %}<div class="product-details__wishlist">{% render 'wishlist-button', product: closest.product, show_label: true %}</div>{% endif %}
   {% endcapture %}
 
   {% render 'group',

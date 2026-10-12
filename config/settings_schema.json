@@ -2222,5 +2222,16 @@
         "default": "equal-width-buttons"
       }
     ]
+  },
+  {
+    "name": "Wishlist",
+    "settings": [
+      {"type":"checkbox","id":"wishlist_enabled","label":"Enable wishlist","default":true},
+      {"type":"color","id":"wishlist_color","label":"Icon and accent color","default":"#B17864","visible_if":"{{ settings.wishlist_enabled }}"},
+      {"type":"checkbox","id":"wishlist_show_count","label":"Show wishlist count","default":true,"visible_if":"{{ settings.wishlist_enabled }}"},
+      {"type":"select","id":"wishlist_flow","label":"Guest behavior","options":[{"value":"guest_signin","label":"Guests can save locally"},{"value":"login_required","label":"Login required"}],"default":"guest_signin","visible_if":"{{ settings.wishlist_enabled }}"},
+      {"type":"checkbox","id":"wishlist_customer_sync","label":"Synchronize logged-in customers through app proxy","default":true,"visible_if":"{{ settings.wishlist_enabled }}"},
+      {"type":"text","id":"wishlist_endpoint","label":"Wishlist app proxy endpoint","default":"/apps/wishlist","info":"Must be a same-origin Shopify app proxy. No credentials belong in the theme.","visible_if":"{{ settings.wishlist_enabled and settings.wishlist_customer_sync }}"}
+    ]
   }
 ]

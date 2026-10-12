@@ -366,5 +366,26 @@
       "default_title": "Название по умолчанию",
       "sticky_add_to_cart": "Быстрое добавление в корзину"
     }
+  },
+  "wishlist": {
+    "title": "Wishlist",
+    "save": "Save to wishlist",
+    "saved": "Saved",
+    "add": "Add",
+    "remove": "Remove",
+    "added": "added to wishlist",
+    "removed": "removed from wishlist",
+    "product": "Product",
+    "add_product": "Add {{ product }} to wishlist",
+    "sign_in_to_use": "Sign in to use wishlist",
+    "sign_in_heading": "Sign in to use your wishlist",
+    "guest_message_html": "<a href=\"{{ link }}\">Sign in</a> to synchronize your wishlist across devices.",
+    "add_all": "Add all to cart",
+    "loading": "Loading wishlist",
+    "from_price": "From {{ price }}",
+    "unavailable": "Saved products are unavailable right now.",
+    "none_available": "No wishlist products are currently available.",
+    "cart_error": "Wishlist products could not be added to the cart.",
+    "storage_error": "Wishlist could not be saved on this device."
   }
 }

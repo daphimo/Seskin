@@ -1,0 +1,39 @@
+{% doc %}
+  Renders product option radios and data attributes for gallery synchronization.
+  @param {product} product - Product whose options are rendered.
+  @param {section} section - Owning section settings.
+{% enddoc %}
+<div class="premium-variants" data-variant-picker>
+{% assign gallery_option_name = section.settings.gallery_option_name | downcase %}
+{% assign size_option_name = section.settings.size_option_name | downcase %}
+{% for option in product.options_with_values %}
+  {% assign option_name = option.name | downcase %}
+    {% assign is_grouping_option = false %}
+    {% if option_name == gallery_option_name %}{% assign is_grouping_option = true %}{% endif %}
+    {% assign is_size = false %}
+    {% if option_name == size_option_name %}{% assign is_size = true %}{% endif %}
+    <fieldset class="premium-variants__option{% if is_grouping_option %} premium-variants__option--swatches{% endif %}">
+      <legend>
+        <span>{{ option.name | escape }}: <strong data-selected-option-label="{{ forloop.index0 }}">{{ option.selected_value | escape }}</strong></span>
+        {% if is_size and section.settings.show_size_guide %}<button class="premium-variants__size-guide" type="button" data-size-guide-open>Size guide</button>{% endif %}
+      </legend>
+      <div class="premium-variants__values">
+        {% for value in option.values %}
+          {% assign swatch_id = value | strip | handleize %}
+          <label class="premium-variants__value{% if is_grouping_option %} premium-variants__value--swatch{% endif %}"{% if is_grouping_option %} data-productswatch-id="{{ swatch_id }}"{% endif %}>
+            <input type="radio" name="premium-option-{{ section.id }}-{{ option.position }}" value="{{ value | escape }}" data-option-index="{{ option.position | minus: 1 }}" {% if option.selected_value == value %}checked{% endif %}>
+            {% if is_grouping_option %}
+              {% assign variant_for_value = product.variants | where: 'option1', value | first %}
+              <span class="premium-variants__swatch" title="{{ value | escape }}">
+                {% if section.settings.swatch_style == 'image' and variant_for_value.featured_image != blank %}{{ variant_for_value.featured_image | image_url: width: 96 | image_tag: loading: 'lazy', alt: '' }}{% else %}<span style="--premium-swatch-color: {{ value | handleize }}"></span>{% endif %}
+              </span>
+              <span class="visually-hidden">{{ value | escape }}</span>
+            {% else %}
+              <span>{{ value | escape }}</span>
+            {% endif %}
+          </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+  {% endfor %}
+</div>

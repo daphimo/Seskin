@@ -1,0 +1,20 @@
+{% doc %}
+  Renders the continuous-image premium product lightbox.
+  @param {product} product - Product whose image media is displayed.
+  @param {string} dialog_id - Unique dialog ID.
+{% enddoc %}
+<dialog class="premium-gallery-modal" id="{{ dialog_id }}" aria-label="{{ product.title | escape }} gallery" data-gallery-dialog>
+  <button class="premium-gallery-modal__close" type="button" aria-label="Close gallery" data-dialog-close>&times;</button>
+  <div class="premium-gallery-modal__scroll">
+    <div class="premium-gallery-modal__images">
+      {% for media in product.media %}
+        {% if media.media_type == 'image' %}
+          {% assign gallery_id = media.alt | strip | handleize %}
+          <div class="premium-gallery-modal__image" data-modal-media data-galleryimage-id="{{ gallery_id }}">
+            {{ media | image_url: width: 2200 | image_tag: widths: '800, 1200, 1600, 2200', sizes: '(min-width: 750px) 60vw, 96vw', loading: 'lazy', alt: media.alt }}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</dialog>

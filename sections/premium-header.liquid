@@ -80,9 +80,9 @@
           {{ 'icon-search.svg' | inline_asset_content }}
           <span>{{ section.settings.search_label | escape }}</span>
         </button>
-        {% if section.settings.show_wishlist and section.settings.wishlist_url != blank %}
-          <a href="{{ section.settings.wishlist_url }}" aria-label="{{ section.settings.wishlist_label | escape }}">
-            <svg viewBox="0 0 20 20" aria-hidden="true">{% render 'icon', icon: 'heart' %}</svg>
+        {% if settings.wishlist_enabled and section.settings.show_wishlist %}
+          <a class="wishlist-link" href="{{ section.settings.wishlist_url | default: '/pages/wishlist' }}" aria-label="{{ section.settings.wishlist_label | escape }}">
+            {% render 'wishlist-icon' %}<span class="wishlist-count" data-wishlist-count hidden>0</span>
           </a>
         {% endif %}
         {% if section.settings.show_account and shop.customer_accounts_enabled %}
@@ -180,7 +180,7 @@
     { "type": "color", "id": "border_color", "label": "t:settings.border_color", "default": "#e8e8e8" },
     { "type": "range", "id": "row_padding", "label": "t:settings.padding", "min": 8, "max": 28, "step": 2, "unit": "px", "default": 14 },
     { "type": "checkbox", "id": "show_localization", "label": "t:settings.country_region", "default": true },
-    { "type": "checkbox", "id": "show_wishlist", "label": "t:options.heart", "default": false },
+    { "type": "checkbox", "id": "show_wishlist", "label": "t:options.heart", "default": true },
     { "type": "url", "id": "wishlist_url", "label": "t:settings.link", "visible_if": "{{ section.settings.show_wishlist }}" },
     { "type": "text", "id": "wishlist_label", "label": "t:settings.heading", "default": "Wishlist", "visible_if": "{{ section.settings.show_wishlist }}" },
     { "type": "checkbox", "id": "show_account", "label": "t:settings.account", "default": true },

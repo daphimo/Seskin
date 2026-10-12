@@ -1,0 +1,33 @@
+{
+  "sections": {
+    "main": {
+      "type": "ordering-page",
+      "blocks": {
+        "nav_returns": { "type": "navigation", "settings": { "label": "Returns", "url": "/pages/returns", "is_current": false } },
+        "nav_ordering": { "type": "navigation", "settings": { "label": "Ordering", "url": "/pages/ordering", "is_current": true } },
+        "nav_shipping": { "type": "navigation", "settings": { "label": "Shipping", "url": "/pages/shipping", "is_current": false } },
+        "nav_international": { "type": "navigation", "settings": { "label": "International", "url": "/pages/international", "is_current": false } },
+        "nav_faqs": { "type": "navigation", "settings": { "label": "FAQs", "url": "/pages/faqs", "is_current": false } },
+        "nav_size_guides": { "type": "navigation", "settings": { "label": "Size guides", "url": "/pages/size-guide", "is_current": false } },
+        "nav_promo": { "type": "navigation", "settings": { "label": "Promo terms", "url": "/pages/promo-terms", "is_current": false } },
+        "nav_stockists": { "type": "navigation", "settings": { "label": "Stockists", "url": "/pages/stockists", "is_current": false } },
+        "nav_contact": { "type": "navigation", "settings": { "label": "Contact us", "url": "/pages/contact", "is_current": false } },
+        "where_to_shop": { "type": "accordion", "settings": { "heading": "Where to shop", "content": "<p>Add links to official stores, retail locations, or authorized stockists.</p>", "expanded": false } },
+        "processing_times": { "type": "accordion", "settings": { "heading": "Processing times", "content": "<p>Add current order-processing guidance here. Avoid promising a delivery date unless the policy guarantees it.</p>", "expanded": false } },
+        "pre_orders": { "type": "accordion", "settings": { "heading": "Pre-orders", "content": "<p>Explain how pre-orders are identified, charged, and fulfilled.</p>", "expanded": false } },
+        "international": { "type": "accordion", "settings": { "heading": "International", "content": "<p>Add information about eligible destinations and international-order considerations.</p>", "expanded": false } },
+        "order_tracking": { "type": "accordion", "settings": { "heading": "Order tracking", "content": "<p>Explain where customers can find tracking information after an order ships.</p>", "expanded": false } },
+        "taxes": { "type": "accordion", "settings": { "heading": "Taxes", "content": "<p>Add the store's approved tax and duty information here.</p>", "expanded": false } },
+        "payment_options": { "type": "accordion", "settings": { "heading": "Payment options", "content": "<p>List only payment methods currently accepted by the store.</p>", "expanded": false } },
+        "updating_orders": { "type": "accordion", "settings": { "heading": "Updating orders", "content": "<p>Explain whether and how customers can request changes after placing an order.</p>", "expanded": false } },
+        "order_cancellations": { "type": "accordion", "settings": { "heading": "Order cancellations", "content": "<p>Add the approved cancellation policy and contact method here.</p>", "expanded": false } },
+        "changing_address": { "type": "accordion", "settings": { "heading": "Changing shipping address", "content": "<p>Explain the approved process for requesting a shipping-address change.</p>", "expanded": false } }
+      },
+      "block_order": ["nav_returns", "nav_ordering", "nav_shipping", "nav_international", "nav_faqs", "nav_size_guides", "nav_promo", "nav_stockists", "nav_contact", "where_to_shop", "processing_times", "pre_orders", "international", "order_tracking", "taxes", "payment_options", "updating_orders", "order_cancellations", "changing_address"],
+      "settings": {
+        "help_url": "/pages/help"
+      }
+    }
+  },
+  "order": ["main"]
+}

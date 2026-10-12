@@ -1,0 +1,21 @@
+{% comment %}Reusable premium product collection rail for product templates.{% endcomment %}
+{{ 'main-premium-product.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'main-premium-product.js' | asset_url }}" type="module" fetchpriority="low"></script>
+{% assign chosen_collection = section.settings.collection %}
+<section class="premium-collection section section--page-width" style="--premium-collection-padding: {{ section.settings.padding }}px;">
+  <premium-collection-slider>
+    <header class="premium-collection__header">
+      <h2>{{ section.settings.heading | default: chosen_collection.title | escape }}</h2>
+      <div class="premium-collection__controls">
+        <button type="button" aria-label="Previous products" data-collection-previous><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M7.82843 10.9999H20V12.9999H7.82843L13.1924 18.3638L11.7782 19.778L4 11.9999L11.7782 4.22168L13.1924 5.63589L7.82843 10.9999Z"></path></svg></button>
+        <button type="button" aria-label="Next products" data-collection-next><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"></path></svg></button>
+      </div>
+    </header>
+    {% if chosen_collection != blank %}
+      <div class="premium-collection__track" data-collection-track>{% for card_product in chosen_collection.products limit: section.settings.product_limit %}{% render 'premium-product-card', product: card_product %}{% endfor %}</div>
+    {% elsif request.design_mode %}<p>Select a collection to populate this product rail.</p>{% endif %}
+  </premium-collection-slider>
+</section>
+{% schema %}
+{"name":"Premium collection","tag":"section","class":"section-wrapper","settings":[{"type":"collection","id":"collection","label":"Collection"},{"type":"text","id":"heading","label":"Custom heading"},{"type":"range","id":"product_limit","label":"Products","min":2,"max":12,"step":1,"default":5},{"type":"range","id":"padding","label":"Vertical padding","min":24,"max":120,"step":4,"unit":"px","default":48}],"presets":[{"name":"Premium collection"}]}
+{% endschema %}

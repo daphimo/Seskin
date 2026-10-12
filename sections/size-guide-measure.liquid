@@ -1,0 +1,64 @@
+{% comment %}
+  Responsive instructional image with merchant-editable measuring steps.
+  @example
+  <!-- Add once between foundational and category-specific size tables. -->
+{% endcomment %}
+
+<section id="how-to-measure" class="size-guide size-guide-measure section color-{{ section.settings.color_scheme }}" style="padding-block: {{ section.settings.padding_top }}px {{ section.settings.padding_bottom }}px;">
+  <div class="size-guide__inner size-guide-measure__layout">
+    <div class="size-guide-measure__media">
+      {% if section.settings.image != blank %}
+        {{ section.settings.image | image_url: width: 1600 | image_tag: widths: '480, 720, 960, 1200, 1600', sizes: '(min-width: 750px) 55vw, 100vw', loading: 'lazy', alt: section.settings.image_alt }}
+      {% else %}
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      {% endif %}
+    </div>
+    <div class="size-guide-measure__content">
+      {% if section.settings.heading != blank %}<h2 class="size-guide__heading">{{ section.settings.heading | escape }}</h2>{% endif %}
+      {% if section.settings.description != blank %}<div class="size-guide__description rte">{{ section.settings.description }}</div>{% endif %}
+      {% if section.blocks.size > 0 %}
+        <ol class="size-guide-measure__steps">
+          {% for block in section.blocks %}
+            <li class="size-guide-measure__step" {{ block.shopify_attributes }}>
+              <div>
+                <h3>{{ block.settings.heading | escape }}</h3>
+                {% if block.settings.text != blank %}<div class="rte">{{ block.settings.text }}</div>{% endif %}
+              </div>
+            </li>
+          {% endfor %}
+        </ol>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% render 'size-guide-styles' %}
+
+{% schema %}
+{
+  "name": "How to measure",
+  "tag": "section",
+  "class": "section-wrapper",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "How to measure" },
+    { "type": "richtext", "id": "description", "label": "Description", "default": "<p>For the most accurate fit, wear minimal clothing and keep the measuring tape level without pulling it tight.</p>" },
+    { "type": "image_picker", "id": "image", "label": "Instructional image" },
+    { "type": "text", "id": "image_alt", "label": "Image alt text", "default": "Model demonstrating where to take body measurements" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+    { "type": "range", "id": "padding_top", "label": "Top padding", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 40 },
+    { "type": "range", "id": "padding_bottom", "label": "Bottom padding", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 40 }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Measurement step",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Bust" },
+        { "type": "richtext", "id": "text", "label": "Instructions", "default": "<p>Measure around the fullest part of your bust, keeping the tape parallel to the floor.</p>" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "How to measure", "blocks": [{ "type": "step" }, { "type": "step" }, { "type": "step" }] }]
+}
+{% endschema %}

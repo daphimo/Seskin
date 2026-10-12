@@ -1,0 +1,19 @@
+{% doc %}
+  Renders a product-level wishlist control.
+  @param {product} product - Product represented by the control.
+  @param {string} [class] - Optional additional class.
+  @param {boolean} [show_label] - Whether to show visible button text.
+{% enddoc %}
+{% if settings.wishlist_enabled and product.handle != blank %}
+  {% if settings.wishlist_flow == 'login_required' and customer == blank %}
+    <a class="wishlist-button{% if class != blank %} {{ class }}{% endif %}" href="{{ routes.account_login_url }}" aria-label="{{ 'wishlist.sign_in_to_use' | t }}">
+      {% render 'wishlist-icon' %}
+      {% if show_label %}<span>{{ 'wishlist.save' | t }}</span>{% endif %}
+    </a>
+  {% else %}
+    <button class="wishlist-button{% if class != blank %} {{ class }}{% endif %}" type="button" data-wishlist-button data-product-handle="{{ product.handle | escape }}" data-product-title="{{ product.title | escape }}" aria-label="{{ 'wishlist.add_product' | t: product: product.title | escape }}" aria-pressed="false">
+      {% render 'wishlist-icon' %}
+      {% if show_label %}<span data-wishlist-label>{{ 'wishlist.save' | t }}</span>{% endif %}
+    </button>
+  {% endif %}
+{% endif %}

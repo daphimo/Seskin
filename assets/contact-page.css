@@ -1,0 +1,36 @@
+.contact-page { color: var(--color-foreground); background: var(--color-background); }
+.contact-page__inner { width: min(calc(100% - 64px), var(--page-width)); margin-inline: auto; }
+.contact-page-heading { padding-block: var(--contact-heading-padding-top) var(--contact-heading-padding-bottom); }
+.contact-page-heading__title { margin: 0; font-size: clamp(3.2rem, 5vw, 5.6rem); line-height: .95; text-transform: uppercase; letter-spacing: .02em; }
+.contact-methods, .contact-question { background: rgb(var(--color-foreground-rgb) / .035); }
+.contact-methods { padding-block: var(--contact-methods-padding-top) var(--contact-methods-padding-bottom); }
+.contact-methods__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.contact-method-card { position: relative; display: grid; min-height: 184px; align-content: center; justify-items: center; gap: 10px; padding: 34px 24px; border: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-20)); border-radius: 4px; background: var(--color-background); text-align: center; }
+.contact-method-card__badge, .contact-question__badge { display: inline-block; padding: 3px 6px; color: var(--color-background); background: rgb(var(--color-foreground-rgb) / .65); font-size: 1.1rem; font-weight: 600; line-height: 1.2; }
+.contact-method-card__badge { position: absolute; inset-block-start: 0; inset-inline-start: 50%; transform: translate(-50%, -1px); }
+.contact-method-card__icon { width: 34px; height: 34px; }
+.contact-method-card__icon svg { display: block; width: 100%; height: 100%; }
+.contact-method-card__heading, .contact-question__heading { margin: 0; text-transform: uppercase; letter-spacing: .03em; }
+.contact-method-card__description { margin: 0; color: rgb(var(--color-foreground-rgb) / var(--opacity-70)); }
+.contact-method-card__link, .contact-link-column__link { color: rgb(var(--color-foreground-rgb) / .7); text-decoration: underline; text-underline-offset: .18em; overflow-wrap: anywhere; }
+.contact-method-card__link:focus-visible, .contact-link-column__link:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+.contact-link-columns { padding-block: var(--contact-links-padding-top) var(--contact-links-padding-bottom); }
+.contact-link-columns__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(24px, 5vw, 72px); }
+.contact-link-column { min-width: 0; text-align: center; }
+.contact-link-column__heading { margin: 0 0 18px; font-size: 1.6rem; }
+.contact-link-column__list { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.contact-question { padding-block: var(--contact-question-padding-top) var(--contact-question-padding-bottom); }
+.contact-question__card { width: min(100%, 580px); margin-inline: auto; padding: 24px; border: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-10)); border-radius: 8px; background: var(--color-background); box-shadow: 0 8px 24px rgb(var(--color-foreground-rgb) / .06); }
+.contact-question__heading { margin-block-start: 14px; }
+.contact-question__description { margin: 2px 0 24px; }
+.contact-question__form { display: grid; grid-template-columns: 1fr 54px; }
+.contact-question__field { position: relative; min-width: 0; }
+.contact-question__sparkle { position: absolute; inset-block-start: 50%; inset-inline-start: 16px; width: 20px; height: 20px; transform: translateY(-50%); pointer-events: none; }
+.contact-question__input { width: 100%; min-height: 54px; padding: 12px 16px 12px 48px; border: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-20)); border-inline-end: 0; border-radius: 0; color: inherit; background: var(--color-background); font: inherit; }
+[dir='rtl'] .contact-question__input { padding: 12px 48px 12px 16px; }
+.contact-question__submit { display: grid; min-width: 54px; min-height: 54px; place-items: center; padding: 0; border: 1px solid var(--color-foreground); color: var(--color-background); background: var(--color-foreground); cursor: pointer; }
+.contact-question__submit svg { width: 22px; height: 22px; }
+.contact-question__input:focus-visible, .contact-question__submit:focus-visible { position: relative; z-index: 1; outline: 2px solid currentColor; outline-offset: 2px; }
+@media screen and (max-width: 989px) { .contact-link-columns__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 48px; } }
+@media screen and (max-width: 749px) { .contact-page__inner { width: min(calc(100% - 24px), var(--page-width)); } .contact-methods__grid { grid-template-columns: 1fr; } .contact-method-card { min-height: 170px; } .contact-link-columns__grid { gap: 40px 20px; } .contact-question__card { padding: 20px; } }
+@media screen and (max-width: 479px) { .contact-link-columns__grid { grid-template-columns: 1fr; } }

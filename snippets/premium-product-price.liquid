@@ -1,0 +1,16 @@
+{% doc %}
+  Renders the selected variant price and optional savings badge.
+  @param {object} variant - Initial selected variant.
+  @param {boolean} show_sale_badge - Whether savings should be displayed.
+  @param {string} sale_badge_format - percentage or amount.
+{% enddoc %}
+{% assign saving = variant.compare_at_price | minus: variant.price %}
+<div class="premium-product__price" data-price-region>
+  <span data-current-price>{{ variant.price | money }}</span>
+  <s data-compare-price{% unless variant.compare_at_price > variant.price %} hidden{% endunless %}>{{ variant.compare_at_price | money }}</s>
+  {% if show_sale_badge %}
+    <span class="premium-product__sale-badge" data-sale-badge{% unless variant.compare_at_price > variant.price %} hidden{% endunless %}>
+      {% if sale_badge_format == 'amount' %}Save {{ saving | money }}{% elsif variant.compare_at_price > variant.price %}{{ saving | times: 100.0 | divided_by: variant.compare_at_price | round }}% off{% endif %}
+    </span>
+  {% endif %}
+</div>

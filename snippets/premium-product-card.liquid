@@ -1,0 +1,16 @@
+{% doc %}
+  Renders a compact premium collection product card.
+  @param {product} product - Product to display.
+{% enddoc %}
+<article class="premium-card">
+  {% render 'wishlist-button', product: product %}
+  <a class="premium-card__media" href="{{ product.url }}">
+    {% if product.featured_image != blank %}{{ product.featured_image | image_url: width: 720 | image_tag: widths: '240, 360, 540, 720', sizes: '(min-width: 990px) 20vw, 44vw', loading: 'lazy', alt: product.featured_image.alt }}{% else %}{{ 'product-apparel-1' | placeholder_svg_tag }}{% endif %}
+    {% if product.images[1] != blank %}{{ product.images[1] | image_url: width: 720 | image_tag: class: 'premium-card__secondary', widths: '240, 360, 540, 720', sizes: '(min-width: 990px) 20vw, 44vw', loading: 'lazy', alt: product.images[1].alt }}{% endif %}
+  </a>
+  <div class="premium-card__content">
+    {% if product.compare_at_price_max > product.price %}<span class="premium-card__badge">Sale</span>{% endif %}
+    <a href="{{ product.url }}">{{ product.title | escape }}</a>
+    <div><span>{{ product.price | money }}</span>{% if product.compare_at_price_max > product.price %} <s>{{ product.compare_at_price_max | money }}</s>{% endif %}</div>
+  </div>
+</article>

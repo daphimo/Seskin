@@ -1,0 +1,30 @@
+{% doc %}
+  Renders a saved product card returned by the wishlist product view.
+  @param {product} product - Saved product.
+{% enddoc %}
+{% liquid
+  assign card_image = product.featured_media.preview_image | default: product.featured_image
+  assign current_variant = product.selected_or_first_available_variant
+%}
+{% if product.handle != blank %}
+  <article class="wishlist-card" data-wishlist-card data-product-handle="{{ product.handle | escape }}" data-variant-id="{{ current_variant.id }}" data-product-available="{{ current_variant.available }}">
+    <div class="wishlist-card__media">
+      <a href="{{ product.url }}" aria-label="{{ product.title | escape }}">
+        {% if card_image != blank %}
+          {{ card_image | image_url: width: 900 | image_tag: widths: '240, 360, 480, 640, 900', sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw', loading: 'lazy', class: 'wishlist-card__image', alt: card_image.alt }}
+        {% else %}
+          {{ 'product-apparel-1' | placeholder_svg_tag: 'wishlist-card__image' }}
+        {% endif %}
+      </a>
+      {% render 'wishlist-button', product: product %}
+    </div>
+    <div class="wishlist-card__content">
+      <h2><a href="{{ product.url }}">{{ product.title | escape }}</a></h2>
+      <div class="wishlist-card__price">
+        {% if product.price_varies %}<span>{{ 'wishlist.from_price' | t: price: product.price_min | money }}</span>{% else %}<span>{{ current_variant.price | money }}</span>{% endif %}
+        {% if current_variant.compare_at_price > current_variant.price %}<s>{{ current_variant.compare_at_price | money }}</s>{% endif %}
+      </div>
+      {% unless product.available %}<span class="wishlist-card__sold-out">{{ 'products.product.sold_out' | t }}</span>{% endunless %}
+    </div>
+  </article>
+{% endif %}

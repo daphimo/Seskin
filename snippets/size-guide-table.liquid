@@ -1,0 +1,66 @@
+{% doc %}
+  Renders a configurable, horizontally scrollable size guide table.
+
+  @param {string} title - Table title.
+  @param {string} [description] - Optional plain-text introduction.
+  @param {string} columns - Pipe-separated column headings.
+  @param {string} rows - Newline-separated rows with pipe-separated cells.
+  @param {string} [note] - Optional rich-text note below the table.
+  @param {string} table_id - Unique ID used to associate the caption and table.
+
+  @example
+  {% render 'size-guide-table', title: 'International sizes', columns: 'Size|US|UK', rows: 'XS|0–2|4–6', table_id: 'international' %}
+{% enddoc %}
+
+{% liquid
+  assign column_items = columns | newline_to_br | strip_newlines | split: '|'
+  assign row_items = rows | newline_to_br | split: '<br />'
+  assign caption_id = table_id | append: '-caption'
+%}
+
+<div class="size-guide-table"{% if title != blank %} aria-labelledby="{{ caption_id }}"{% endif %}>
+  {% if title != blank or description != blank %}
+    <div class="size-guide-table__header">
+      {% if title != blank %}
+        <h3 class="size-guide-table__title" id="{{ caption_id }}">{{ title | escape }}</h3>
+      {% endif %}
+      {% if description != blank %}
+        <p class="size-guide-table__description">{{ description | escape }}</p>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if columns != blank and rows != blank %}
+    <div class="size-guide-table__scroller" tabindex="0" role="region"{% if title != blank %} aria-labelledby="{{ caption_id }}"{% endif %}>
+      <table>
+        <thead>
+          <tr>
+            {% for column in column_items %}
+              <th scope="col">{{ column | strip | escape }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in row_items %}
+            {% assign cells = row | strip | split: '|' %}
+            {% if row != blank %}
+              <tr>
+                {% for cell in cells %}
+                  {% if forloop.first %}
+                    <th scope="row">{{ cell | strip | escape }}</th>
+                  {% else %}
+                    <td>{{ cell | strip | escape }}</td>
+                  {% endif %}
+                {% endfor %}
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+  {% if note != blank %}
+    <div class="size-guide-table__note rte">{{ note }}</div>
+  {% endif %}
+</div>

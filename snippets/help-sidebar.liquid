@@ -1,0 +1,36 @@
+{% doc %}
+  Renders shared help-page navigation from section navigation blocks.
+
+  @param {object} blocks - Section blocks containing navigation entries.
+  @param {string} current_path - Current request path used as an active-state fallback.
+  @param {string} label - Accessible navigation label.
+
+  @example
+  {% render 'help-sidebar', blocks: section.blocks, current_path: request.path, label: 'Help pages' %}
+{% enddoc %}
+
+<nav class="help-sidebar" aria-label="{{ label | escape }}">
+  <ul class="help-sidebar__list">
+    {% assign active_assigned = false %}
+    {% for block in blocks %}
+      {% if block.type == 'navigation' and block.settings.url != blank %}
+        {% liquid
+          assign is_current = block.settings.is_current
+          if block.settings.url == current_path
+            assign is_current = true
+          endif
+          if active_assigned
+            assign is_current = false
+          elsif is_current
+            assign active_assigned = true
+          endif
+        %}
+        <li {{ block.shopify_attributes }}>
+          <a class="help-sidebar__link" href="{{ block.settings.url }}"{% if is_current %} aria-current="page"{% endif %}>
+            {{ block.settings.label | escape }}
+          </a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</nav>

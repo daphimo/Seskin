@@ -1,0 +1,18 @@
+{% doc %}
+  Renders the configurable premium product size guide dialog.
+  @param {section} section - Section settings and size rows.
+{% enddoc %}
+<dialog class="premium-size-guide" data-size-guide-dialog aria-labelledby="PremiumSizeGuideTitle-{{ section.id }}">
+  <button class="premium-size-guide__close" type="button" aria-label="Close size guide" data-size-guide-close>&times;</button>
+  <div class="premium-size-guide__content">
+    <h2 id="PremiumSizeGuideTitle-{{ section.id }}">{{ section.settings.size_guide_heading | escape }}</h2>
+    <div class="premium-size-guide__tabs" role="tablist" aria-label="Size systems">
+      <button type="button" role="tab" aria-selected="true">{{ section.settings.size_tab_primary | escape }}</button>
+      <button type="button" role="tab" aria-selected="false">{{ section.settings.size_tab_secondary | escape }}</button>
+    </div>
+    {% if section.settings.size_guide_description != blank %}<div class="rte">{{ section.settings.size_guide_description }}</div>{% endif %}
+    <fieldset class="premium-size-guide__units"><legend class="visually-hidden">Measurement unit</legend><label><input type="radio" name="size-unit-{{ section.id }}" value="in" checked> Inches</label><label><input type="radio" name="size-unit-{{ section.id }}" value="cm"> Centimeters</label></fieldset>
+    {% render 'premium-product-size-table', section: section %}
+    {% if section.settings.size_guide_note != blank %}<div class="premium-size-guide__note rte">{{ section.settings.size_guide_note }}</div>{% endif %}
+  </div>
+</dialog>

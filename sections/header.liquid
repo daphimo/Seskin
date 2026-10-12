@@ -350,7 +350,6 @@
   {% endif %}
   data-skip-node-update
   data-scroll-direction="none"
-  data-transparent-threshold="{{ section.settings.transparent_scroll_threshold | default: 48 }}"
   {% if section.settings.menu_row == 'top' and bottom_row_blocks.size > 0 %}
     data-submenu-overlap-bottom-row
   {% endif %}
@@ -552,7 +551,6 @@
     z-index: var(--layer-overlay);
 
     &[transparent='not-sticky'][data-sticky-state='active'],
-    &[data-transparent-solid],
     &:has(.menu-list__list-item > .menu-list__link:not([aria-haspopup]):hover) {
       --header-logo-display: unset;
       --header-logo-inverse-display: unset;
@@ -566,7 +564,7 @@
     }
 
     /** For transparent header, apply transparent text color to rows when menu is not hovered */
-    &:not([data-sticky-state='active']):not([data-transparent-solid]):not(:has(.menu-list__link:hover)):not(:has(header-menu[aria-expanded='true']))
+    &:not([data-sticky-state='active']):not(:has(.menu-list__link:hover)):not(:has(header-menu[aria-expanded='true']))
       .header__row {
       --color-foreground: var(--color-transparent-text);
       --color-foreground-rgb: var(--color-transparent-text-rgb);
@@ -578,7 +576,7 @@
 
     /* Swap the cart bubble in transparent state only when using the default
        style. Custom bubble colors apply unchanged across header states. */
-    &[data-bubble-style='default']:not([data-sticky-state='active']):not([data-transparent-solid]):not(:has(.menu-list__link:hover)):not(
+    &[data-bubble-style='default']:not([data-sticky-state='active']):not(:has(.menu-list__link:hover)):not(
         :has(header-menu[aria-expanded='true'])
       )
       .header__row {
@@ -1761,17 +1759,6 @@
       "visible_if": "{{ section.settings.enable_transparent_header_home }}"
     },
     {
-      "type": "range",
-      "id": "transparent_scroll_threshold",
-      "label": "t:settings.scroll_speed",
-      "min": 0,
-      "max": 240,
-      "step": 8,
-      "unit": "px",
-      "default": 48,
-      "visible_if": "{{ section.settings.enable_transparent_header_home or section.settings.enable_transparent_header_product or section.settings.enable_transparent_header_collection }}"
-    },
-    {
       "type": "color",
       "id": "text_color_transparent_home",
       "label": "t:settings.text_color_transparent",
@@ -1825,40 +1812,6 @@
       "label": "t:settings.text_color_transparent",
       "placeholder": "t:settings.default",
       "visible_if": "{{ section.settings.enable_transparent_header_collection }}"
-    }
-  ],
-  "blocks": [
-    {
-      "type": "header_promotion",
-      "name": "t:names.image",
-      "limit": 20,
-      "settings": [
-        {
-          "type": "text",
-          "id": "menu_label",
-          "label": "t:settings.menu"
-        },
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "t:settings.image"
-        },
-        {
-          "type": "text",
-          "id": "title",
-          "label": "t:settings.title"
-        },
-        {
-          "type": "textarea",
-          "id": "description",
-          "label": "t:names.description"
-        },
-        {
-          "type": "url",
-          "id": "url",
-          "label": "t:settings.link"
-        }
-      ]
     }
   ],
   "presets": []

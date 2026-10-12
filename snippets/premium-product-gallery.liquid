@@ -1,0 +1,50 @@
+{% doc %}
+  Renders an interactive, variant-filterable product media gallery.
+  @param {product} product - Product media source.
+  @param {section} section - Owning premium product section.
+  @param {string} model_sizing - Optional model sizing text.
+{% enddoc %}
+{% assign dialog_id = 'PremiumGalleryDialog-' | append: section.id %}
+<div class="premium-gallery" data-gallery>
+  <div class="premium-gallery__viewport" data-gallery-viewport>
+    {% for media in product.media %}
+      {% assign gallery_id = media.alt | strip | handleize %}
+      <div class="premium-gallery__slide" data-gallery-media data-galleryimage-id="{{ gallery_id }}" data-media-id="{{ media.id }}" {% unless forloop.first %}hidden{% endunless %}>
+        {% case media.media_type %}
+          {% when 'image' %}
+            {% liquid
+              assign image_loading = 'lazy'
+              assign image_priority = 'auto'
+              if forloop.first
+                assign image_loading = 'eager'
+                assign image_priority = 'high'
+              endif
+            %}
+            {{ media | image_url: width: 1800 | image_tag: widths: '480, 720, 960, 1200, 1800', sizes: '(min-width: 750px) var(--premium-gallery-width), 100vw', loading: image_loading, fetchpriority: image_priority, alt: media.alt }}
+          {% when 'video' %}{{ media | video_tag: controls: true, image_size: '1200x' }}
+          {% when 'external_video' %}{{ media | external_video_tag }}
+          {% when 'model' %}{{ media | model_viewer_tag }}
+        {% endcase %}
+      </div>
+    {% else %}
+      {{ 'product-apparel-1' | placeholder_svg_tag: 'premium-gallery__placeholder' }}
+    {% endfor %}
+  </div>
+  {% if section.settings.show_zoom and product.media.size > 0 %}
+    <button class="premium-gallery__control premium-gallery__zoom" type="button" aria-label="Open enlarged gallery" data-dialog-open="{{ dialog_id }}">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M18.031 16.6168L22.3137 20.8995L20.8995 22.3137L16.6168 18.031C15.0769 19.263 13.124 20 11 20C6.032 20 2 15.968 2 11C2 6.032 6.032 2 11 2C15.968 2 20 6.032 20 11C20 13.124 19.263 15.0769 18.031 16.6168ZM16.0247 15.8748C17.2475 14.6146 18 12.8956 18 11C18 7.1325 14.8675 4 11 4C7.1325 4 4 7.1325 4 11C4 14.8675 7.1325 18 11 18C12.8956 18 14.6146 17.2475 15.8748 16.0247L16.0247 15.8748ZM10 10V7H12V10H15V12H12V15H10V12H7V10H10Z"></path></svg>
+    </button>
+  {% endif %}
+  {% if section.settings.show_wishlist %}<button class="premium-gallery__control premium-gallery__wishlist" type="button" disabled aria-label="Wishlist integration is not configured" title="Wishlist integration is not configured">♡</button>{% endif %}
+  {% if section.settings.show_navigation and product.media.size > 1 %}
+    <button class="premium-gallery__control premium-gallery__previous" type="button" aria-label="Previous media" data-gallery-previous><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M7.82843 10.9999H20V12.9999H7.82843L13.1924 18.3638L11.7782 19.778L4 11.9999L11.7782 4.22168L13.1924 5.63589L7.82843 10.9999Z"></path></svg></button>
+    <button class="premium-gallery__control premium-gallery__next" type="button" aria-label="Next media" data-gallery-next><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"></path></svg></button>
+  {% endif %}
+  {% if model_sizing != blank and section.settings.show_model_sizing %}
+    <button class="premium-gallery__model-button" type="button" aria-expanded="false" data-model-sizing-toggle><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 19H19V14H10V5H5V7H7V9H5V11H8V13H5V15H7V17H5V19H7V17H9V19H11V16H13V19H15V17H17V19ZM12 12H20C20.5523 12 21 12.4477 21 13V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V4C3 3.44772 3.44772 3 4 3H11C11.5523 3 12 3.44772 12 4V12Z"></path></svg>Model sizing</button>
+    <div class="premium-gallery__model-popover" data-model-sizing hidden>{{ model_sizing }}</div>
+  {% endif %}
+  {% if section.settings.show_progress %}<div class="premium-gallery__progress" aria-hidden="true"><span data-gallery-progress></span></div>{% endif %}
+</div>
+{% if model_sizing != blank and section.settings.show_model_sizing %}<div class="premium-gallery__model-mobile rte">{{ model_sizing }}</div>{% endif %}
+{% render 'premium-product-gallery-modal', product: product, dialog_id: dialog_id %}

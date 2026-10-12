@@ -1,0 +1,214 @@
+{% doc %}
+  Provides shared styles for size guide sections and tables.
+
+  @example
+  {% render 'size-guide-styles' %}
+{% enddoc %}
+
+{% stylesheet %}
+  .size-guide {
+    color: var(--color-foreground);
+  }
+
+  .size-guide__inner {
+    width: min(calc(100% - 32px), var(--page-width));
+    margin-inline: auto;
+  }
+
+  .size-guide__eyebrow,
+  .size-guide-table__title {
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .size-guide__eyebrow {
+    font-size: 1.2rem;
+  }
+
+  .size-guide__title {
+    max-width: 18ch;
+    margin-block: 8px 16px;
+  }
+
+  .size-guide__description {
+    max-width: 72ch;
+    margin: 0;
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-70));
+  }
+
+  .size-guide__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin-block-start: 24px;
+    padding-block: 16px;
+    border-block: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-20));
+  }
+
+  .size-guide__nav a {
+    color: inherit;
+    font-size: 1.3rem;
+    text-underline-offset: 0.3em;
+  }
+
+  .size-guide__heading {
+    margin: 0 0 8px;
+  }
+
+  .size-guide__lede {
+    max-width: 75ch;
+    margin: 0 0 28px;
+  }
+
+  .size-guide__tables {
+    display: grid;
+    gap: 36px;
+  }
+
+  .size-guide__tables--paired {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .size-guide-table {
+    min-width: 0;
+  }
+
+  .size-guide-table__header {
+    margin-block-end: 10px;
+  }
+
+  .size-guide-table__title {
+    font-size: 1.5rem;
+  }
+
+  .size-guide-table__description,
+  .size-guide-table__note {
+    margin-block: 6px 0;
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-70));
+    font-size: 1.2rem;
+  }
+
+  .size-guide-table__scroller {
+    max-width: 100%;
+    overflow-x: auto;
+    border: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-20));
+    overscroll-behavior-inline: contain;
+  }
+
+  .size-guide-table__scroller:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  .size-guide-table table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+    font-size: 1.2rem;
+    line-height: 1.35;
+  }
+
+  .size-guide-table th,
+  .size-guide-table td {
+    min-width: 84px;
+    padding: 10px 12px;
+    border-inline-end: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-20));
+    border-block-end: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-20));
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .size-guide-table tr > :first-child {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: 1;
+    background: var(--color-background);
+    text-align: start;
+  }
+
+  .size-guide-table thead th {
+    background: rgb(var(--color-foreground-rgb) / var(--opacity-10));
+    font-weight: 600;
+  }
+
+  .size-guide-table tr > :last-child {
+    border-inline-end: 0;
+  }
+
+  .size-guide-table tbody tr:last-child > * {
+    border-block-end: 0;
+  }
+
+  .size-guide-measure__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+    gap: clamp(24px, 5vw, 64px);
+    align-items: center;
+  }
+
+  .size-guide-measure__media {
+    overflow: hidden;
+    background: rgb(var(--color-foreground-rgb) / var(--opacity-10));
+  }
+
+  .size-guide-measure__media img,
+  .size-guide-measure__media svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .size-guide-measure__steps {
+    display: grid;
+    gap: 20px;
+    margin: 28px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: measure-step;
+  }
+
+  .size-guide-measure__step {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 12px;
+    counter-increment: measure-step;
+  }
+
+  .size-guide-measure__step::before {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    content: counter(measure-step);
+    font-size: 1.2rem;
+  }
+
+  .size-guide-measure__step h3,
+  .size-guide-measure__step p {
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .size-guide__inner {
+      width: min(calc(100% - 24px), var(--page-width));
+    }
+
+    .size-guide__tables--paired,
+    .size-guide-measure__layout {
+      grid-template-columns: 1fr;
+    }
+
+    .size-guide-table table {
+      font-size: 1.1rem;
+    }
+
+    .size-guide-table th,
+    .size-guide-table td {
+      padding: 8px 10px;
+    }
+  }
+{% endstylesheet %}

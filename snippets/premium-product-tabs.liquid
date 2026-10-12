@@ -1,0 +1,12 @@
+{% doc %}
+  Renders accessible product information tabs from tab blocks.
+  @param {section} section - Section containing tab blocks.
+{% enddoc %}
+<div class="premium-tabs" data-tabs>
+  <div class="premium-tabs__list" role="tablist" aria-label="Product information">
+    {% assign tab_index = 0 %}
+    {% for block in section.blocks %}{% if block.type == 'tab' %}<button type="button" role="tab" id="PremiumTab-{{ block.id }}" aria-controls="PremiumPanel-{{ block.id }}" aria-selected="{% if tab_index == 0 %}true{% else %}false{% endif %}" data-tab-button="{{ tab_index }}">{{ block.settings.heading | escape }}</button>{% assign tab_index = tab_index | plus: 1 %}{% endif %}{% endfor %}
+  </div>
+  {% assign tab_index = 0 %}
+  {% for block in section.blocks %}{% if block.type == 'tab' %}<div class="premium-tabs__panel rte" role="tabpanel" id="PremiumPanel-{{ block.id }}" aria-labelledby="PremiumTab-{{ block.id }}" data-tab-panel="{{ tab_index }}" {% unless tab_index == 0 %}hidden{% endunless %} {{ block.shopify_attributes }}>{% if block.settings.use_product_description %}{{ product.description }}{% else %}{{ block.settings.content }}{% endif %}</div>{% assign tab_index = tab_index | plus: 1 %}{% endif %}{% endfor %}
+</div>

@@ -1,0 +1,139 @@
+{% comment %}
+  Shipping help page with a shared sidebar and configurable content blocks.
+  @example
+  <!-- Use once in templates/page.shipping.json. -->
+{% endcomment %}
+
+{{ 'help-page.css' | asset_url | stylesheet_tag }}
+{{ 'ordering-page.css' | asset_url | stylesheet_tag }}
+{{ 'shipping-page.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'ordering-page.js' | asset_url }}" type="module" fetchpriority="low"></script>
+
+{% liquid
+  assign desktop_image = section.settings.banner_image
+  assign mobile_image = section.settings.banner_image_mobile | default: desktop_image
+%}
+
+<section
+  class="shipping-page color-{{ section.settings.color_scheme }}"
+  style="--shipping-banner-height-desktop: {{ section.settings.banner_height_desktop }}px; --shipping-banner-height-mobile: {{ section.settings.banner_height_mobile }}px; --shipping-banner-position: {{ section.settings.banner_position }}; --shipping-padding-bottom: {{ section.settings.padding_bottom }}px;"
+>
+  <div class="shipping-page__banner">
+    {% if desktop_image != blank %}
+      <picture>
+        {% if section.settings.banner_image_mobile != blank %}
+          <source media="(max-width: 749px)" srcset="{{ mobile_image | image_url: width: 550 }} 550w, {{ mobile_image | image_url: width: 750 }} 750w, {{ mobile_image | image_url: width: 1100 }} 1100w" sizes="100vw">
+        {% endif %}
+        {{ desktop_image | image_url: width: 2400 | image_tag: widths: '750, 1100, 1500, 2000, 2400', sizes: '100vw', loading: 'eager', fetchpriority: 'high', alt: section.settings.banner_alt }}
+      </picture>
+    {% else %}
+      {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+    {% endif %}
+  </div>
+
+  <div class="shipping-page__inner">
+    <nav class="shipping-page__breadcrumbs" aria-label="{{ section.settings.breadcrumb_label | escape }}">
+      <ol class="shipping-page__breadcrumb-list">
+        <li><a href="{{ routes.root_url }}">{{ section.settings.home_label | escape }}</a></li>
+        <li aria-hidden="true">/</li>
+        <li>{% if section.settings.help_url != blank %}<a href="{{ section.settings.help_url }}">{{ section.settings.help_label | escape }}</a>{% else %}<span>{{ section.settings.help_label | escape }}</span>{% endif %}</li>
+        <li aria-hidden="true">/</li>
+        <li aria-current="page">{{ section.settings.heading | escape }}</li>
+      </ol>
+    </nav>
+
+    <h1 class="shipping-page__title">{{ section.settings.heading | escape }}</h1>
+
+    <div class="shipping-page__layout">
+      {% render 'help-sidebar', blocks: section.blocks, current_path: request.path, label: section.settings.sidebar_label %}
+
+      <div class="shipping-page__content">
+        <h2 class="shipping-page__content-title">{{ section.settings.content_heading | escape }}</h2>
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'heading' %}
+              <h2 class="shipping-page__block-heading" {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</h2>
+            {% when 'subheading' %}
+              <h3 class="shipping-page__block-subheading" {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</h3>
+            {% when 'rich_text' %}
+              <div class="shipping-page__rich-text rte" {{ block.shopify_attributes }}>{{ block.settings.content }}</div>
+            {% when 'table' %}
+              <div {{ block.shopify_attributes }}>
+                {% render 'help-shipping-table', title: block.settings.title, intro: block.settings.intro, columns: block.settings.columns, rows: block.settings.rows, note: block.settings.note, table_id: block.id %}
+              </div>
+            {% when 'image' %}
+              <figure class="shipping-page__image" {{ block.shopify_attributes }}>
+                {% if block.settings.image != blank %}
+                  {{ block.settings.image | image_url: width: 1800 | image_tag: widths: '480, 720, 960, 1200, 1800', sizes: '(min-width: 750px) 70vw, 100vw', loading: 'lazy', alt: block.settings.alt }}
+                {% else %}
+                  {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                {% endif %}
+                {% if block.settings.caption != blank %}<figcaption class="shipping-page__image-caption rte">{{ block.settings.caption }}</figcaption>{% endif %}
+              </figure>
+            {% when 'accordion' %}
+              {% liquid
+                assign trigger_id = 'shipping-trigger-' | append: section.id | append: '-' | append: block.id
+                assign panel_id = 'shipping-panel-' | append: section.id | append: '-' | append: block.id
+              %}
+              <ordering-accordion-component class="ordering-accordion" {{ block.shopify_attributes }}>
+                <div class="ordering-accordion__item">
+                  <h3 class="ordering-accordion__heading">
+                    <button class="ordering-accordion__trigger" type="button" id="{{ trigger_id }}" aria-expanded="{% if block.settings.expanded %}true{% else %}false{% endif %}" aria-controls="{{ panel_id }}" on:click="/toggle" ref="trigger[]">
+                      <span>{{ block.settings.heading | escape }}</span>
+                      <svg class="ordering-accordion__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"></path></svg>
+                    </button>
+                  </h3>
+                  <div class="ordering-accordion__panel" id="{{ panel_id }}" role="region" aria-labelledby="{{ trigger_id }}" aria-hidden="{% if block.settings.expanded %}false{% else %}true{% endif %}" {% unless block.settings.expanded %}inert{% endunless %} ref="panel[]">
+                    <div class="ordering-accordion__inner rte">{{ block.settings.content }}</div>
+                  </div>
+                </div>
+              </ordering-accordion-component>
+            {% when 'separator' %}
+              <hr class="shipping-page__separator" {{ block.shopify_attributes }}>
+            {% when 'spacer' %}
+              <div class="shipping-page__spacer" style="--shipping-spacer-height: {{ block.settings.height }}px;" {{ block.shopify_attributes }}></div>
+          {% endcase %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Shipping help page",
+  "tag": "section",
+  "class": "section-wrapper",
+  "limit": 1,
+  "max_blocks": 40,
+  "settings": [
+    { "type": "image_picker", "id": "banner_image", "label": "Desktop banner image" },
+    { "type": "image_picker", "id": "banner_image_mobile", "label": "Mobile banner image" },
+    { "type": "text", "id": "banner_alt", "label": "Banner alt text", "default": "Models wearing a range of apparel fits" },
+    { "type": "range", "id": "banner_height_desktop", "label": "Desktop banner height", "min": 200, "max": 700, "step": 10, "unit": "px", "default": 380 },
+    { "type": "range", "id": "banner_height_mobile", "label": "Mobile banner height", "min": 160, "max": 500, "step": 10, "unit": "px", "default": 240 },
+    { "type": "select", "id": "banner_position", "label": "Banner focal position", "options": [{ "value": "center center", "label": "Center" }, { "value": "center top", "label": "Top" }, { "value": "center bottom", "label": "Bottom" }], "default": "center center" },
+    { "type": "text", "id": "breadcrumb_label", "label": "Breadcrumb accessibility label", "default": "Breadcrumb" },
+    { "type": "text", "id": "home_label", "label": "Home label", "default": "Home" },
+    { "type": "text", "id": "help_label", "label": "Help label", "default": "Help" },
+    { "type": "url", "id": "help_url", "label": "Help page link" },
+    { "type": "text", "id": "heading", "label": "Page heading", "default": "Shipping" },
+    { "type": "text", "id": "sidebar_label", "label": "Sidebar accessibility label", "default": "Help pages" },
+    { "type": "text", "id": "content_heading", "label": "Content heading", "default": "Shipping" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+    { "type": "range", "id": "padding_bottom", "label": "Bottom padding", "min": 24, "max": 160, "step": 4, "unit": "px", "default": 96 }
+  ],
+  "blocks": [
+    { "type": "navigation", "name": "Help navigation link", "settings": [{ "type": "text", "id": "label", "label": "Label", "default": "Help page" }, { "type": "url", "id": "url", "label": "Link" }, { "type": "checkbox", "id": "is_current", "label": "Show as current page", "default": false }] },
+    { "type": "heading", "name": "Section heading", "settings": [{ "type": "text", "id": "text", "label": "Heading", "default": "Shipping information" }] },
+    { "type": "subheading", "name": "Subheading", "settings": [{ "type": "text", "id": "text", "label": "Subheading", "default": "Delivery information" }] },
+    { "type": "rich_text", "name": "Rich text", "settings": [{ "type": "richtext", "id": "content", "label": "Content", "default": "<p>Add current shipping information here.</p>" }] },
+    { "type": "table", "name": "Shipping table", "settings": [{ "type": "text", "id": "title", "label": "Table title", "default": "International shipping and returns" }, { "type": "text", "id": "intro", "label": "Introduction" }, { "type": "textarea", "id": "columns", "label": "Column headings", "info": "Separate headings with |.", "default": "Country|Standard transit time|Standard shipping fees|Express transit time|Express shipping fees|Duty & sales tax|Pre-paid returns fees|Free returns" }, { "type": "textarea", "id": "rows", "label": "Table rows", "info": "One row per line; separate cells with | and use ~ for a line break inside a cell.", "default": "Example country|3–5 business days|Add current fee|1–3 business days|Add current fee|Add current policy|Add current fee|Add eligibility" }, { "type": "richtext", "id": "note", "label": "Footnote" }] },
+    { "type": "image", "name": "Image", "settings": [{ "type": "image_picker", "id": "image", "label": "Image" }, { "type": "text", "id": "alt", "label": "Alt text" }, { "type": "richtext", "id": "caption", "label": "Caption" }] },
+    { "type": "accordion", "name": "Collapsible information", "settings": [{ "type": "text", "id": "heading", "label": "Heading", "default": "Additional information" }, { "type": "richtext", "id": "content", "label": "Content", "default": "<p>Add the approved policy information here.</p>" }, { "type": "checkbox", "id": "expanded", "label": "Expanded by default", "default": false }] },
+    { "type": "separator", "name": "Separator", "settings": [] },
+    { "type": "spacer", "name": "Spacing", "settings": [{ "type": "range", "id": "height", "label": "Height", "min": 8, "max": 96, "step": 4, "unit": "px", "default": 24 }] }
+  ],
+  "presets": [{ "name": "Shipping help page" }]
+}
+{% endschema %}

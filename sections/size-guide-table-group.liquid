@@ -1,0 +1,51 @@
+{% comment %}
+  A configurable catalog of representative size tables using shared rendering.
+  @example
+  <!-- Add once and use table blocks for distinct sizing categories. -->
+{% endcomment %}
+
+<section id="size-guide-tables" class="size-guide size-guide--tables section color-{{ section.settings.color_scheme }}" style="padding-block: {{ section.settings.padding_top }}px {{ section.settings.padding_bottom }}px;">
+  <div class="size-guide__inner">
+    {% if section.settings.heading != blank %}<h2 class="size-guide__heading">{{ section.settings.heading | escape }}</h2>{% endif %}
+    {% if section.settings.description != blank %}<div class="size-guide__lede rte">{{ section.settings.description }}</div>{% endif %}
+    <div class="size-guide__tables">
+      {% for block in section.blocks %}
+        <div id="size-guide-{{ block.id }}" {{ block.shopify_attributes }}>
+          {% render 'size-guide-table', title: block.settings.title, description: block.settings.description, columns: block.settings.columns, rows: block.settings.rows, note: block.settings.note, table_id: block.id %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% render 'size-guide-styles' %}
+
+{% schema %}
+{
+  "name": "Size guide tables",
+  "tag": "section",
+  "class": "section-wrapper",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Clothing size guides" },
+    { "type": "richtext", "id": "description", "label": "Description", "default": "<p>Compare your body measurements with the charts for each product category.</p>" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+    { "type": "range", "id": "padding_top", "label": "Top padding", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 32 },
+    { "type": "range", "id": "padding_bottom", "label": "Bottom padding", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 48 }
+  ],
+  "blocks": [
+    {
+      "type": "table",
+      "name": "Size table",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Table title", "default": "Underwear size guide" },
+        { "type": "text", "id": "description", "label": "Description", "default": "Body measurements" },
+        { "type": "textarea", "id": "columns", "label": "Column headings", "info": "Separate each heading with a | character.", "default": "Size|Bust (in)|Waist (in)|Hip (in)" },
+        { "type": "textarea", "id": "rows", "label": "Rows", "info": "Use one line per row and separate cells with a | character.", "default": "XS|32–33|24–25|34–35\nS|34–35|26–27|36–37\nM|36–37|28–29|38–39\nL|38–40|30–32|40–42\nXL|41–43|33–35|43–45" },
+        { "type": "richtext", "id": "note", "label": "Note" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Size guide tables", "blocks": [{ "type": "table" }, { "type": "table" }, { "type": "table" }] }]
+}
+{% endschema %}

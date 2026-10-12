@@ -1,0 +1,50 @@
+{% comment %}
+  Size guide title, introduction, and compact category navigation.
+  @example
+  <!-- Add once at the beginning of a size guide page template. -->
+{% endcomment %}
+
+<section class="size-guide size-guide--intro section section--page-width color-{{ section.settings.color_scheme }}" style="padding-block: {{ section.settings.padding_top }}px {{ section.settings.padding_bottom }}px;">
+  <div class="size-guide__inner">
+    {% if section.settings.eyebrow != blank %}<p class="size-guide__eyebrow">{{ section.settings.eyebrow | escape }}</p>{% endif %}
+    <h1 class="size-guide__title">{{ section.settings.heading | escape }}</h1>
+    {% if section.settings.description != blank %}<div class="size-guide__description rte">{{ section.settings.description }}</div>{% endif %}
+    {% if section.blocks.size > 0 %}
+      <nav class="size-guide__nav" aria-label="{{ section.settings.navigation_label | escape }}">
+        {% for block in section.blocks %}
+          <a href="{{ block.settings.link }}" {{ block.shopify_attributes }}>{{ block.settings.label | escape }}</a>
+        {% endfor %}
+      </nav>
+    {% endif %}
+  </div>
+</section>
+
+{% render 'size-guide-styles' %}
+
+{% schema %}
+{
+  "name": "Size guide intro",
+  "tag": "section",
+  "class": "section-wrapper",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Find your fit" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Size guide" },
+    { "type": "richtext", "id": "description", "label": "Description", "default": "<p>Use the charts below to find your best fit. Measurements are a guide and may vary slightly by style.</p>" },
+    { "type": "text", "id": "navigation_label", "label": "Navigation label", "default": "Size guide categories" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+    { "type": "range", "id": "padding_top", "label": "Top padding", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 48 },
+    { "type": "range", "id": "padding_bottom", "label": "Bottom padding", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 24 }
+  ],
+  "blocks": [
+    {
+      "type": "link",
+      "name": "Category link",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Underwear" },
+        { "type": "text", "id": "link", "label": "Anchor link", "default": "#size-guide-tables" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Size guide intro", "blocks": [{ "type": "link" }, { "type": "link" }, { "type": "link" }] }]
+}
+{% endschema %}

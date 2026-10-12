@@ -25,6 +25,28 @@
     {%- render 'theme-styles-variables' -%}
     {%- render 'color-palette' -%}
 
+    {% if settings.wishlist_enabled %}
+      {{ 'wishlist.css' | asset_url | stylesheet_tag }}
+      <style>:root{--wishlist-color:{{ settings.wishlist_color }};}</style>
+      <script>
+        window.ShopifyWishlistConfig = {
+          endpoint: {{ settings.wishlist_endpoint | default: '/apps/wishlist' | json }},
+          syncEnabled: {{ settings.wishlist_customer_sync | json }},
+          customerId: {% if customer %}{{ customer.id | append: '' | json }}{% else %}null{% endif %},
+          showCount: {{ settings.wishlist_show_count | json }},
+          strings: {
+            add: {{ 'wishlist.add' | t | json }}, remove: {{ 'wishlist.remove' | t | json }},
+            added: {{ 'wishlist.added' | t | json }}, removed: {{ 'wishlist.removed' | t | json }},
+            save: {{ 'wishlist.save' | t | json }}, saved: {{ 'wishlist.saved' | t | json }},
+            product: {{ 'wishlist.product' | t | json }}, unavailable: {{ 'wishlist.unavailable' | t | json }},
+            noneAvailable: {{ 'wishlist.none_available' | t | json }}, cartError: {{ 'wishlist.cart_error' | t | json }},
+            storageError: {{ 'wishlist.storage_error' | t | json }}
+          }
+        };
+      </script>
+      <script src="{{ 'wishlist.js' | asset_url }}" type="module"></script>
+    {% endif %}
+
     {% if request.design_mode %}
       {%- render 'theme-editor' -%}
     {% endif %}
@@ -33,6 +55,7 @@
   </head>
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }} product-card-swatches-{{ settings.product_card_swatch_shape }}">
+    {% if settings.wishlist_enabled %}<p class="visually-hidden" data-wishlist-status role="status" aria-live="polite"></p>{% endif %}
     {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
 
     {% render 'chat-drawer' %}

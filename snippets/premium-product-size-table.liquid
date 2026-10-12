@@ -1,0 +1,19 @@
+{% doc %}
+  Renders measurement rows configured on the premium product section.
+  @param {section} section - Section containing size_row blocks and heading settings.
+{% enddoc %}
+<div class="premium-size-table__scroller" tabindex="0" role="region" aria-label="Size measurements">
+  <table>
+    <thead><tr>{% assign headings = section.settings.size_table_headings | split: '|' %}{% for heading in headings %}<th scope="col">{{ heading | strip | escape }}</th>{% endfor %}</tr></thead>
+    <tbody>
+      {% for block in section.blocks %}
+        {% if block.type == 'size_row' %}
+          {% assign cells = block.settings.values | split: '|' %}
+          <tr {{ block.shopify_attributes }}>
+            {% for cell in cells %}{% if forloop.index <= 2 %}<th scope="row">{{ cell | strip | escape }}</th>{% else %}<td data-measurement data-inch-value="{{ cell | strip | escape }}">{{ cell | strip | escape }}</td>{% endif %}{% endfor %}
+          </tr>
+        {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

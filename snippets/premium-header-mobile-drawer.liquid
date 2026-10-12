@@ -71,6 +71,7 @@
     </ul>
   </nav>
   <div class="premium-header-drawer__utilities">
+    {% if settings.wishlist_enabled and section.settings.show_wishlist %}<a class="wishlist-link" href="{{ section.settings.wishlist_url | default: '/pages/wishlist' }}">{% render 'wishlist-icon' %}<span>{{ section.settings.wishlist_label | escape }}</span><span class="wishlist-count" data-wishlist-count hidden>0</span></a>{% endif %}
     {% if section.settings.show_account and shop.customer_accounts_enabled %}<a href="{{ routes.account_url }}">{{ 'content.account_title' | t }}</a>{% endif %}
     {% if section.settings.utility_menu != blank %}
       {% for utility_link in section.settings.utility_menu.links %}<a href="{{ utility_link.url }}">{{ utility_link.title | escape }}</a>{% endfor %}

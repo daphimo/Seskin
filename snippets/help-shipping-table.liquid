@@ -1,0 +1,50 @@
+{% doc %}
+  Renders an editable shipping table from delimiter-separated settings.
+
+  @param {string} title - Accessible table title.
+  @param {string} [intro] - Optional plain-text introduction.
+  @param {string} columns - Pipe-separated column headings.
+  @param {string} rows - Newline-separated rows containing pipe-separated cells. Use ~ for a line break within a cell.
+  @param {string} [note] - Optional rich-text footnote.
+  @param {string} table_id - Unique table caption ID.
+
+  @example
+  {% render 'help-shipping-table', title: 'International shipping', columns: 'Country|Transit time', rows: 'Example|3–5 days', table_id: 'shipping' %}
+{% enddoc %}
+
+{% liquid
+  assign column_items = columns | strip_newlines | split: '|'
+  assign row_items = rows | newline_to_br | split: '<br />'
+  assign caption_id = table_id | append: '-caption'
+%}
+
+<div class="shipping-table">
+  {% if title != blank %}<h3 class="shipping-table__title" id="{{ caption_id }}">{{ title | escape }}</h3>{% endif %}
+  {% if intro != blank %}<p class="shipping-table__intro">{{ intro | escape }}</p>{% endif %}
+  {% if columns != blank and rows != blank %}
+    <div class="shipping-table__wrapper" tabindex="0" role="region"{% if title != blank %} aria-labelledby="{{ caption_id }}"{% endif %}>
+      <table>
+        {% if title != blank %}<caption class="visually-hidden">{{ title | escape }}</caption>{% endif %}
+        <thead>
+          <tr>
+            {% for column in column_items %}<th scope="col">{{ column | strip | escape }}</th>{% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in row_items %}
+            {% assign cells = row | strip | split: '|' %}
+            {% if row != blank %}
+              <tr>
+                {% for cell in cells %}
+                  {% assign cell_content = cell | strip | escape | replace: '~', '<br>' %}
+                  {% if forloop.first %}<th scope="row">{{ cell_content }}</th>{% else %}<td>{{ cell_content }}</td>{% endif %}
+                {% endfor %}
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+  {% if note != blank %}<div class="shipping-table__note rte">{{ note }}</div>{% endif %}
+</div>

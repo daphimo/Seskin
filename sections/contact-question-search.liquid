@@ -1,0 +1,23 @@
+{% comment %}Question card that submits to Shopify storefront search or a configured destination.{% endcomment %}
+{{ 'contact-page.css' | asset_url | stylesheet_tag }}
+{% assign search_destination = section.settings.search_url | default: routes.search_url %}
+<section class="contact-page contact-question color-{{ section.settings.color_scheme }}" style="--contact-question-padding-top: {{ section.settings.padding_top }}px; --contact-question-padding-bottom: {{ section.settings.padding_bottom }}px;">
+  <div class="contact-page__inner">
+    <div class="contact-question__card">
+      {% if section.settings.badge != blank %}<span class="contact-question__badge">{{ section.settings.badge | escape }}</span>{% endif %}
+      <h2 class="contact-question__heading">{{ section.settings.heading | escape }}</h2>
+      {% if section.settings.description != blank %}<p class="contact-question__description">{{ section.settings.description | escape }}</p>{% endif %}
+      <form class="contact-question__form" action="{{ search_destination }}" method="get" role="search">
+        <div class="contact-question__field">
+          <label class="visually-hidden" for="ContactQuestion-{{ section.id }}">{{ section.settings.input_label | escape }}</label>
+          <svg class="contact-question__sparkle" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.6 4.7 2.3 6.4 7 7-4.7.6-6.4 2.3-7 7-.6-4.7-2.3-6.4-7-7 4.7-.6 6.4-2.3 7-7Zm7 13c.3 2.1 1 2.8 3 3-2 .3-2.7 1-3 3-.3-2-1-2.7-3-3 2-.2 2.7-.9 3-3Z"></path></svg>
+          <input class="contact-question__input" id="ContactQuestion-{{ section.id }}" type="search" name="q" placeholder="{{ section.settings.placeholder | escape }}" required>
+        </div>
+        <button class="contact-question__submit" type="submit" aria-label="{{ section.settings.submit_label | escape }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg></button>
+      </form>
+    </div>
+  </div>
+</section>
+{% schema %}
+{"name":"Contact question search","tag":"section","class":"section-wrapper","settings":[{"type":"text","id":"badge","label":"Badge","default":"Faster response"},{"type":"text","id":"heading","label":"Heading","default":"Have a question?"},{"type":"text","id":"description","label":"Description","default":"Search for answers immediately"},{"type":"text","id":"input_label","label":"Input accessibility label","default":"Search help"},{"type":"text","id":"placeholder","label":"Input placeholder","default":"Ask a question..."},{"type":"text","id":"submit_label","label":"Submit accessibility label","default":"Search"},{"type":"url","id":"search_url","label":"Optional search or FAQ destination","info":"Leave blank to use Shopify storefront search."},{"type":"color_scheme","id":"color_scheme","label":"Color scheme","default":"scheme-1"},{"type":"range","id":"padding_top","label":"Top padding","min":24,"max":120,"step":4,"unit":"px","default":40},{"type":"range","id":"padding_bottom","label":"Bottom padding","min":24,"max":120,"step":4,"unit":"px","default":40}],"presets":[{"name":"Contact question search"}]}
+{% endschema %}

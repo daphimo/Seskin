@@ -1,0 +1,36 @@
+{% comment %}
+  Wishlist page shell. Saved products are hydrated from browser state using a product view.
+{% endcomment %}
+{% liquid
+  assign login_required = false
+  if settings.wishlist_flow == 'login_required' and customer == blank
+    assign login_required = true
+  endif
+%}
+<section class="wishlist-page section section--page-width spacing-style" style="{% render 'spacing-style', settings: section.settings %}"{% unless login_required %} data-wishlist-section{% endunless %}>
+  <header class="wishlist-page__header">
+    <div><h1>{{ section.settings.heading | escape }}</h1>{% if section.settings.description != blank %}<div class="rte">{{ section.settings.description }}</div>{% endif %}</div>
+    {% unless login_required %}<button class="button" type="button" data-wishlist-add-all hidden aria-busy="false">{{ 'wishlist.add_all' | t }}</button>{% endunless %}
+  </header>
+  {% if login_required %}
+    <div class="wishlist-page__empty">{% render 'wishlist-icon' %}<h2>{{ 'wishlist.sign_in_heading' | t }}</h2><a class="button" href="{{ routes.account_login_url }}">{{ 'actions.log_in' | t }}</a></div>
+  {% else %}
+    {% if settings.wishlist_flow == 'guest_signin' and customer == blank %}<p class="wishlist-page__signin">{{ 'wishlist.guest_message_html' | t: link: routes.account_login_url }}</p>{% endif %}
+    <div class="wishlist-page__grid" data-wishlist-grid aria-live="polite" aria-busy="true"><span class="wishlist-page__loader" aria-label="{{ 'wishlist.loading' | t }}"></span></div>
+    <div class="wishlist-page__empty" data-wishlist-empty hidden>{% render 'wishlist-icon' %}<h2>{{ section.settings.empty_heading | escape }}</h2><p>{{ section.settings.empty_text | escape }}</p><a class="button" href="{{ routes.all_products_collection_url }}">{{ 'actions.continue_shopping' | t }}</a></div>
+  {% endif %}
+</section>
+{% schema %}
+{
+  "name":"Wishlist products",
+  "settings":[
+    {"type":"text","id":"heading","label":"Heading","default":"Your wishlist"},
+    {"type":"richtext","id":"description","label":"Description","default":"<p>The products you love, saved in one place.</p>"},
+    {"type":"text","id":"empty_heading","label":"Empty heading","default":"Your wishlist is empty"},
+    {"type":"textarea","id":"empty_text","label":"Empty text","default":"Save products you love and they will appear here."},
+    {"type":"range","id":"padding-block-start","label":"Top padding","min":0,"max":120,"step":4,"unit":"px","default":64},
+    {"type":"range","id":"padding-block-end","label":"Bottom padding","min":0,"max":120,"step":4,"unit":"px","default":80}
+  ],
+  "presets":[{"name":"Wishlist products"}]
+}
+{% endschema %}

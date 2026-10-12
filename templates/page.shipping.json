@@ -1,0 +1,28 @@
+{
+  "sections": {
+    "main": {
+      "type": "shipping-page",
+      "blocks": {
+        "nav_returns": { "type": "navigation", "settings": { "label": "Returns", "url": "/pages/returns", "is_current": false } },
+        "nav_ordering": { "type": "navigation", "settings": { "label": "Ordering", "url": "/pages/ordering", "is_current": false } },
+        "nav_shipping": { "type": "navigation", "settings": { "label": "Shipping", "url": "/pages/shipping", "is_current": true } },
+        "nav_international": { "type": "navigation", "settings": { "label": "International", "url": "/pages/international", "is_current": false } },
+        "nav_faqs": { "type": "navigation", "settings": { "label": "FAQs", "url": "/pages/faqs", "is_current": false } },
+        "nav_size_guides": { "type": "navigation", "settings": { "label": "Size guides", "url": "/pages/size-guide", "is_current": false } },
+        "nav_promo": { "type": "navigation", "settings": { "label": "Promo terms", "url": "/pages/promo-terms", "is_current": false } },
+        "nav_stockists": { "type": "navigation", "settings": { "label": "Stockists", "url": "/pages/stockists", "is_current": false } },
+        "nav_contact": { "type": "navigation", "settings": { "label": "Contact us", "url": "/pages/contact", "is_current": false } },
+        "international_heading": { "type": "subheading", "settings": { "text": "International shipping & returns" } },
+        "international_intro": { "type": "rich_text", "settings": { "content": "<p>Use the table below to publish current destination, transit, fee, duty, and returns information. Replace all sample values with approved store policies before publishing.</p>" } },
+        "shipping_table": { "type": "table", "settings": { "title": "Country shipping guide", "intro": "Representative structure—edit every value in the theme editor.", "columns": "Country|Standard transit time|Standard shipping fees|Express transit time|Express shipping fees|Duty & sales tax|Pre-paid returns fees|Free returns", "rows": "Example country|3–5 business days|Add current fee|1–3 business days|Add current fee|Add current policy|Add current fee|Add eligibility\nAnother destination|Add estimate|Add current fee|Add estimate|Add current fee|Add current policy|Add current fee|Add eligibility", "note": "<p>Transit times, fees, duties, and eligibility are editable examples and are not storefront commitments.</p>" } },
+        "returns": { "type": "accordion", "settings": { "heading": "Returns", "content": "<p>Add the approved returns window, conditions, and destination-specific return instructions here.</p>", "expanded": true } },
+        "duties": { "type": "accordion", "settings": { "heading": "Duties & taxes", "content": "<p>Explain how duties and taxes are handled for eligible destinations.</p>", "expanded": false } },
+        "restrictions": { "type": "accordion", "settings": { "heading": "Shipping restrictions", "content": "<p>Add current destination or product restrictions here.</p>", "expanded": false } },
+        "tracking": { "type": "accordion", "settings": { "heading": "Tracking & delivery issues", "content": "<p>Explain how customers receive tracking and where they should report delivery issues.</p>", "expanded": false } }
+      },
+      "block_order": ["nav_returns", "nav_ordering", "nav_shipping", "nav_international", "nav_faqs", "nav_size_guides", "nav_promo", "nav_stockists", "nav_contact", "international_heading", "international_intro", "shipping_table", "returns", "duties", "restrictions", "tracking"],
+      "settings": { "help_url": "/pages/help" }
+    }
+  },
+  "order": ["main"]
+}
