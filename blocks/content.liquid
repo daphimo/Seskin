@@ -1,0 +1,848 @@
+{% liquid
+  assign image = block.settings.image
+  assign ratio = block.settings.image_ratio
+%}
+
+<div
+  id="ContentOverImage-{{ block.id }}"
+  class="
+    content-over-image
+    content-over-image--{{ ratio }}
+    content-over-image--position-{{ block.settings.content_position }}
+    content-over-image--align-{{ block.settings.content_alignment }}
+  "
+  style="
+    --coi-overlay-color: {{ block.settings.overlay_color }};
+    --coi-overlay-opacity: {{ block.settings.overlay_opacity | divided_by: 100.0 }};
+
+    --coi-title-color: {{ block.settings.title_color }};
+    --coi-text-color: {{ block.settings.text_color }};
+
+    --coi-title-size: {{ block.settings.title_size }}px;
+    --coi-title-size-mobile: {{ block.settings.title_size_mobile }}px;
+
+    --coi-content-width: {{ block.settings.content_width }}px;
+    --coi-content-gap: {{ block.settings.content_gap }}px;
+
+    --coi-padding-desktop: {{ block.settings.content_padding }}px;
+    --coi-padding-mobile: {{ block.settings.content_padding_mobile }}px;
+
+    --coi-radius: {{ block.settings.border_radius }}px;
+
+    --coi-button-bg: {{ block.settings.button_background }};
+    --coi-button-text: {{ block.settings.button_text_color }};
+    --coi-button-border: {{ block.settings.button_border_color }};
+
+    --coi-button-hover-bg: {{ block.settings.button_hover_background }};
+    --coi-button-hover-text: {{ block.settings.button_hover_text_color }};
+    --coi-button-hover-border: {{ block.settings.button_hover_border_color }};
+  "
+  {{ block.shopify_attributes }}
+>
+
+  <div class="content-over-image__media">
+    {% if image != blank %}
+      {{
+        image
+        | image_url: width: 2400
+        | image_tag:
+          loading: 'lazy',
+          widths: '400, 600, 800, 1000, 1200, 1600, 2000, 2400',
+          sizes: '100vw',
+          class: 'content-over-image__image',
+          alt: image.alt
+      }}
+    {% else %}
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'content-over-image__placeholder' }}
+    {% endif %}
+  </div>
+
+  {% if block.settings.overlay_opacity > 0 %}
+    <div
+      class="content-over-image__overlay"
+      aria-hidden="true"
+    ></div>
+  {% endif %}
+
+  <div class="content-over-image__content-wrapper">
+    <div class="content-over-image__content">
+
+      {% if block.settings.eyebrow != blank %}
+        <div
+          class="content-over-image__eyebrow"
+          style="color: {{ block.settings.eyebrow_color }};"
+        >
+          {{ block.settings.eyebrow }}
+        </div>
+      {% endif %}
+
+      {% if block.settings.title != blank %}
+        <h2 class="content-over-image__title">
+          {{ block.settings.title }}
+        </h2>
+      {% endif %}
+
+      {% if block.settings.content != blank %}
+        <div class="content-over-image__text rte">
+          {{ block.settings.content }}
+        </div>
+      {% endif %}
+
+      {% if block.settings.button_label != blank %}
+        <a
+          {% if block.settings.button_link != blank %}
+            href="{{ block.settings.button_link }}"
+          {% else %}
+            role="link"
+            aria-disabled="true"
+          {% endif %}
+          class="
+            content-over-image__button
+            content-over-image__button--{{ block.settings.button_style }}
+          "
+        >
+          {{ block.settings.button_label }}
+
+          {% if block.settings.button_style == 'link' %}
+            <span
+              class="content-over-image__button-arrow"
+              aria-hidden="true"
+            >
+              →
+            </span>
+          {% endif %}
+        </a>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+
+.content-over-image {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--coi-radius);
+  isolation: isolate;
+}
+
+/* ================================
+   IMAGE
+================================ */
+
+.content-over-image__media {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.content-over-image__image,
+.content-over-image__placeholder {
+  display: block;
+  width: 100%;
+}
+
+/* AUTO */
+
+.content-over-image--auto .content-over-image__media {
+  height: auto;
+}
+
+.content-over-image--auto .content-over-image__image {
+  height: auto;
+  object-fit: contain;
+}
+
+/* SQUARE */
+
+.content-over-image--square {
+  aspect-ratio: 1 / 1;
+}
+
+.content-over-image--square .content-over-image__media,
+.content-over-image--square .content-over-image__image {
+  width: 100%;
+  height: 100%;
+}
+
+/* PORTRAIT */
+
+.content-over-image--portrait {
+  aspect-ratio: 4 / 5;
+}
+
+.content-over-image--portrait .content-over-image__media,
+.content-over-image--portrait .content-over-image__image {
+  width: 100%;
+  height: 100%;
+}
+
+/* LANDSCAPE */
+
+.content-over-image--landscape {
+  aspect-ratio: 16 / 9;
+}
+
+.content-over-image--landscape .content-over-image__media,
+.content-over-image--landscape .content-over-image__image {
+  width: 100%;
+  height: 100%;
+}
+
+/* Keep cropped ratios positioned from top */
+
+.content-over-image--square .content-over-image__image,
+.content-over-image--portrait .content-over-image__image,
+.content-over-image--landscape .content-over-image__image {
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* ================================
+   OVERLAY
+================================ */
+
+.content-over-image__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: var(--coi-overlay-color);
+  opacity: var(--coi-overlay-opacity);
+}
+
+/* ================================
+   CONTENT WRAPPER
+================================ */
+
+.content-over-image__content-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+
+  display: flex;
+
+  padding: var(--coi-padding-desktop);
+
+  pointer-events: none;
+}
+
+.content-over-image__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--coi-content-gap);
+
+  width: min(100%, var(--coi-content-width));
+
+  pointer-events: auto;
+}
+
+/* ================================
+   POSITION
+================================ */
+
+/* TOP LEFT */
+
+.content-over-image--position-top-left
+.content-over-image__content-wrapper {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+/* TOP CENTER */
+
+.content-over-image--position-top-center
+.content-over-image__content-wrapper {
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* TOP RIGHT */
+
+.content-over-image--position-top-right
+.content-over-image__content-wrapper {
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+/* CENTER LEFT */
+
+.content-over-image--position-center-left
+.content-over-image__content-wrapper {
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* CENTER */
+
+.content-over-image--position-center
+.content-over-image__content-wrapper {
+  align-items: center;
+  justify-content: center;
+}
+
+/* CENTER RIGHT */
+
+.content-over-image--position-center-right
+.content-over-image__content-wrapper {
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* BOTTOM LEFT */
+
+.content-over-image--position-bottom-left
+.content-over-image__content-wrapper {
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+/* BOTTOM CENTER */
+
+.content-over-image--position-bottom-center
+.content-over-image__content-wrapper {
+  align-items: flex-end;
+  justify-content: center;
+}
+
+/* BOTTOM RIGHT */
+
+.content-over-image--position-bottom-right
+.content-over-image__content-wrapper {
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+/* ================================
+   ALIGNMENT
+================================ */
+
+.content-over-image--align-left
+.content-over-image__content {
+  text-align: left;
+  align-items: flex-start;
+}
+
+.content-over-image--align-center
+.content-over-image__content {
+  text-align: center;
+  align-items: center;
+}
+
+.content-over-image--align-right
+.content-over-image__content {
+  text-align: right;
+  align-items: flex-end;
+}
+
+/* ================================
+   TEXT
+================================ */
+
+.content-over-image__eyebrow {
+  margin: 0;
+
+  font-size: 13px;
+  line-height: 1.2;
+
+  font-weight: 600;
+
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.content-over-image__title {
+  margin: 0;
+
+  color: var(--coi-title-color);
+
+  font-family: var(--font-heading-family);
+  font-size: var(--coi-title-size);
+  line-height: 1.05;
+
+  font-weight: var(--font-heading-weight);
+}
+
+.content-over-image__text {
+  margin: 0;
+
+  color: var(--coi-text-color);
+
+  font-family: var(--font-body-family);
+}
+
+.content-over-image__text > * {
+  color: inherit;
+}
+
+.content-over-image__text p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* ================================
+   BUTTON BASE
+================================ */
+
+.content-over-image__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  width: fit-content;
+
+  text-decoration: none;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+/* ================================
+   PRIMARY
+================================ */
+
+.content-over-image__button--primary {
+  padding: 12px 24px;
+
+  background: var(--coi-button-bg);
+  color: var(--coi-button-text);
+
+  border: 1px solid var(--coi-button-border);
+  border-radius: 4px;
+}
+
+.content-over-image__button--primary:hover {
+  background: var(--coi-button-hover-bg);
+  color: var(--coi-button-hover-text);
+  border-color: var(--coi-button-hover-border);
+}
+
+/* ================================
+   SECONDARY
+================================ */
+
+.content-over-image__button--secondary {
+  padding: 12px 24px;
+
+  background: transparent;
+  color: var(--coi-button-text);
+
+  border: 1px solid var(--coi-button-border);
+  border-radius: 4px;
+}
+
+.content-over-image__button--secondary:hover {
+  background: var(--coi-button-hover-bg);
+  color: var(--coi-button-hover-text);
+  border-color: var(--coi-button-hover-border);
+}
+
+/* ================================
+   LINK STYLE
+================================ */
+
+.content-over-image__button--link {
+  position: relative;
+
+  padding: 3px 0;
+
+  color: var(--coi-button-text);
+
+  border: 0;
+  background: transparent;
+}
+
+.content-over-image__button--link::after {
+  content: '';
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 1px;
+
+  background: currentColor;
+}
+
+.content-over-image__button--link:hover {
+  color: var(--coi-button-hover-text);
+}
+
+.content-over-image__button-arrow {
+  transition: transform 0.2s ease;
+}
+
+.content-over-image__button--link:hover
+.content-over-image__button-arrow {
+  transform: translateX(4px);
+}
+
+/* ================================
+   PLACEHOLDER
+================================ */
+
+.content-over-image__placeholder {
+  min-height: 400px;
+  background: #eeeeee;
+}
+
+/* ================================
+   MOBILE
+================================ */
+
+@media screen and (max-width: 749px) {
+
+  .content-over-image__content-wrapper {
+    padding: var(--coi-padding-mobile);
+  }
+
+  .content-over-image__title {
+    font-size: var(--coi-title-size-mobile);
+  }
+
+}
+
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Content over image",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape"
+        }
+      ],
+      "default": "landscape"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 30
+    },
+
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Featured collection"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "Content over image"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Description",
+      "default": "<p>Use this text to tell customers about your collection, product or brand.</p>"
+    },
+
+    {
+      "type": "header",
+      "content": "Content position"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Position",
+      "options": [
+        {
+          "value": "top-left",
+          "label": "Top left"
+        },
+        {
+          "value": "top-center",
+          "label": "Top center"
+        },
+        {
+          "value": "top-right",
+          "label": "Top right"
+        },
+        {
+          "value": "center-left",
+          "label": "Center left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "center-right",
+          "label": "Center right"
+        },
+        {
+          "value": "bottom-left",
+          "label": "Bottom left"
+        },
+        {
+          "value": "bottom-center",
+          "label": "Bottom center"
+        },
+        {
+          "value": "bottom-right",
+          "label": "Bottom right"
+        }
+      ],
+      "default": "center-left"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Content width",
+      "min": 200,
+      "max": 900,
+      "step": 20,
+      "unit": "px",
+      "default": 520
+    },
+    {
+      "type": "range",
+      "id": "content_gap",
+      "label": "Content spacing",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "content_padding",
+      "label": "Desktop padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "content_padding_mobile",
+      "label": "Mobile padding",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title size - desktop",
+      "min": 20,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 52
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "label": "Title size - mobile",
+      "min": 18,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+
+    {
+      "type": "header",
+      "content": "Text colors"
+    },
+    {
+      "type": "color",
+      "id": "eyebrow_color",
+      "label": "Eyebrow color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Description color",
+      "default": "#ffffff"
+    },
+
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Shop now"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button style",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "link",
+          "label": "Link"
+        }
+      ],
+      "default": "primary"
+    },
+
+    {
+      "type": "header",
+      "content": "Button colors"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Border",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_background",
+      "label": "Hover background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Hover text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_border_color",
+      "label": "Hover border",
+      "default": "#000000"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Content over image"
+    }
+  ]
+}
+{% endschema %}
