@@ -5,6 +5,10 @@
   fetchpriority="low"
 ></script>
 
+{% capture legacy_static_product_card %}
+  {% content_for 'block', type: '_product-card', id: 'static-product-card', closest.product: null %}
+{% endcapture %}
+
 {% liquid
   case section.settings.layout_type
     when 'grid'
@@ -98,12 +102,7 @@
       {% capture list_items %}
         {% for product in products limit: section.settings.max_products %}
           <div class="resource-list__item">
-            {% content_for 'block',
-              type: '_product-card',
-              id: 'static-product-card',
-              closest.product: product,
-              product_view_context: 'recommendation'
-            %}
+            {% render 'premium-product-card', product: product, section_id: section.id %}
           </div>
           {% unless forloop.last %}
             <!--@list/split-->

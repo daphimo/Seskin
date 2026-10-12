@@ -10,7 +10,7 @@
       {% for media in product.media %}
         {% if media.media_type == 'image' %}
           {% assign gallery_id = media.alt | strip | handleize %}
-          <div class="premium-gallery-modal__image" data-modal-media data-galleryimage-id="{{ gallery_id }}">
+          <div class="premium-gallery-modal__image" data-modal-media data-galleryimage-id="{{ gallery_id }}" data-media-id="{{ media.id }}">
             {{ media | image_url: width: 2200 | image_tag: widths: '800, 1200, 1600, 2200', sizes: '(min-width: 750px) 60vw, 96vw', loading: 'lazy', alt: media.alt }}
           </div>
         {% endif %}

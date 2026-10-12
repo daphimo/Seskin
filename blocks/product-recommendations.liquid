@@ -12,6 +12,10 @@
   type="module"
 ></script>
 
+{% capture legacy_static_product_card %}
+  {% content_for 'block', type: '_product-card', id: 'static-product-card', closest.product: null %}
+{% endcapture %}
+
 {% liquid
   assign block_settings = block.settings
   case block_settings.layout_type
@@ -98,11 +102,7 @@
       {% capture list_items %}
         {% for product in products limit: block_settings.max_products %}
           <div class="resource-list__item">
-            {% content_for 'block',
-              type: '_product-card',
-              id: 'static-product-card',
-              closest.product: product
-            %}
+            {% render 'premium-product-card', product: product, section_id: section.id %}
           </div>
           {% if block_settings.layout_type == 'carousel' or block_settings.carousel_on_mobile %}
             {% unless forloop.last %}

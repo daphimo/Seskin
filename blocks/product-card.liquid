@@ -4,14 +4,7 @@
   assign product = block.settings.product
 -%}
 
-{% capture children %}
-  {% content_for 'blocks', closest.product: product %}
-{% endcapture %}
-
-{% render 'swatch-styles' %}
-{% render 'quantity-selector-styles' %}
-{% render 'product-card', children: children, product: product, block: block %}
-{% render 'buy-buttons-styles' %}
+{% render 'premium-product-card', product: product, section_id: section.id, block: block %}
 
 {% schema %}
 {

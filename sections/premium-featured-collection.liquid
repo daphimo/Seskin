@@ -4,9 +4,6 @@
 {% endcomment %}
 
 {{ 'splide.min.css' | asset_url | stylesheet_tag }}
-{{ 'custom-splide.css' | asset_url | stylesheet_tag }}
-{{ 'main-premium-product.css' | asset_url | stylesheet_tag }}
-<script src="{{ 'main-premium-product.js' | asset_url }}" type="module" fetchpriority="low"></script>
 
 {% liquid
   assign chosen_collection = section.settings.collection
@@ -14,7 +11,7 @@
 %}
 
 <section
-  class="premium-collection section section--page-width"
+  class="premium-collection premium-featured-collection section section--page-width"
   style="--premium-collection-padding-top: {{ section.settings.padding }}px; --premium-collection-padding-bottom: {{ section.settings.padding_bottom }}px; --premium-collection-title-size: {{ section.settings.heading_size }}px;"
 >
   {% if chosen_collection != blank %}
@@ -65,7 +62,7 @@
           <ul class="splide__list premium-collection__list" role="list">
             {% for card_product in chosen_collection.products limit: section.settings.product_limit %}
               <li class="splide__slide premium-collection__slide">
-                {% render 'premium-product-card', product: card_product %}
+                {% render 'premium-product-card', product: card_product, section_id: section.id %}
               </li>
             {% endfor %}
           </ul>

@@ -7,6 +7,10 @@
   endif
 %}
 
+{% capture legacy_static_product_card %}
+  {% content_for 'block', type: '_product-card', id: 'static-product-card', closest.product: null %}
+{% endcapture %}
+
 <div
   class="section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
 ></div>
@@ -36,12 +40,7 @@
         <div
           class="resource-list__item"
         >
-            {% content_for 'block',
-              type: '_product-card',
-              id: 'static-product-card',
-              closest.product: product,
-              product_view_context: 'collection'
-            %}
+            {% render 'premium-product-card', product: product, section_id: section.id %}
           </div>
 
           {% unless forloop.last %}
@@ -54,7 +53,7 @@
         <div
           class="resource-list__item"
         >
-            {% content_for 'block', type: '_product-card', id: 'static-product-card', closest.product: null %}
+            {% render 'premium-product-card', product: null, section_id: section.id %}
         </div>
 
         {% unless forloop.last %}

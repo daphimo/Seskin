@@ -131,9 +131,16 @@ export class QuickAddComponent extends Component {
       const html = await this.fetchProductPage(currentUrl);
       if (html) {
         const gridElement = html.querySelector('[data-product-grid-content]');
+        const premiumProduct = html.querySelector('.main-premium-product');
         if (gridElement) {
           // Cache the cloned element to avoid modifying the original
           productGrid = /** @type {Element} */ (gridElement.cloneNode(true));
+          this.#cachedContent.set(currentUrl, productGrid);
+        } else if (premiumProduct) {
+          const premiumContent = document.createElement('div');
+          premiumContent.className = 'premium-quick-add-content';
+          premiumContent.append(premiumProduct.cloneNode(true));
+          productGrid = premiumContent;
           this.#cachedContent.set(currentUrl, productGrid);
         }
       }
@@ -142,8 +149,12 @@ export class QuickAddComponent extends Component {
     if (productGrid) {
       // Use a fresh clone from the cache
       const freshContent = /** @type {Element} */ (productGrid.cloneNode(true));
-      await this.updateQuickAddModal(freshContent);
-      this.#updateVariantPicker(productGrid);
+      if (freshContent.classList.contains('premium-quick-add-content')) {
+        this.#updatePremiumQuickAddModal(freshContent);
+      } else {
+        await this.updateQuickAddModal(freshContent);
+        this.#updateVariantPicker(productGrid);
+      }
     }
 
     this.#openQuickAddModal();
@@ -157,6 +168,24 @@ export class QuickAddComponent extends Component {
     const productMedia = dialogComponent.querySelector('.product-information__media');
     productDetails?.scrollTo({ top: 0, behavior: 'instant' });
     productMedia?.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  /** @param {Element} premiumContent */
+  #updatePremiumQuickAddModal(premiumContent) {
+    const modalContent = document.getElementById('quick-add-modal-content');
+    if (!modalContent) return;
+
+    const productInfo = premiumContent.querySelector('.premium-product__info');
+    if (productInfo && !productInfo.querySelector('.premium-quick-add__details')) {
+      const viewDetails = document.createElement('a');
+      viewDetails.className = 'premium-quick-add__details';
+      viewDetails.href = this.productPageUrl;
+      viewDetails.textContent = this.dataset.viewDetailsLabel || '';
+      productInfo.append(viewDetails);
+    }
+
+    modalContent.removeAttribute('view-event-payload');
+    modalContent.replaceChildren(premiumContent);
   }
 
   /** @param {QuickAddDialog} dialogComponent */

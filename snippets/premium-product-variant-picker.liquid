@@ -12,6 +12,7 @@
     {% if option_name == gallery_option_name %}{% assign is_grouping_option = true %}{% endif %}
     {% assign is_size = false %}
     {% if option_name == size_option_name %}{% assign is_size = true %}{% endif %}
+    {% assign option_key = 'option' | append: option.position %}
     <fieldset class="premium-variants__option{% if is_grouping_option %} premium-variants__option--swatches{% endif %}">
       <legend>
         <span>{{ option.name | escape }}: <strong data-selected-option-label="{{ forloop.index0 }}">{{ option.selected_value | escape }}</strong></span>
@@ -19,17 +20,18 @@
       </legend>
       <div class="premium-variants__values">
         {% for value in option.values %}
-          {% assign swatch_id = value | strip | handleize %}
+          {% assign value_name = value.name | default: value %}
+          {% assign swatch_id = value_name | strip | handleize %}
           <label class="premium-variants__value{% if is_grouping_option %} premium-variants__value--swatch{% endif %}"{% if is_grouping_option %} data-productswatch-id="{{ swatch_id }}"{% endif %}>
-            <input type="radio" name="premium-option-{{ section.id }}-{{ option.position }}" value="{{ value | escape }}" data-option-index="{{ option.position | minus: 1 }}" {% if option.selected_value == value %}checked{% endif %}>
+            <input type="radio" name="premium-option-{{ section.id }}-{{ option.position }}" value="{{ value_name | escape }}" data-option-index="{{ option.position | minus: 1 }}" {% if value.selected %}checked{% endif %} {% unless value.available %}disabled{% endunless %}>
             {% if is_grouping_option %}
-              {% assign variant_for_value = product.variants | where: 'option1', value | first %}
-              <span class="premium-variants__swatch" title="{{ value | escape }}">
-                {% if section.settings.swatch_style == 'image' and variant_for_value.featured_image != blank %}{{ variant_for_value.featured_image | image_url: width: 96 | image_tag: loading: 'lazy', alt: '' }}{% else %}<span style="--premium-swatch-color: {{ value | handleize }}"></span>{% endif %}
+              {% assign variant_for_value = product.variants | where: option_key, value_name | first %}
+              <span class="premium-variants__swatch" title="{{ value_name | escape }}">
+                {% if section.settings.swatch_style == 'image' and variant_for_value.featured_image != blank %}{{ variant_for_value.featured_image | image_url: width: 96 | image_tag: loading: 'lazy', alt: '' }}{% elsif value.swatch.color != blank %}<span style="--premium-swatch-color: {{ value.swatch.color }}"></span>{% else %}<span></span>{% endif %}
               </span>
-              <span class="visually-hidden">{{ value | escape }}</span>
+              <span class="visually-hidden">{{ value_name | escape }}</span>
             {% else %}
-              <span>{{ value | escape }}</span>
+              <span>{{ value_name | escape }}</span>
             {% endif %}
           </label>
         {% endfor %}

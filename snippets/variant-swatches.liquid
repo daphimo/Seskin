@@ -177,6 +177,7 @@
             <li class="variant-option__swatch">
               <label
                 data-media-id="{{ featured_media.id }}"
+                data-card-image-id="{{ featured_media.preview_image.id }}"
                 data-cardswatch-id="{{ product_resource.id }}-{{ product_option_value.name | handleize }}"
                 class="variant-option__button-label variant-option__button-label--has-swatch"
                 on:pointerenter="product-card/previewVariant/{{ featured_media.id }}"

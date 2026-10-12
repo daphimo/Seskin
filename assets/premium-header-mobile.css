@@ -39,7 +39,7 @@
 .premium-header__mobile-logo a { display: flex; align-items: center; min-width: 0; }
 .premium-header__mobile-logo img { display: block; width: min(var(--premium-mobile-logo-width), 52px); height: auto; }
 .premium-header__actions { grid-area: actions; gap: 0; }
-.premium-header__actions .premium-header__search-trigger,
+.premium-header__search-trigger,
 .premium-header__actions .premium-header__account { display: none; }
 .premium-header__mobile-search-trigger {
   grid-area: search;

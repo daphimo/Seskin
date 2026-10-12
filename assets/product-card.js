@@ -198,6 +198,7 @@ export class ProductCard extends ProductCardLink {
     this.#handleQuickAdd();
 
     this.addEventListener(StandardEvents.productSelect, this.#handleProductSelect);
+    this.addEventListener('change', this.#handlePremiumSwatchChange, { capture: true });
     this.addEventListener(SlideshowSelectEvent.eventName, this.#handleSlideshowSelect);
     mediaQueryLarge.addEventListener('change', this.#handleQuickAdd);
 
@@ -214,7 +215,21 @@ export class ProductCard extends ProductCardLink {
   disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener('click', this.navigateToProduct);
+    this.removeEventListener('change', this.#handlePremiumSwatchChange, { capture: true });
   }
+
+  /**
+   * Updates premium card media immediately when a card swatch changes.
+   * @param {Event} event
+   */
+  #handlePremiumSwatchChange = (event) => {
+    if (!(event.target instanceof HTMLInputElement)) return;
+    if (!event.target.matches('input[type="radio"][data-variant-id]')) return;
+
+    const swatch = event.target.closest('[data-cardswatch-id]');
+    const cardSwatchId = swatch?.getAttribute('data-cardswatch-id');
+    if (cardSwatchId) this.selectImagesForSwatch(cardSwatchId);
+  };
 
   #preloadNextPreviewImage() {
     const currentSlide = this.refs.slideshow?.slides?.[this.refs.slideshow?.current];
@@ -292,6 +307,43 @@ export class ProductCard extends ProductCardLink {
    * @param {string} cardSwatchId
    */
   selectImagesForSwatch(cardSwatchId) {
+    const premiumImages = [...this.querySelectorAll('.premium-card__image')];
+    if (premiumImages.length) {
+      const matchingImages = premiumImages.filter(
+        (image) => image.getAttribute('data-cardimage-id') === cardSwatchId
+      );
+      const selectedSwatch = this.querySelector(`[data-cardswatch-id="${CSS.escape(cardSwatchId)}"]`);
+      const selectedImageId = selectedSwatch?.getAttribute('data-card-image-id');
+      const fallbackImage = selectedImageId
+        ? premiumImages.find((image) => image.getAttribute('data-media-id') === selectedImageId)
+        : null;
+      const defaultImage = premiumImages.find((image) => image.getAttribute('data-card-default') === 'true');
+      const selectedImages = matchingImages.length
+        ? matchingImages
+        : fallbackImage
+          ? [fallbackImage]
+          : defaultImage
+            ? [defaultImage]
+            : [premiumImages[0]];
+
+      if (selectedImages.length) {
+        for (const image of premiumImages) {
+          image.classList.remove('premium-card__image--primary', 'premium-card__image--secondary');
+          image.hidden = true;
+        }
+
+        selectedImages[0].hidden = false;
+        selectedImages[0].classList.add('premium-card__image--primary');
+
+        if (selectedImages[1]) {
+          selectedImages[1].hidden = false;
+          selectedImages[1].classList.add('premium-card__image--secondary');
+        }
+      }
+
+      return;
+    }
+
     const { slideshow } = this.refs;
     if (!slideshow || !cardSwatchId) return;
 

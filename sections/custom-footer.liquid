@@ -1,0 +1,207 @@
+{% comment %}
+  Configurable editorial footer with navigation, newsletter signup, and social links.
+  Add this section to the footer group and select the Help and More menus.
+{% endcomment %}
+
+{{ 'custom-footer.css' | asset_url | stylesheet_tag }}
+
+{% liquid
+  assign help_menu = section.settings.help_menu
+  assign more_menu = section.settings.more_menu
+  assign newsletter_form_id = 'CustomFooterNewsletter-' | append: section.id
+%}
+
+<section
+  class="custom-footer"
+  style="
+    --custom-footer-background: {{ section.settings.background_color }};
+    --custom-footer-text: {{ section.settings.text_color }};
+    --custom-footer-link: {{ section.settings.link_color }};
+    --custom-footer-link-hover: {{ section.settings.link_color }};
+    --custom-footer-input-border: {{ section.settings.input_border_color }};
+    --custom-footer-input-background: {{ section.settings.background_color }};
+    --custom-footer-input-text: {{ section.settings.text_color }};
+    --custom-footer-button-background: {{ section.settings.button_background }};
+    --custom-footer-button-icon: #ffffff;
+    --custom-footer-max-width: {{ section.settings.max_width }}px;
+    --custom-footer-padding-top: {{ section.settings.padding_top }}px;
+    --custom-footer-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --custom-footer-mobile-padding-top: {{ section.settings.mobile_padding_top }}px;
+    --custom-footer-mobile-padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+    --custom-footer-padding-inline: {{ section.settings.padding_inline }}px;
+    --custom-footer-mobile-padding-inline: {{ section.settings.mobile_padding_inline }}px;
+    --custom-footer-column-gap: {{ section.settings.column_gap }}px;
+    --custom-footer-social-size: {{ section.settings.social_icon_size }}px;
+    --custom-footer-social-gap: {{ section.settings.social_icon_gap }}px;
+    --custom-footer-social-margin-top: {{ section.settings.social_margin_top }}px;
+  "
+>
+  <div class="custom-footer__inner">
+    <div class="custom-footer__grid">
+      {% if section.settings.show_help and help_menu != blank %}
+        <details class="custom-footer__nav custom-footer__nav--help{% unless section.settings.mobile_accordions %} custom-footer__nav--static{% endunless %}" open>
+          <summary class="custom-footer__nav-summary">
+            <span>{{ section.settings.help_heading | escape }}</span>
+            <span class="custom-footer__accordion-icon" aria-hidden="true"></span>
+          </summary>
+          <nav aria-label="{{ section.settings.help_heading | escape }}">
+            <ul class="custom-footer__nav-list" role="list">
+              {% for link in help_menu.links %}
+                <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+              {% endfor %}
+            </ul>
+          </nav>
+        </details>
+      {% endif %}
+
+      {% if section.settings.show_newsletter %}
+        <div class="custom-footer__newsletter">
+          {% if section.settings.newsletter_heading != blank %}
+            <h2 class="custom-footer__newsletter-heading">{{ section.settings.newsletter_heading | escape }}</h2>
+          {% endif %}
+          {% if section.settings.newsletter_description != blank %}
+            <div class="custom-footer__newsletter-description rte">{{ section.settings.newsletter_description }}</div>
+          {% endif %}
+
+          {% form 'customer', id: newsletter_form_id, class: 'custom-footer__newsletter-form' %}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <div class="custom-footer__form-row">
+              <label class="visually-hidden" for="CustomFooterEmail-{{ section.id }}">{{ section.settings.email_placeholder | escape }}</label>
+              <input
+                id="CustomFooterEmail-{{ section.id }}"
+                class="custom-footer__email"
+                type="email"
+                name="contact[email]"
+                value="{% if form.email %}{{ form.email | escape }}{% endif %}"
+                autocomplete="email"
+                autocapitalize="off"
+                autocorrect="off"
+                placeholder="{{ section.settings.email_placeholder | escape }}"
+                required
+                {% if form.errors %}aria-invalid="true" aria-describedby="CustomFooterError-{{ section.id }}"{% endif %}
+              >
+              <button class="custom-footer__submit" type="submit" aria-label="{{ section.settings.submit_label | escape }}">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M8 4l8 8-8 8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+                </svg>
+              </button>
+            </div>
+
+            {% if form.posted_successfully? %}
+              <p class="custom-footer__form-message" role="status">{{ 'blocks.email_signup.success' | t }}</p>
+            {% elsif form.errors %}
+              <div class="custom-footer__form-message custom-footer__form-message--error" id="CustomFooterError-{{ section.id }}" role="alert">
+                {{ form.errors | default_errors }}
+              </div>
+            {% endif %}
+          {% endform %}
+
+          {% if section.settings.consent_text != blank or section.settings.terms_url != blank or section.settings.privacy_url != blank %}
+            <p class="custom-footer__consent">
+              {% if section.settings.consent_text != blank %}{{ section.settings.consent_text | escape }}{% endif %}
+              {% if section.settings.terms_url != blank %}
+                <a href="{{ section.settings.terms_url }}">{{ section.settings.terms_label | escape }}</a>
+              {% endif %}
+              {% if section.settings.privacy_url != blank %}
+                <a href="{{ section.settings.privacy_url }}">{{ section.settings.privacy_label | escape }}</a>
+              {% endif %}
+            </p>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if section.settings.show_more and more_menu != blank %}
+        <details class="custom-footer__nav custom-footer__nav--more{% unless section.settings.mobile_accordions %} custom-footer__nav--static{% endunless %}" open>
+          <summary class="custom-footer__nav-summary">
+            <span>{{ section.settings.more_heading | escape }}</span>
+            <span class="custom-footer__accordion-icon" aria-hidden="true"></span>
+          </summary>
+          <nav aria-label="{{ section.settings.more_heading | escape }}">
+            <ul class="custom-footer__nav-list" role="list">
+              {% for link in more_menu.links %}
+                <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+              {% endfor %}
+            </ul>
+          </nav>
+        </details>
+      {% endif %}
+    </div>
+
+    {% if section.settings.show_socials %}
+      <div class="custom-footer__socials" aria-label="{{ section.settings.social_label | escape }}">
+        {% assign social_names = 'instagram,facebook,youtube,twitter,tiktok' | split: ',' %}
+        {% for social_name in social_names %}
+          {% assign social_setting = social_name | append: '_url' %}
+          {% assign social_url = section.settings[social_setting] %}
+          {% if social_url != blank %}
+            {% assign social_accessible_name = social_name | capitalize %}
+            {% if social_name == 'twitter' %}{% assign social_accessible_name = 'X' %}{% endif %}
+            <a class="custom-footer__social-link" href="{{ social_url }}" aria-label="{{ social_accessible_name }}">
+              <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                {% render 'icon', icon: social_name %}
+              </svg>
+            </a>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Custom premium footer",
+  "tag": "section",
+  "class": "custom-footer-section",
+  "enabled_on": { "groups": ["footer"] },
+  "settings": [
+    { "type": "color", "id": "background_color", "label": "Background", "default": "#ffffff" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#262321" },
+    { "type": "color", "id": "link_color", "label": "Links", "default": "#262321" },
+    { "type": "range", "id": "max_width", "label": "Maximum content width", "min": 900, "max": 1600, "step": 20, "unit": "px", "default": 1180 },
+    { "type": "range", "id": "column_gap", "label": "Desktop column gap", "min": 20, "max": 120, "step": 4, "unit": "px", "default": 64 },
+    { "type": "range", "id": "padding_top", "label": "Desktop top padding", "min": 24, "max": 160, "step": 4, "unit": "px", "default": 56 },
+    { "type": "range", "id": "padding_bottom", "label": "Desktop bottom padding", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 24 },
+    { "type": "range", "id": "padding_inline", "label": "Desktop horizontal padding", "min": 16, "max": 80, "step": 4, "unit": "px", "default": 32 },
+    { "type": "range", "id": "mobile_padding_top", "label": "Mobile top padding", "min": 20, "max": 100, "step": 4, "unit": "px", "default": 40 },
+    { "type": "range", "id": "mobile_padding_bottom", "label": "Mobile bottom padding", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 24 },
+    { "type": "range", "id": "mobile_padding_inline", "label": "Mobile horizontal padding", "min": 12, "max": 40, "step": 2, "unit": "px", "default": 20 },
+    { "type": "checkbox", "id": "mobile_accordions", "label": "Use mobile menu accordions", "default": true },
+
+    { "type": "checkbox", "id": "show_help", "label": "Show Help navigation", "default": true },
+    { "type": "text", "id": "help_heading", "label": "Heading", "default": "Help", "visible_if": "{{ section.settings.show_help }}" },
+    { "type": "link_list", "id": "help_menu", "label": "Menu", "visible_if": "{{ section.settings.show_help }}" },
+
+    { "type": "checkbox", "id": "show_newsletter", "label": "Show newsletter", "default": true },
+    { "type": "text", "id": "newsletter_heading", "label": "Heading", "default": "Stay in the know", "visible_if": "{{ section.settings.show_newsletter }}" },
+    { "type": "richtext", "id": "newsletter_description", "label": "Description", "default": "<p>Be the first to discover new drops, special offers, and all things SKIMS</p>", "visible_if": "{{ section.settings.show_newsletter }}" },
+    { "type": "text", "id": "email_placeholder", "label": "Email placeholder", "default": "Your email", "visible_if": "{{ section.settings.show_newsletter }}" },
+    { "type": "text", "id": "submit_label", "label": "Submit accessible label", "default": "Subscribe to newsletter", "visible_if": "{{ section.settings.show_newsletter }}" },
+    { "type": "textarea", "id": "consent_text", "label": "Consent text", "default": "By submitting your email you agree to receive recurring automated marketing messages.", "visible_if": "{{ section.settings.show_newsletter }}" },
+    { "type": "url", "id": "terms_url", "label": "Terms link", "visible_if": "{{ section.settings.show_newsletter }}" },
+    { "type": "text", "id": "terms_label", "label": "Terms link label", "default": "Terms", "visible_if": "{{ section.settings.terms_url != blank }}" },
+    { "type": "url", "id": "privacy_url", "label": "Privacy link", "visible_if": "{{ section.settings.show_newsletter }}" },
+    { "type": "text", "id": "privacy_label", "label": "Privacy link label", "default": "Privacy", "visible_if": "{{ section.settings.privacy_url != blank }}" },
+    { "type": "color", "id": "input_border_color", "label": "Input border", "default": "#413d3a", "visible_if": "{{ section.settings.show_newsletter }}" },
+    { "type": "color", "id": "button_background", "label": "Button background", "default": "#312e2c", "visible_if": "{{ section.settings.show_newsletter }}" },
+
+    { "type": "checkbox", "id": "show_more", "label": "Show More navigation", "default": true },
+    { "type": "text", "id": "more_heading", "label": "Heading", "default": "More", "visible_if": "{{ section.settings.show_more }}" },
+    { "type": "link_list", "id": "more_menu", "label": "Menu", "visible_if": "{{ section.settings.show_more }}" },
+
+    { "type": "checkbox", "id": "show_socials", "label": "Show social links", "default": true },
+    { "type": "text", "id": "social_label", "label": "Accessible label", "default": "Social media", "visible_if": "{{ section.settings.show_socials }}" },
+    { "type": "url", "id": "instagram_url", "label": "Instagram", "visible_if": "{{ section.settings.show_socials }}" },
+    { "type": "url", "id": "facebook_url", "label": "Facebook", "visible_if": "{{ section.settings.show_socials }}" },
+    { "type": "url", "id": "youtube_url", "label": "YouTube", "visible_if": "{{ section.settings.show_socials }}" },
+    { "type": "url", "id": "twitter_url", "label": "X", "visible_if": "{{ section.settings.show_socials }}" },
+    { "type": "url", "id": "tiktok_url", "label": "TikTok", "visible_if": "{{ section.settings.show_socials }}" },
+    { "type": "range", "id": "social_icon_size", "label": "Icon size", "min": 16, "max": 32, "step": 1, "unit": "px", "default": 20, "visible_if": "{{ section.settings.show_socials }}" },
+    { "type": "range", "id": "social_icon_gap", "label": "Icon gap", "min": 12, "max": 48, "step": 2, "unit": "px", "default": 28, "visible_if": "{{ section.settings.show_socials }}" },
+    { "type": "range", "id": "social_margin_top", "label": "Space above icons", "min": 20, "max": 120, "step": 4, "unit": "px", "default": 72, "visible_if": "{{ section.settings.show_socials }}" }
+  ],
+  "presets": [
+    { "name": "Custom premium footer", "category": "Footer" }
+  ]
+}
+{% endschema %}

@@ -55,7 +55,8 @@
 .premium-header__main {
   position: relative;
   z-index: var(--layer-flat, 1);
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  column-gap: var(--gap-md);
   min-height: 54px;
   color: var(--premium-fg);
   background: var(--premium-bg);
@@ -139,13 +140,16 @@
 }
 
 .premium-header__actions {
+  --premium-header-action-size: 40px;
+  --premium-header-icon-size: 24px;
   display: flex;
   align-items: center;
   justify-content: end;
   gap: var(--gap-md);
 }
 
-.premium-header__actions :is(a, button),
+.premium-header__actions a,
+.premium-header__search-trigger,
 .premium-header__menu-button,
 .premium-header__mobile-search-trigger {
   color: inherit;
@@ -153,7 +157,7 @@
   border: 0;
 }
 
-.premium-header__actions :is(a, button) {
+.premium-header__actions a {
   display: inline-flex;
   position: relative;
   align-items: center;
@@ -163,14 +167,37 @@
   padding: 0;
 }
 
-.premium-header__actions svg { width: 20px; height: 20px; }
+.premium-header__actions :is(.wishlist-link, .premium-header__account, .premium-header__cart) {
+  flex: 0 0 var(--premium-header-action-size);
+  width: var(--premium-header-action-size);
+  height: var(--premium-header-action-size);
+  min-width: var(--premium-header-action-size);
+  min-height: var(--premium-header-action-size);
+  line-height: 0;
+}
+
+.premium-header__actions :is(.wishlist-link, .premium-header__account, .premium-header__cart) svg {
+  display: block;
+  flex: none;
+  width: var(--premium-header-icon-size);
+  height: var(--premium-header-icon-size);
+}
+
 .premium-header__search-trigger {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--minimum-touch-target);
   gap: var(--gap-xs);
   min-width: 200px !important;
   padding-inline: var(--padding-md) !important;
   justify-content: start !important;
   border: 1px solid color-mix(in srgb, currentColor 15%, transparent) !important;
   border-radius: 999px;
+}
+
+.premium-header__search-trigger svg {
+  width: 20px;
+  height: 20px;
 }
 
 .premium-header__cart > span {

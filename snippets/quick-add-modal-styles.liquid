@@ -32,9 +32,17 @@
 
   @media screen and (min-width: 750px) {
     .quick-add-modal {
-      width: var(--quick-add-modal-width);
-      height: var(--quick-add-modal-height);
+      width: min(1120px, 92vw);
+      height: 100dvh;
       max-width: none;
+      max-height: 100dvh;
+      margin: 0 0 0 auto;
+      border-block: 0;
+      border-inline-end: 0;
+    }
+
+    [dir='rtl'] .quick-add-modal {
+      margin: 0 auto 0 0;
     }
   }
 
@@ -46,7 +54,10 @@
 
     @media screen and (max-width: 749px) {
       position: fixed;
-      margin: auto 0 0 0;
+      width: 100%;
+      height: 100dvh;
+      max-height: 100dvh;
+      margin: 0 0 0 auto;
       min-height: unset;
       max-width: 100%;
       border-radius: 0;
@@ -79,11 +90,19 @@
   }
 
   .quick-add-modal[open] {
-    animation: modalSlideInTop var(--animation-speed) var(--animation-easing) forwards;
+    animation: quickAddSlideInRight var(--animation-speed) var(--animation-easing) forwards;
   }
 
   .quick-add-modal.dialog-closing {
-    animation: modalSlideOutTop var(--animation-speed) var(--animation-easing) forwards;
+    animation: quickAddSlideOutRight var(--animation-speed) var(--animation-easing) forwards;
+  }
+
+  [dir='rtl'] .quick-add-modal[open] {
+    animation-name: quickAddSlideInLeft;
+  }
+
+  [dir='rtl'] .quick-add-modal.dialog-closing {
+    animation-name: quickAddSlideOutLeft;
   }
 
   .quick-add-modal__close {
@@ -622,5 +641,25 @@
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  @keyframes quickAddSlideInRight {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes quickAddSlideOutRight {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(100%); }
+  }
+
+  @keyframes quickAddSlideInLeft {
+    from { opacity: 0; transform: translateX(-100%); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes quickAddSlideOutLeft {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(-100%); }
   }
 {% endstylesheet %}

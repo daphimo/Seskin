@@ -3,6 +3,8 @@
   type="module"
   fetchpriority="low"
 ></script>
+<script src="{{ 'main-premium-product.js' | asset_url }}" type="module" fetchpriority="low"></script>
+{{ 'main-premium-product.css' | asset_url | stylesheet_tag }}
 
 {% render 'dialog-styles' %}
 

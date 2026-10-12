@@ -5,23 +5,39 @@ class PremiumProduct extends Component {
   #controller = new AbortController();
   #activeIndex = 0;
   #touchStart = 0;
+  #dragStartX = 0;
+  #dragScrollLeft = 0;
+  #dragPointerId = null;
+  #scrollFrame = 0;
   #returnFocus;
 
   connectedCallback() {
     super.connectedCallback();
+    this.#controller.abort();
+    this.#controller = new AbortController();
     const signal = this.#controller.signal;
     this.addEventListener('change', this.#onChange, { signal });
     this.addEventListener('click', this.#onClick, { signal });
     this.addEventListener('keydown', this.#onKeyDown, { signal });
-    this.querySelector('[data-gallery-viewport]')?.addEventListener('touchstart', this.#onTouchStart, { signal, passive: true });
-    this.querySelector('[data-gallery-viewport]')?.addEventListener('touchend', this.#onTouchEnd, { signal, passive: true });
+    const viewport = this.querySelector('[data-gallery-viewport]');
+    viewport?.addEventListener('touchstart', this.#onTouchStart, { signal, passive: true });
+    viewport?.addEventListener('touchend', this.#onTouchEnd, { signal, passive: true });
+    viewport?.addEventListener('pointerdown', this.#onPointerDown, { signal });
+    viewport?.addEventListener('pointermove', this.#onPointerMove, { signal });
+    viewport?.addEventListener('pointerup', this.#onPointerEnd, { signal });
+    viewport?.addEventListener('pointercancel', this.#onPointerEnd, { signal });
+    viewport?.addEventListener('scroll', this.#onGalleryScroll, { signal, passive: true });
+    viewport?.addEventListener('dragstart', this.#preventNativeDrag, { signal });
     this.querySelector('[data-gallery-dialog]')?.addEventListener('click', this.#onDialogClick, { signal });
+    this.querySelector('[data-size-guide-dialog]')?.addEventListener('click', this.#onSizeGuideDialogClick, { signal });
+    for (const dialog of this.querySelectorAll('dialog')) dialog.addEventListener('close', this.#onDialogClose, { signal });
     this.#selectVariant();
-    this.#showMedia(0);
+    this.#showMedia(0, 'auto');
   }
 
   disconnectedCallback() {
     this.#controller.abort();
+    cancelAnimationFrame(this.#scrollFrame);
     this.#unlockScroll();
     super.disconnectedCallback();
   }
@@ -56,7 +72,40 @@ class PremiumProduct extends Component {
   #onKeyDown = (event) => { if (event.key === 'Escape') { this.#closeDialog(); this.#closeSizeGuide(); } };
   #onTouchStart = (event) => { this.#touchStart = event.changedTouches[0]?.clientX ?? 0; };
   #onTouchEnd = (event) => { const delta = (event.changedTouches[0]?.clientX ?? 0) - this.#touchStart; if (Math.abs(delta) > 45) this.#showMedia(this.#activeIndex + (delta < 0 ? 1 : -1)); };
+  #preventNativeDrag = (event) => event.preventDefault();
+  #onPointerDown = (event) => {
+    if (event.pointerType !== 'mouse' || event.button !== 0) return;
+    const viewport = event.currentTarget;
+    if (!(viewport instanceof HTMLElement)) return;
+    this.#dragPointerId = event.pointerId;
+    this.#dragStartX = event.clientX;
+    this.#dragScrollLeft = viewport.scrollLeft;
+    viewport.setPointerCapture(event.pointerId);
+    viewport.toggleAttribute('data-dragging', true);
+  };
+  #onPointerMove = (event) => {
+    if (event.pointerId !== this.#dragPointerId) return;
+    const viewport = event.currentTarget;
+    if (!(viewport instanceof HTMLElement)) return;
+    event.preventDefault();
+    viewport.scrollLeft = this.#dragScrollLeft - (event.clientX - this.#dragStartX);
+  };
+  #onPointerEnd = (event) => {
+    if (event.pointerId !== this.#dragPointerId) return;
+    const viewport = event.currentTarget;
+    if (!(viewport instanceof HTMLElement)) return;
+    this.#dragPointerId = null;
+    viewport.toggleAttribute('data-dragging', false);
+    if (viewport.hasPointerCapture(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
+    this.#snapToClosestMedia();
+  };
+  #onGalleryScroll = () => {
+    cancelAnimationFrame(this.#scrollFrame);
+    this.#scrollFrame = requestAnimationFrame(() => this.#syncActiveMediaFromScroll());
+  };
   #onDialogClick = (event) => { if (event.target === event.currentTarget) this.#closeDialog(); };
+  #onSizeGuideDialogClick = (event) => { if (event.target === event.currentTarget) this.#closeSizeGuide(); };
+  #onDialogClose = () => { if (!this.querySelector('dialog[open]')) this.#unlockScroll(); };
 
   #selectedOptions() {
     const options = [];
@@ -71,14 +120,15 @@ class PremiumProduct extends Component {
     const idInput = this.querySelector('[data-variant-id-input]');
     if (idInput instanceof HTMLInputElement) idInput.value = String(variant.id);
     for (const label of this.querySelectorAll('[data-selected-option-label]')) label.textContent = options[Number(label.getAttribute('data-selected-option-label'))] || '';
-    this.querySelector('[data-current-price]').textContent = variant.priceFormatted;
+    const currentPrice = this.querySelector('[data-current-price]');
+    if (currentPrice) currentPrice.textContent = variant.priceFormatted;
     const compare = this.querySelector('[data-compare-price]');
     const sale = this.querySelector('[data-sale-badge]');
     const discounted = variant.compareAt > variant.price;
     if (compare) { compare.textContent = variant.compareFormatted; compare.toggleAttribute('hidden', !discounted); }
     if (sale) { sale.toggleAttribute('hidden', !discounted); if (discounted) sale.textContent = this.dataset.saleFormat === 'amount' ? `Save ${variant.savingFormatted}` : `${Math.round((variant.compareAt - variant.price) * 100 / variant.compareAt)}% off`; }
     const add = this.querySelector('[data-add-to-cart]');
-    if (add instanceof HTMLButtonElement) { add.disabled = !variant.available; const label = add.querySelector('[data-add-label]'); if (label) label.textContent = variant.available ? 'Add to cart' : 'Sold out'; }
+    if (add instanceof HTMLButtonElement) { add.disabled = !variant.available; const label = add.querySelector('[data-add-label]'); if (label) label.textContent = variant.available ? this.dataset.addLabel || 'Add to cart' : this.dataset.soldOutLabel || 'Sold out'; }
     const url = new URL(window.location.href); url.searchParams.set('variant', variant.id); history.replaceState({}, '', url);
     const groupIndex = [...this.querySelectorAll('.premium-variants__option')].findIndex((item) => item.querySelector('input')?.closest('[data-productswatch-id]'));
     this.#filterMedia(groupIndex >= 0 ? options[groupIndex] : '');
@@ -98,16 +148,49 @@ class PremiumProduct extends Component {
 
   #normalize(value) { return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
 
-  #showMedia(index) {
+  #showMedia(index, behavior = 'smooth') {
     const media = this.#visibleMedia;
     if (!media.length) return;
     this.#activeIndex = (index + media.length) % media.length;
-    for (const item of this.querySelectorAll('[data-gallery-media]')) item.hidden = item !== media[this.#activeIndex];
-    const progress = this.querySelector('[data-gallery-progress]');
-    if (progress instanceof HTMLElement) progress.style.width = `${((this.#activeIndex + 1) / media.length) * 100}%`;
+    for (const item of media) item.hidden = false;
+    const viewport = this.querySelector('[data-gallery-viewport]');
+    const selectedMedia = media[this.#activeIndex];
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (viewport instanceof HTMLElement && selectedMedia instanceof HTMLElement) {
+      viewport.scrollTo({ left: selectedMedia.offsetLeft, behavior: reducedMotion ? 'auto' : behavior });
+    }
+    this.#updateGalleryProgress(media.length);
   }
 
-  #openDialog(button) { const dialog = this.querySelector(`#${CSS.escape(button.dataset.dialogOpen || '')}`); if (!(dialog instanceof HTMLDialogElement)) return; this.#returnFocus = button; dialog.showModal(); document.documentElement.classList.add('premium-modal-open'); }
+  #syncActiveMediaFromScroll() {
+    const viewport = this.querySelector('[data-gallery-viewport]');
+    const media = this.#visibleMedia;
+    if (!(viewport instanceof HTMLElement) || !media.length) return;
+    let closestIndex = 0;
+    let closestDistance = Number.POSITIVE_INFINITY;
+    for (const [index, item] of media.entries()) {
+      if (!(item instanceof HTMLElement)) continue;
+      const distance = Math.abs(item.offsetLeft - viewport.scrollLeft);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
+      }
+    }
+    this.#activeIndex = closestIndex;
+    this.#updateGalleryProgress(media.length);
+  }
+
+  #snapToClosestMedia() {
+    this.#syncActiveMediaFromScroll();
+    this.#showMedia(this.#activeIndex);
+  }
+
+  #updateGalleryProgress(mediaCount) {
+    const progress = this.querySelector('[data-gallery-progress]');
+    if (progress instanceof HTMLElement) progress.style.width = `${((this.#activeIndex + 1) / mediaCount) * 100}%`;
+  }
+
+  #openDialog(button) { const dialog = this.querySelector(`#${CSS.escape(button.dataset.dialogOpen || '')}`); if (!(dialog instanceof HTMLDialogElement)) return; this.#returnFocus = button; dialog.showModal(); document.documentElement.classList.add('premium-modal-open'); const activeMediaId = this.#visibleMedia[this.#activeIndex]?.getAttribute('data-media-id'); const modalMedia = activeMediaId ? dialog.querySelector(`[data-modal-media][data-media-id="${CSS.escape(activeMediaId)}"]`) : null; modalMedia?.scrollIntoView({ block: 'start' }); }
   #closeDialog() { const dialog = this.querySelector('[data-gallery-dialog]'); if (dialog instanceof HTMLDialogElement && dialog.open) dialog.close(); this.#unlockScroll(); this.#returnFocus?.focus(); }
   #openSizeGuide(button) { const dialog = this.querySelector('[data-size-guide-dialog]'); if (!(dialog instanceof HTMLDialogElement)) return; this.#returnFocus = button; dialog.showModal(); document.documentElement.classList.add('premium-modal-open'); }
   #closeSizeGuide() { const dialog = this.querySelector('[data-size-guide-dialog]'); if (dialog instanceof HTMLDialogElement && dialog.open) dialog.close(); this.#unlockScroll(); this.#returnFocus?.focus(); }

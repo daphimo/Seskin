@@ -1,16 +1,144 @@
 {% doc %}
-  Renders a compact premium collection product card.
+  Renders a compact premium collection product card with swatches and quick actions.
+
   @param {product} product - Product to display.
+  @param {string} section_id - Owning section ID used by quick add.
+  @param {block} [block] - Optional owning theme block.
+
+  @example
+  {% render 'premium-product-card', product: product, section_id: section.id %}
 {% enddoc %}
-<article class="premium-card">
-  {% render 'wishlist-button', product: product %}
-  <a class="premium-card__media" href="{{ product.url }}">
-    {% if product.featured_image != blank %}{{ product.featured_image | image_url: width: 720 | image_tag: widths: '240, 360, 540, 720', sizes: '(min-width: 990px) 20vw, 44vw', loading: 'lazy', alt: product.featured_image.alt }}{% else %}{{ 'product-apparel-1' | placeholder_svg_tag }}{% endif %}
-    {% if product.images[1] != blank %}{{ product.images[1] | image_url: width: 720 | image_tag: class: 'premium-card__secondary', widths: '240, 360, 540, 720', sizes: '(min-width: 990px) 20vw, 44vw', loading: 'lazy', alt: product.images[1].alt }}{% endif %}
-  </a>
-  <div class="premium-card__content">
-    {% if product.compare_at_price_max > product.price %}<span class="premium-card__badge">Sale</span>{% endif %}
-    <a href="{{ product.url }}">{{ product.title | escape }}</a>
-    <div><span>{{ product.price | money }}</span>{% if product.compare_at_price_max > product.price %} <s>{{ product.compare_at_price_max | money }}</s>{% endif %}</div>
+
+{% liquid
+  assign selected_variant = product.selected_or_first_available_variant
+  assign selected_image = selected_variant.featured_image | default: product.featured_image
+  assign highlight = product.metafields.custom.product_highlight.value | default: product.metafields.custom.product_highlight
+  assign has_swatches = false
+
+  for product_option in product.options_with_values
+    assign option_swatch_count = product_option.values | map: 'swatch' | compact | size
+    if option_swatch_count > 0
+      assign has_swatches = true
+      break
+    endif
+  endfor
+
+  assign show_quick_add = false
+  if product.available
+    if settings.quick_add or settings.mobile_quick_add
+      assign show_quick_add = true
+    endif
+  endif
+
+  assign show_actions = false
+  if settings.wishlist_enabled or show_quick_add
+    assign show_actions = true
+  endif
+
+  assign show_badge = false
+  if product.available == false or selected_variant.compare_at_price > selected_variant.price
+    assign show_badge = true
+  endif
+%}
+
+<product-card
+  class="premium-card product-card"
+  data-product-id="{{ product.id }}"
+  style="--quick-add-display: flex; --quick-add-mobile-display: flex; --quick-add-mobile-opacity: 1;"
+  {% if block %}{{ block.shopify_attributes }}{% endif %}
+>
+  <div class="premium-card__media-wrap">
+    <a
+      class="premium-card__media"
+      href="{{ product.url }}"
+      ref="productCardLink"
+      aria-label="{{ product.title | escape }}"
+    >
+    {% if product.images.size > 0 %}
+      {% for image in product.images %}
+        {% liquid
+          assign image_class = 'premium-card__image'
+          assign is_default_image = false
+          if image.id == selected_image.id
+            assign image_class = image_class | append: ' premium-card__image--primary'
+            assign is_default_image = true
+          elsif image.id == product.images[1].id
+            assign image_class = image_class | append: ' premium-card__image--secondary'
+          endif
+
+          assign image_loading = 'lazy'
+          if forloop.first
+            assign image_loading = 'eager'
+          endif
+
+          assign image_alt_handle = image.alt | handleize
+          assign image_card_id = product.id | append: '-' | append: image_alt_handle
+        %}
+        {{ image
+          | image_url: width: 900
+          | image_tag:
+            class: image_class,
+            widths: '240, 360, 540, 720, 900',
+            sizes: '(min-width: 990px) 20vw, 44vw',
+            loading: image_loading,
+            alt: image.alt,
+            data-media-id: image.id,
+            data-card-default: is_default_image,
+            data-cardimage-id: image_card_id
+        }}
+      {% endfor %}
+    {% else %}
+      {{ 'product-apparel-1' | placeholder_svg_tag: 'premium-card__placeholder' }}
+    {% endif %}
+
+    {% if show_badge %}
+      <span class="premium-card__badge">
+        {% if product.available == false %}
+          {{ 'content.product_badge_sold_out' | t }}
+        {% elsif settings.show_product_card_savings %}
+          {% if settings.product_card_savings_format == 'amount' %}
+            {% assign savings_value = selected_variant.compare_at_price | minus: selected_variant.price | money %}
+          {% else %}
+            {% assign savings_value = selected_variant.compare_at_price | minus: selected_variant.price | times: 100.0 | divided_by: selected_variant.compare_at_price | round | append: '%' %}
+          {% endif %}
+          {{ 'content.product_badge_sale' | t }} {{ savings_value }}
+        {% else %}
+          {{ 'content.product_badge_sale' | t }}
+        {% endif %}
+      </span>
+    {% endif %}
+    </a>
+
+    {% if show_actions %}
+      <div class="premium-card__actions">
+        {% render 'wishlist-button', product: product %}
+        {% if show_quick_add %}
+          {% render 'quick-add', product: product, section_id: section_id %}
+        {% endif %}
+      </div>
+    {% endif %}
   </div>
-</article>
+
+  <div class="premium-card__content">
+    {% if has_swatches %}
+      <div class="premium-card__swatches">
+        {% render 'variant-swatches', product_resource: product, has_option_selected: true %}
+      </div>
+    {% endif %}
+
+    {% if highlight != blank %}
+      <p class="premium-card__highlight">{{ highlight | escape }}</p>
+    {% endif %}
+
+    <a class="premium-card__title" href="{{ product.url }}">{{ product.title | escape }}</a>
+
+    <div class="premium-card__price">
+      <span>{{ selected_variant.price | money }}</span>
+      {% if selected_variant.compare_at_price > selected_variant.price %}
+        <s>{{ selected_variant.compare_at_price | money }}</s>
+      {% endif %}
+    </div>
+  </div>
+</product-card>
+
+{% render 'product-card-styles' %}

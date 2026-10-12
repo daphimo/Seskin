@@ -5,8 +5,8 @@
   assign model_sizing = product.metafields.custom.model_sizing.value | default: product.metafields.custom.model_sizing
   assign initial_variant = product.selected_or_first_available_variant
 %}
-<premium-product class="premium-product" data-gallery-option-name="{{ section.settings.gallery_option_name | escape }}" data-sale-format="{{ section.settings.sale_badge_format }}">
-  <div class="premium-product__layout section section--full-width" style="--premium-gallery-column: {{ section.settings.gallery_width }}%; --premium-product-gap: {{ section.settings.content_gap }}px; --premium-media-ratio: {{ section.settings.media_ratio }};">
+<premium-product class="main-premium-product premium-product" data-gallery-option-name="{{ section.settings.gallery_option_name | escape }}" data-sale-format="{{ section.settings.sale_badge_format }}" data-add-label="{{ 'actions.add_to_cart' | t | escape }}" data-sold-out-label="{{ 'content.product_badge_sold_out' | t | escape }}">
+  <div class="premium-product__layout" style="--premium-gallery-column: {{ section.settings.gallery_width }}%; --premium-product-gap: {{ section.settings.content_gap }}px; --premium-media-ratio: {{ section.settings.media_ratio }};">
     <div class="premium-product__gallery-column">{% render 'premium-product-gallery', product: product, section: section, model_sizing: model_sizing %}</div>
     {% render 'premium-product-info', product: product, section: section %}
   </div>

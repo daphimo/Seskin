@@ -7,7 +7,8 @@
 {%- enddoc -%}
 
 {% liquid
-  assign product_form_id = 'QuickAdd-ProductForm-' | append: product.id | append: '-' | append: block.id
+  assign quick_add_owner_id = block.id | default: section_id
+  assign product_form_id = 'QuickAdd-ProductForm-' | append: product.id | append: '-' | append: quick_add_owner_id
   assign add_to_cart_text = 'actions.add' | t
   assign choose_options_text = 'actions.choose' | t
   # Logic to determine which variant to use (matching swatch selection logic from product-card)
@@ -139,6 +140,7 @@
       class="button quick-add__button quick-add__button--choose add-to-cart-button"
       name="add"
       on:click="quick-add-component/handleClick"
+      aria-label="{{ choose_options_text | escape }}"
     >
       <span
         aria-hidden="true"
