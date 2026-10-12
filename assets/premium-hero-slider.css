@@ -82,7 +82,7 @@
   justify-items: var(--premium-hero-inline-alignment);
   width: 100%;
   height: 100%;
-  padding: clamp(24px, 5vw, 76px);
+  padding: clamp(42px,6vw,91px);
   pointer-events: none;
 }
 
