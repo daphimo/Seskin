@@ -51,6 +51,7 @@
 .premium-hero__placeholder {
   display: block;
   object-fit: cover;
+  object-position: top;
 }
 
 .premium-hero__placeholder {
