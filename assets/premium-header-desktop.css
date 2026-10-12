@@ -7,7 +7,7 @@
   content: '';
   position: absolute;
   inset-inline: 0;
-  inset-block-end: -6px;
+  inset-block-end: -2px;
   height: 1px;
   background: currentColor;
   transform: scaleX(0);
