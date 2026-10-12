@@ -51,6 +51,7 @@
 .premium-hero__placeholder {
   display: block;
   object-fit: cover;
+  object-position: top;
 }
 
 .premium-hero__placeholder {
@@ -81,7 +82,7 @@
   justify-items: var(--premium-hero-inline-alignment);
   width: 100%;
   height: 100%;
-  padding: clamp(24px, 5vw, 76px);
+  padding: clamp(42px,8vw,108px);
   pointer-events: none;
 }
 
