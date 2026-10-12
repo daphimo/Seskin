@@ -1,4 +1,5 @@
 import { Component } from '@theme/component';
+import { destroyCustomSplide, mountCustomSplide } from '@theme/custom-splide';
 
 class PremiumProduct extends Component {
   #controller = new AbortController();
@@ -116,10 +117,40 @@ class PremiumProduct extends Component {
   #setUnit(unit) { for (const cell of this.querySelectorAll('[data-measurement]')) { const source = cell.dataset.inchValue || ''; cell.textContent = unit === 'cm' ? source.replace(/\d+(?:\.\d+)?/g, (value) => String(Math.round(Number(value) * 2.54 * 10) / 10)) : source; } }
 }
 
-class PremiumCollectionSlider extends HTMLElement {
-  connectedCallback() { this.addEventListener('click', this.#click); }
-  disconnectedCallback() { this.removeEventListener('click', this.#click); }
-  #click = (event) => { const button = event.target instanceof Element ? event.target.closest('button') : null; const track = this.querySelector('[data-collection-track]'); if (!(button instanceof HTMLButtonElement) || !(track instanceof HTMLElement)) return; const direction = button.hasAttribute('data-collection-next') ? 1 : -1; track.scrollBy({ left: direction * track.clientWidth * 0.8, behavior: 'smooth' }); };
+class PremiumCollectionSlider extends Component {
+  /** @type {HTMLElement | null} */
+  #root = null;
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.#root = this.querySelector('[data-custom-splide]');
+    if (!this.#root) return;
+
+    const desktopItems = Number.parseInt(this.dataset.desktopItems || '4', 10);
+    const mobileItems = Number.parseInt(this.dataset.mobileItems || '2', 10);
+    const gap = `${Number.parseInt(this.dataset.slideGap || '4', 10)}px`;
+
+    mountCustomSplide(this.#root, {
+      type: 'slide',
+      rewind: false,
+      perPage: desktopItems,
+      perMove: 1,
+      gap,
+      pagination: false,
+      breakpoints: {
+        749: {
+          perPage: mobileItems,
+          gap,
+        },
+      },
+    });
+  }
+
+  disconnectedCallback() {
+    if (this.#root) destroyCustomSplide(this.#root);
+    this.#root = null;
+    super.disconnectedCallback();
+  }
 }
 
 if (!customElements.get('premium-product')) customElements.define('premium-product', PremiumProduct);
