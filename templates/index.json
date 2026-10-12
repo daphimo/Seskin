@@ -230,6 +230,114 @@
         "padding_bottom": 0
       }
     },
+    "section_dmtDhV": {
+      "type": "section",
+      "blocks": {
+        "content_WJM37W": {
+          "type": "content",
+          "name": "Content over image",
+          "settings": {
+            "image": "shopify://shop_images/1f7084f439ab33fcc02a04af7a9966acee693817-1940x1788_2.jpg",
+            "image_ratio": "auto",
+            "border_radius": 0,
+            "overlay_color": "#000000",
+            "overlay_opacity": 10,
+            "eyebrow": "",
+            "title": "UNDERWEAR",
+            "content": "<p>The icons of your top drawer—these are the softest undies you’ll ever own</p>",
+            "content_position": "bottom-left",
+            "content_alignment": "left",
+            "content_width": 520,
+            "content_gap": 16,
+            "content_padding": 48,
+            "content_padding_mobile": 24,
+            "title_size": 52,
+            "title_size_mobile": 36,
+            "eyebrow_color": "#ffffff",
+            "title_color": "#ffffff",
+            "text_color": "#ffffff",
+            "button_label": "Shop now",
+            "button_link": "shopify://collections/butt-hip-enhancers",
+            "button_style": "link",
+            "button_background": "#ffffff",
+            "button_text_color": "{{ settings.color_palette.background }}",
+            "button_border_color": "#ffffff",
+            "button_hover_background": "#000000",
+            "button_hover_text_color": "#ffffff",
+            "button_hover_border_color": "#000000"
+          },
+          "blocks": {}
+        },
+        "content_4gPWcb": {
+          "type": "content",
+          "name": "Content over image",
+          "settings": {
+            "image": "shopify://shop_images/b70f9f7dbc3b5ecc1c28d3528ba283523be066ef-1940x1788_2.png",
+            "image_ratio": "auto",
+            "border_radius": 0,
+            "overlay_color": "#000000",
+            "overlay_opacity": 10,
+            "eyebrow": "",
+            "title": "BRA",
+            "content": "<p>Everyone is switching to SKIMS bras—you’re next</p>",
+            "content_position": "bottom-left",
+            "content_alignment": "left",
+            "content_width": 520,
+            "content_gap": 16,
+            "content_padding": 48,
+            "content_padding_mobile": 24,
+            "title_size": 52,
+            "title_size_mobile": 36,
+            "eyebrow_color": "#ffffff",
+            "title_color": "#ffffff",
+            "text_color": "#ffffff",
+            "button_label": "Shop now",
+            "button_link": "shopify://collections/bras-tops",
+            "button_style": "link",
+            "button_background": "#ffffff",
+            "button_text_color": "{{ settings.color_palette.background }}",
+            "button_border_color": "#ffffff",
+            "button_hover_background": "#000000",
+            "button_hover_text_color": "#ffffff",
+            "button_hover_border_color": "#000000"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "content_WJM37W",
+        "content_4gPWcb"
+      ],
+      "name": "t:names.custom_section",
+      "settings": {
+        "content_direction": "row",
+        "vertical_on_mobile": false,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "small",
+        "section_height_custom": 50,
+        "background_media": "none",
+        "background_color": "",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_color": "",
+        "border_radius": 0,
+        "padding-block-start": 24,
+        "padding-block-end": 24
+      }
+    },
     "premium_hero_slider_b7gWbQ": {
       "type": "premium-hero-slider",
       "blocks": {
@@ -348,6 +456,7 @@
     "premium_hero_slider_dN8Qca",
     "collection_list_Qmt7f4",
     "premium_hero_slider_VxLkrp",
+    "section_dmtDhV",
     "premium_hero_slider_b7gWbQ",
     "section_4BdXky"
   ]
