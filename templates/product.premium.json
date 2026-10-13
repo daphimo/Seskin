@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {"type":"main-premium-product","blocks":{"details":{"type":"tab","settings":{"heading":"Details","use_product_description":true}},"fit":{"type":"tab","settings":{"heading":"Fit & Fabric","content":"<p>Add approved fit, fabric, and care information.</p>"}},"shipping":{"type":"tab","settings":{"heading":"Shipping & Returns","content":"<p>Add approved shipping and returns information.</p>"}},"size_xxs":{"type":"size_row","settings":{"values":"XXS|00|30–31|23–24|31–34"}},"size_xs":{"type":"size_row","settings":{"values":"XS|0–2|31.5–33.5|24–26|34–36.5"}},"size_s":{"type":"size_row","settings":{"values":"S|4–6|34–36|26.5–28.5|37–39"}},"size_m":{"type":"size_row","settings":{"values":"M|8–10|36.5–38.5|29–31|39.5–41.5"}},"size_l":{"type":"size_row","settings":{"values":"L|12–14|39–41|31.5–34.5|42–44"}}},"block_order":["details","fit","shipping","size_xxs","size_xs","size_s","size_m","size_l"],"settings":{"show_wishlist":true}},
