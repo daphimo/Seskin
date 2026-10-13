@@ -30,9 +30,8 @@
     <div class="premium-header__utility">
       <a class="premium-header__logo" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
         {% if solid_logo != blank %}
-          {{ solid_logo | image_url: width: 600 | image_tag: class: 'premium-header__logo-image premium-header__logo-image--solid', widths: '120, 180, 240, 360, 600', sizes: '240px', loading: 'eager', fetchpriority: 'high' }}
+          {{ solid_logo | image_url: width: 600 | image_tag: class: 'premium-header__logo-image premium-header__logo-image--solid', widths: '120, 180, 240, 360, 600', sizes: '240px', loading: 'eager' }}
           {{ transparent_logo | image_url: width: 600 | image_tag: class: 'premium-header__logo-image premium-header__logo-image--transparent', widths: '120, 180, 240, 360, 600', sizes: '240px', loading: 'eager' }}
-          {{ mobile_logo | image_url: width: 360 | image_tag: class: 'premium-header__logo-image premium-header__logo-image--mobile', widths: '100, 140, 180, 240, 360', sizes: '180px', loading: 'eager' }}
         {% else %}
           <span>{{ shop.name | escape }}</span>
         {% endif %}
@@ -63,7 +62,7 @@
 
       <div class="premium-header__mobile-logo">
         <a href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
-          {% if mobile_logo != blank %}{{ mobile_logo | image_url: width: 360 | image_tag: widths: '100, 140, 180, 240, 360', sizes: '180px', loading: 'eager' }}{% else %}{{ shop.name | escape }}{% endif %}
+          {% if mobile_logo != blank %}{{ mobile_logo | image_url: width: 180 | image_tag: widths: '100, 140, 180', sizes: '52px', loading: 'eager' }}{% else %}{{ shop.name | escape }}{% endif %}
         </a>
       </div>
 
@@ -165,6 +164,22 @@
   </dialog>
 </premium-header>
 
+<script>
+  (() => {
+    const header = document.currentScript.previousElementSibling;
+    if (!(header instanceof HTMLElement) || header.localName !== 'premium-header') return;
+
+    const main = header.querySelector('.premium-header__main');
+    const utility = header.querySelector('.premium-header__utility');
+    if (!(main instanceof HTMLElement) || !(utility instanceof HTMLElement)) return;
+
+    const mainHeight = Math.round(main.offsetHeight);
+    const shellHeight = mainHeight + Math.round(utility.offsetHeight);
+    document.body.style.setProperty('--header-height', `${shellHeight}px`);
+    header.style.setProperty('--premium-main-height', `${mainHeight}px`);
+    header.style.setProperty('--premium-shell-height', `${shellHeight}px`);
+  })();
+</script>
 <script src="{{ 'premium-header.js' | asset_url }}" type="module"></script>
 
 {% schema %}

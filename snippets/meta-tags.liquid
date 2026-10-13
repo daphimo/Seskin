@@ -115,9 +115,9 @@
   href="{{ canonical_url }}"
 >
 
-{% if page_description %}
+{% if og_description != blank %}
   <meta
     name="description"
-    content="{{ page_description | escape }}"
+    content="{{ og_description | escape }}"
   >
 {% endif %}

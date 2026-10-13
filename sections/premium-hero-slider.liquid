@@ -87,7 +87,7 @@
             {% liquid
               assign desktop_image = block.settings.desktop_media | default: block.settings.mobile_media
               assign mobile_image = block.settings.mobile_media | default: desktop_image
-              assign image_alt = block.settings.image_alt | default: desktop_image.alt
+              assign image_alt = block.settings.image_alt | default: desktop_image.alt | default: block.settings.title
               assign loading = 'lazy'
               assign fetchpriority = 'auto'
               if forloop.first and section.index == 1
@@ -124,6 +124,8 @@
                         media="(max-width: 749px)"
                         srcset="{{ mobile_image | image_url: width: 375 }} 375w, {{ mobile_image | image_url: width: 550 }} 550w, {{ mobile_image | image_url: width: 750 }} 750w, {{ mobile_image | image_url: width: 1100 }} 1100w"
                         sizes="100vw"
+                        width="{{ mobile_image.width }}"
+                        height="{{ mobile_image.height }}"
                       >
                     {% endif %}
                     {{ desktop_image | image_url: width: 2400 | image_tag: widths: '750, 1100, 1500, 2000, 2400', sizes: '100vw', loading: loading, fetchpriority: fetchpriority, alt: image_alt }}
@@ -208,7 +210,31 @@
   </premium-hero-slider>
 </div>
 
-<script src="{{ 'premium-hero-slider.js' | asset_url }}" type="module"></script>
+<script type="module">
+  if (!window.loadPremiumHeroSlider) {
+    const load = () => {
+      document.removeEventListener('pointerdown', load, true);
+      document.removeEventListener('keydown', load, true);
+      window.premiumHeroSliderModule ||= import({{ 'premium-hero-slider.js' | asset_url | json }});
+      return window.premiumHeroSliderModule;
+    };
+
+    window.loadPremiumHeroSlider = load;
+
+    if (window.matchMedia('(max-width: 749px)').matches && !window.Shopify?.designMode) {
+      document.addEventListener('pointerdown', load, { once: true, capture: true });
+      document.addEventListener('keydown', load, { once: true, capture: true });
+
+      if (document.readyState === 'complete') {
+        load();
+      } else {
+        window.addEventListener('load', load, { once: true });
+      }
+    } else {
+      load();
+    }
+  }
+</script>
 
 {% schema %}
 {
