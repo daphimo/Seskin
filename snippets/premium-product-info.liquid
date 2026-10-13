@@ -10,7 +10,6 @@
   <h1 class="premium-product__title">{{ product.title | escape }}</h1>
   {% render 'premium-product-price', variant: variant, show_sale_badge: section.settings.show_sale_badge, sale_badge_format: section.settings.sale_badge_format %}
   {% render 'premium-product-variant-picker', product: product, section: section %}
-  {% if settings.wishlist_enabled %}<div class="premium-product__wishlist">{% render 'wishlist-button', product: product, show_label: true %}</div>{% endif %}
   <product-form-component data-section-id="{{ section.id }}" data-product-id="{{ product.id }}" data-product-url="{{ product.url }}" on:submit="/handleSubmit">
     <div class="visually-hidden" aria-live="assertive" role="status" aria-atomic="true" ref="liveRegion"></div>
     {% assign premium_product_form_id = 'PremiumProductForm-' | append: section.id %}
@@ -18,7 +17,7 @@
       <input type="hidden" name="id" value="{{ variant.id }}" ref="variantId" data-variant-id-input>
       {% if section.settings.show_quantity %}<label class="premium-product__quantity">Quantity <input type="number" name="quantity" value="{{ variant.quantity_rule.min | default: 1 }}" min="{{ variant.quantity_rule.min | default: 1 }}" {% if variant.quantity_rule.max %}max="{{ variant.quantity_rule.max }}"{% endif %} step="{{ variant.quantity_rule.increment | default: 1 }}"></label>{% else %}<input type="hidden" name="quantity" value="1">{% endif %}
       <button class="premium-product__add button" type="submit" name="add" data-add-to-cart {% unless variant.available %}disabled{% endunless %}><span data-add-label>{% if variant.available %}Add to cart{% else %}Sold out{% endif %}</span></button>
-      {{ form | payment_button }}
+      {% comment %} {{ form | payment_button }} {% endcomment %}
     {% endform %}
   </product-form-component>
   {% if section.settings.show_tabs %}{% render 'premium-product-tabs', section: section %}{% endif %}

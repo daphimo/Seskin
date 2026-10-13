@@ -1,0 +1,64 @@
+{% comment %}
+  Lists every published Shopify page with pagination for stores containing more than 50 pages.
+  @example
+  <!-- Use once in templates/page.sitemap.json. -->
+{% endcomment %}
+
+{{ 'sitemap-page.css' | asset_url | stylesheet_tag }}
+
+<section
+  class="sitemap-page"
+  style="--sitemap-columns: {{ section.settings.columns }}; --sitemap-padding-top: {{ section.settings.padding_top }}px; --sitemap-padding-bottom: {{ section.settings.padding_bottom }}px; --sitemap-background: {{ section.settings.background_color }}; --sitemap-text: {{ section.settings.text_color }}; --sitemap-link: {{ section.settings.link_color }}; --sitemap-border: {{ section.settings.border_color }};"
+>
+  <div class="sitemap-page__inner">
+    <header class="sitemap-page__header">
+      {% if section.settings.heading != blank %}<h1 class="sitemap-page__heading">{{ section.settings.heading | escape }}</h1>{% endif %}
+      {% if section.settings.intro != blank %}<div class="sitemap-page__intro rte">{{ section.settings.intro }}</div>{% endif %}
+    </header>
+
+    {% paginate pages by 50 %}
+      <nav class="sitemap-page__navigation" aria-label="{{ section.settings.navigation_label | escape }}">
+        <ul class="sitemap-page__list" role="list">
+          {% for page_item in pages %}
+            <li class="sitemap-page__item">
+              <a class="sitemap-page__link" href="{{ page_item.url }}">{{ page_item.title | escape }}</a>
+            </li>
+          {% else %}
+            <li class="sitemap-page__empty">{{ section.settings.empty_message | escape }}</li>
+          {% endfor %}
+        </ul>
+      </nav>
+
+      {% if paginate.pages > 1 %}
+        <nav class="sitemap-page__pagination" aria-label="{{ 'content.pagination.nav_label' | t }}">
+          {% if paginate.previous %}<a href="{{ paginate.previous.url }}">{{ 'content.pagination.previous' | t }}</a>{% endif %}
+          <span>{{ 'content.pagination.page' | t: page: paginate.current_page }} / {{ paginate.pages }}</span>
+          {% if paginate.next %}<a href="{{ paginate.next.url }}">{{ 'content.pagination.next' | t }}</a>{% endif %}
+        </nav>
+      {% endif %}
+    {% endpaginate %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:names.page",
+  "tag": "section",
+  "class": "section-wrapper",
+  "limit": 1,
+  "settings": [
+    { "type": "text", "id": "heading", "label": "t:settings.heading", "default": "Sitemap" },
+    { "type": "richtext", "id": "intro", "label": "t:settings.text", "default": "<p>Browse all pages on our store.</p>" },
+    { "type": "text", "id": "navigation_label", "label": "t:settings.navigation", "default": "All pages" },
+    { "type": "text", "id": "empty_message", "label": "t:settings.text", "default": "No pages are available." },
+    { "type": "range", "id": "columns", "label": "t:settings.columns", "min": 2, "max": 5, "step": 1, "default": 3 },
+    { "type": "color", "id": "background_color", "label": "t:settings.background_color", "default": "#ffffff" },
+    { "type": "color", "id": "text_color", "label": "t:settings.text_color", "default": "#262321" },
+    { "type": "color", "id": "link_color", "label": "t:settings.text_color", "default": "#262321" },
+    { "type": "color", "id": "border_color", "label": "t:settings.border_color", "default": "#dedbd8" },
+    { "type": "range", "id": "padding_top", "label": "t:settings.padding_top", "min": 24, "max": 160, "step": 4, "unit": "px", "default": 64 },
+    { "type": "range", "id": "padding_bottom", "label": "t:settings.padding_bottom", "min": 24, "max": 160, "step": 4, "unit": "px", "default": 96 }
+  ],
+  "presets": [{ "name": "t:names.page" }]
+}
+{% endschema %}

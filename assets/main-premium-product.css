@@ -101,7 +101,7 @@
   place-items: center;
   border: 0;
   border-radius: 50%;
-  color: inherit;
+  color: #000;
   background: rgb(var(--color-background-rgb) / 72%);
   box-shadow: none;
   cursor: pointer;
@@ -423,17 +423,6 @@
 
 .main-premium-product .premium-variants__swatch > span {
   background: var(--premium-swatch-color, rgb(var(--color-foreground-rgb) / var(--opacity-20)));
-}
-
-.main-premium-product .premium-product__wishlist {
-  display: flex;
-  margin-block-start: 20px;
-}
-
-.main-premium-product .premium-product__wishlist .wishlist-button {
-  min-height: var(--premium-control-height);
-  padding-inline: 16px;
-  border-radius: 0;
 }
 
 .main-premium-product .premium-product__quantity {

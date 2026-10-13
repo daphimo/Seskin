@@ -19,7 +19,7 @@
         "show_navigation": true,
         "show_progress": true,
         "show_zoom": true,
-        "show_wishlist": false,
+        "show_wishlist": true,
         "show_model_sizing": true,
         "show_highlight": true,
         "show_sale_badge": true,
@@ -356,10 +356,61 @@
         "padding-block-start": 0,
         "padding-block-end": 0
       }
+    },
+    "premium_featured_collection_nDKwaM": {
+      "type": "premium-featured-collection",
+      "name": "t:names.featured_collection",
+      "settings": {
+        "collection": "bras-tops",
+        "heading": "",
+        "heading_size": 28,
+        "product_limit": 12,
+        "columns_desktop": 4,
+        "columns_mobile": "2",
+        "slide_gap": 4,
+        "show_arrows": true,
+        "padding": 48,
+        "padding_bottom": 48
+      }
+    },
+    "premium_featured_collection_aChWdT": {
+      "type": "premium-featured-collection",
+      "name": "t:names.featured_collection",
+      "settings": {
+        "collection": "butt-hip-enhancers",
+        "heading": "",
+        "heading_size": 28,
+        "product_limit": 12,
+        "columns_desktop": 4,
+        "columns_mobile": "2",
+        "slide_gap": 4,
+        "show_arrows": true,
+        "padding": 48,
+        "padding_bottom": 48
+      }
+    },
+    "premium_featured_collection_CNmWaR": {
+      "type": "premium-featured-collection",
+      "name": "t:names.featured_collection",
+      "settings": {
+        "collection": "fashion-body-tape",
+        "heading": "",
+        "heading_size": 28,
+        "product_limit": 12,
+        "columns_desktop": 4,
+        "columns_mobile": "2",
+        "slide_gap": 4,
+        "show_arrows": true,
+        "padding": 48,
+        "padding_bottom": 48
+      }
     }
   },
   "order": [
     "main_premium_product_eXczpC",
-    "main"
+    "main",
+    "premium_featured_collection_nDKwaM",
+    "premium_featured_collection_aChWdT",
+    "premium_featured_collection_CNmWaR"
   ]
 }

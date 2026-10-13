@@ -145,7 +145,7 @@
   display: flex;
   align-items: center;
   justify-content: end;
-  gap: var(--gap-md);
+  gap: 0;
 }
 
 .premium-header__actions a,
@@ -295,7 +295,10 @@
 
 .premium-header-promo { min-width: 0; }
 .premium-header-promo a { display: grid; gap: var(--gap-xs); color: inherit; text-decoration: none; }
-.premium-header-promo__image { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+.premium-header-promo__image { width: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    height: 180px; }
 .premium-header-promo strong { font-size: var(--font-size--sm); }
 .premium-header-promo p { margin: 0; font-size: var(--font-size--xs); line-height: 1.4; }
 

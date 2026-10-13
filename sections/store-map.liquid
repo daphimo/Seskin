@@ -1,0 +1,105 @@
+{% comment %}
+  Store location details paired with a Google Maps embed and switchable desktop placement.
+  @example
+  <!-- Use once in templates/page.store-locator.json. -->
+{% endcomment %}
+
+{{ 'store-map.css' | asset_url | stylesheet_tag }}
+
+{% liquid
+  assign map_query = section.settings.address | strip | url_encode
+  assign phone_href = section.settings.phone | remove: ' ' | remove: '(' | remove: ')' | remove: '-' | remove: '.'
+%}
+
+<section
+  class="store-map store-map--text-{{ section.settings.text_position }}"
+  style="--store-map-height: {{ section.settings.map_height }}px; --store-map-padding-top: {{ section.settings.padding_top }}px; --store-map-padding-bottom: {{ section.settings.padding_bottom }}px; --store-map-background: {{ section.settings.background_color }}; --store-map-text: {{ section.settings.text_color }}; --store-map-details-background: {{ section.settings.details_background }}; --store-map-link: {{ section.settings.link_color }}; --store-map-placeholder: {{ section.settings.map_placeholder_color }};"
+>
+  <div class="store-map__inner">
+    <div class="store-map__details">
+      {% if section.settings.eyebrow != blank %}<p class="store-map__eyebrow">{{ section.settings.eyebrow | escape }}</p>{% endif %}
+      {% if section.settings.heading != blank %}<h1 class="store-map__heading">{{ section.settings.heading | escape }}</h1>{% endif %}
+      {% if section.settings.description != blank %}<div class="store-map__description rte">{{ section.settings.description }}</div>{% endif %}
+
+      <dl class="store-map__information">
+        {% if section.settings.address != blank %}
+          <div class="store-map__information-row">
+            <dt>{{ section.settings.address_label | escape }}</dt>
+            <dd>{{ section.settings.address | escape | newline_to_br }}</dd>
+          </div>
+        {% endif %}
+        {% if section.settings.phone != blank %}
+          <div class="store-map__information-row">
+            <dt>{{ section.settings.phone_label | escape }}</dt>
+            <dd><a href="tel:{{ phone_href }}">{{ section.settings.phone | escape }}</a></dd>
+          </div>
+        {% endif %}
+        {% if section.settings.email != blank %}
+          <div class="store-map__information-row">
+            <dt>{{ section.settings.email_label | escape }}</dt>
+            <dd><a href="mailto:{{ section.settings.email | escape }}">{{ section.settings.email | escape }}</a></dd>
+          </div>
+        {% endif %}
+        {% if section.settings.hours != blank %}
+          <div class="store-map__information-row">
+            <dt>{{ section.settings.hours_label | escape }}</dt>
+            <dd class="rte">{{ section.settings.hours }}</dd>
+          </div>
+        {% endif %}
+      </dl>
+
+      {% if section.settings.additional_information != blank %}
+        <div class="store-map__additional rte">{{ section.settings.additional_information }}</div>
+      {% endif %}
+    </div>
+
+    <div class="store-map__media">
+      {% if section.settings.address != blank %}
+        <iframe
+          src="https://www.google.com/maps?q={{ map_query }}&amp;output=embed"
+          title="{{ section.settings.map_title | escape }}"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen
+        ></iframe>
+      {% else %}
+        <div class="store-map__placeholder">{{ section.settings.map_placeholder | escape }}</div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:names.image_with_text",
+  "tag": "section",
+  "class": "section-wrapper",
+  "limit": 1,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "t:settings.text", "default": "Visit us" },
+    { "type": "text", "id": "heading", "label": "t:settings.heading", "default": "Store locator" },
+    { "type": "richtext", "id": "description", "label": "t:settings.text", "default": "<p>Visit our store for personal assistance and the latest collection.</p>" },
+    { "type": "textarea", "id": "address", "label": "t:settings.text", "default": "Los Angeles, California" },
+    { "type": "text", "id": "address_label", "label": "t:settings.heading", "default": "Address" },
+    { "type": "text", "id": "phone", "label": "t:settings.text", "default": "+1 (000) 000-0000" },
+    { "type": "text", "id": "phone_label", "label": "t:settings.heading", "default": "Contact number" },
+    { "type": "text", "id": "email", "label": "t:settings.text" },
+    { "type": "text", "id": "email_label", "label": "t:settings.heading", "default": "Email" },
+    { "type": "richtext", "id": "hours", "label": "t:settings.text", "default": "<p>Monday–Saturday: 10:00 AM–8:00 PM<br>Sunday: 11:00 AM–6:00 PM</p>" },
+    { "type": "text", "id": "hours_label", "label": "t:settings.heading", "default": "Store hours" },
+    { "type": "richtext", "id": "additional_information", "label": "t:settings.text" },
+    { "type": "select", "id": "text_position", "label": "t:settings.position", "options": [{ "value": "left", "label": "t:options.left" }, { "value": "right", "label": "t:options.right" }], "default": "left" },
+    { "type": "text", "id": "map_title", "label": "t:settings.heading", "default": "Store location on Google Maps" },
+    { "type": "text", "id": "map_placeholder", "label": "t:settings.text", "default": "Add a store address to display the map." },
+    { "type": "range", "id": "map_height", "label": "t:settings.height", "min": 320, "max": 760, "step": 20, "unit": "px", "default": 560 },
+    { "type": "color", "id": "background_color", "label": "t:settings.background_color", "default": "#ffffff" },
+    { "type": "color", "id": "text_color", "label": "t:settings.text_color", "default": "#262321" },
+    { "type": "color", "id": "details_background", "label": "t:settings.background_color", "default": "#f4f2f0" },
+    { "type": "color", "id": "link_color", "label": "t:settings.text_color", "default": "#262321" },
+    { "type": "color", "id": "map_placeholder_color", "label": "t:settings.background_color", "default": "#ebe7e3" },
+    { "type": "range", "id": "padding_top", "label": "t:settings.padding_top", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 48 },
+    { "type": "range", "id": "padding_bottom", "label": "t:settings.padding_bottom", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 80 }
+  ],
+  "presets": [{ "name": "t:names.image_with_text" }]
+}
+{% endschema %}

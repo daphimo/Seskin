@@ -1,0 +1,105 @@
+.sitemap-page {
+  color: var(--sitemap-text);
+  background: var(--sitemap-background);
+}
+
+.sitemap-page__inner {
+  width: min(calc(100% - 32px), var(--page-width));
+  margin-inline: auto;
+  padding-block: var(--sitemap-padding-top) var(--sitemap-padding-bottom);
+}
+
+.sitemap-page__header {
+  max-width: 760px;
+  margin-block-end: clamp(32px, 5vw, 64px);
+}
+
+.sitemap-page__heading {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.sitemap-page__intro {
+  margin-block-start: 16px;
+}
+
+.sitemap-page__intro > :first-child {
+  margin-block-start: 0;
+}
+
+.sitemap-page__intro > :last-child {
+  margin-block-end: 0;
+}
+
+.sitemap-page__list {
+  display: grid;
+  grid-template-columns: repeat(var(--sitemap-columns), minmax(0, 1fr));
+  gap: 0 clamp(24px, 4vw, 64px);
+  margin: 0;
+  padding: 0;
+  border-block-start: 1px solid var(--sitemap-border);
+  list-style: none;
+}
+
+.sitemap-page__item {
+  min-width: 0;
+  border-block-end: 1px solid var(--sitemap-border);
+}
+
+.sitemap-page__link {
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  padding-block: 12px;
+  color: var(--sitemap-link);
+  font-weight: 600;
+  line-height: 1.3;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.sitemap-page__link:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.sitemap-page__link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.sitemap-page__empty {
+  grid-column: 1 / -1;
+  padding-block: 20px;
+}
+
+.sitemap-page__pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-block-start: 40px;
+}
+
+.sitemap-page__pagination a {
+  color: var(--sitemap-link);
+  text-underline-offset: 0.25em;
+}
+
+@media screen and (max-width: 989px) {
+  .sitemap-page__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .sitemap-page__inner {
+    width: min(calc(100% - 24px), var(--page-width));
+  }
+
+  .sitemap-page__list {
+    grid-template-columns: 1fr;
+  }
+}

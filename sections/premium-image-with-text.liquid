@@ -1,0 +1,65 @@
+{% comment %}
+  Premium editorial image-and-copy composition with switchable media placement.
+  @example
+  <!-- Add to a page template and select an image in the theme editor. -->
+{% endcomment %}
+
+{{ 'premium-image-with-text.css' | asset_url | stylesheet_tag }}
+
+<section
+  class="premium-image-text premium-image-text--image-{{ section.settings.image_position }}"
+  style="--premium-image-text-ratio: {{ section.settings.image_ratio }}%; --premium-image-text-content-width: {{ section.settings.content_width }}px; --premium-image-text-padding-top: {{ section.settings.padding_top }}px; --premium-image-text-padding-bottom: {{ section.settings.padding_bottom }}px; --premium-image-text-background: {{ section.settings.background_color }}; --premium-image-text-color: {{ section.settings.text_color }}; --premium-image-text-content-background: {{ section.settings.content_background }}; --premium-image-text-media-background: {{ section.settings.media_background }}; --premium-image-text-button-background: {{ section.settings.button_background }}; --premium-image-text-button-color: {{ section.settings.button_text_color }}; --premium-image-text-button-hover-background: {{ section.settings.button_hover_background }}; --premium-image-text-button-hover-color: {{ section.settings.button_hover_text_color }};"
+>
+  <div class="premium-image-text__inner">
+    <div class="premium-image-text__media">
+      {% if section.settings.image != blank %}
+        {{ section.settings.image | image_url: width: 2400 | image_tag: widths: '480, 720, 960, 1200, 1600, 2000, 2400', sizes: '(min-width: 750px) 50vw, 100vw', loading: 'lazy', alt: section.settings.image_alt }}
+      {% else %}
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      {% endif %}
+    </div>
+
+    <div class="premium-image-text__content premium-image-text__content--{{ section.settings.text_alignment }}">
+      <div class="premium-image-text__content-inner">
+        {% if section.settings.eyebrow != blank %}<p class="premium-image-text__eyebrow">{{ section.settings.eyebrow | escape }}</p>{% endif %}
+        {% if section.settings.heading != blank %}<h2 class="premium-image-text__heading">{{ section.settings.heading | escape }}</h2>{% endif %}
+        {% if section.settings.text != blank %}<div class="premium-image-text__text rte">{{ section.settings.text }}</div>{% endif %}
+        {% if section.settings.button_label != blank and section.settings.button_link != blank %}
+          <a class="premium-image-text__button button" href="{{ section.settings.button_link }}">{{ section.settings.button_label | escape }}</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:names.image_with_text",
+  "tag": "section",
+  "class": "section-wrapper",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "t:settings.image" },
+    { "type": "text", "id": "image_alt", "label": "t:settings.label", "default": "Editorial brand image" },
+    { "type": "select", "id": "image_position", "label": "t:settings.image_position", "options": [{ "value": "left", "label": "t:options.left" }, { "value": "right", "label": "t:options.right" }], "default": "left" },
+    { "type": "range", "id": "image_ratio", "label": "t:settings.aspect_ratio", "min": 60, "max": 140, "step": 5, "unit": "%", "default": 110 },
+    { "type": "text", "id": "eyebrow", "label": "t:settings.text", "default": "Our story" },
+    { "type": "text", "id": "heading", "label": "t:settings.heading", "default": "Designed for confidence" },
+    { "type": "richtext", "id": "text", "label": "t:settings.text", "default": "<p>We create considered essentials that bring together refined design, everyday comfort, and an uncompromising attention to fit.</p><p>Every collection is developed to feel effortless, enduring, and distinctly yours.</p>" },
+    { "type": "text", "id": "button_label", "label": "t:settings.label", "default": "Discover our collections" },
+    { "type": "url", "id": "button_link", "label": "t:settings.link" },
+    { "type": "select", "id": "text_alignment", "label": "t:settings.alignment", "options": [{ "value": "left", "label": "t:options.left" }, { "value": "center", "label": "t:options.center" }], "default": "left" },
+    { "type": "range", "id": "content_width", "label": "t:settings.content_width", "min": 320, "max": 720, "step": 20, "unit": "px", "default": 520 },
+    { "type": "color", "id": "background_color", "label": "t:settings.background_color", "default": "#ffffff" },
+    { "type": "color", "id": "text_color", "label": "t:settings.text_color", "default": "#262321" },
+    { "type": "color", "id": "content_background", "label": "t:settings.background_color", "default": "#f4f2f0" },
+    { "type": "color", "id": "media_background", "label": "t:settings.background_color", "default": "#ebe7e3" },
+    { "type": "color", "id": "button_background", "label": "t:settings.background_color", "default": "#262321" },
+    { "type": "color", "id": "button_text_color", "label": "t:settings.text_color", "default": "#ffffff" },
+    { "type": "color", "id": "button_hover_background", "label": "t:settings.background_color", "default": "#ffffff" },
+    { "type": "color", "id": "button_hover_text_color", "label": "t:settings.text_color", "default": "#262321" },
+    { "type": "range", "id": "padding_top", "label": "t:settings.padding_top", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 64 },
+    { "type": "range", "id": "padding_bottom", "label": "t:settings.padding_bottom", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 64 }
+  ],
+  "presets": [{ "name": "t:names.image_with_text" }]
+}
+{% endschema %}

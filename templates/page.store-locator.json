@@ -1,61 +1,33 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
     "main": {
-      "type": "main-page",
-      "blocks": {
-        "heading": {
-          "type": "text",
-          "name": "t:names.title",
-          "settings": {
-            "text": "<h1>{{ closest.page.title }}</h1>",
-            "width": "100%",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "h2",
-            "font": "var(--font-body--family)",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "page-content": {
-          "type": "page-content",
-          "settings": {},
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "heading",
-        "page-content"
-      ],
+      "type": "store-map",
       "settings": {
-        "content_direction": "column",
-        "gap": 32,
-        "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 40,
-        "padding-block-end": 80
+        "eyebrow": "Visit us",
+        "heading": "Store locator",
+        "description": "<p>Visit our store for personal assistance and the latest collection.</p>",
+        "address": "Los Angeles, California",
+        "address_label": "Address",
+        "phone": "+1 (000) 000-0000",
+        "phone_label": "Contact number",
+        "email": "",
+        "email_label": "Email",
+        "hours": "<p>Monday–Saturday: 10:00 AM–8:00 PM<br>Sunday: 11:00 AM–6:00 PM</p>",
+        "hours_label": "Store hours",
+        "additional_information": "",
+        "text_position": "left",
+        "map_title": "Store location on Google Maps",
+        "map_placeholder": "Add a store address to display the map.",
+        "map_height": 560,
+        "background_color": "#ffffff",
+        "text_color": "#262321",
+        "details_background": "#f4f2f0",
+        "link_color": "#262321",
+        "map_placeholder_color": "#ebe7e3",
+        "padding_top": 48,
+        "padding_bottom": 80
       }
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["main"]
 }

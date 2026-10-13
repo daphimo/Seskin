@@ -53,9 +53,35 @@
         "padding-block-start": 40,
         "padding-block-end": 80
       }
+    },
+    "premium_story": {
+      "type": "premium-image-with-text",
+      "settings": {
+        "image_alt": "Editorial brand image",
+        "image_position": "left",
+        "image_ratio": 110,
+        "eyebrow": "Our story",
+        "heading": "Designed for confidence",
+        "text": "<p>We create considered essentials that bring together refined design, everyday comfort, and an uncompromising attention to fit.</p><p>Every collection is developed to feel effortless, enduring, and distinctly yours.</p>",
+        "button_label": "Discover our collections",
+        "button_link": "/collections/all",
+        "text_alignment": "left",
+        "content_width": 520,
+        "background_color": "#ffffff",
+        "text_color": "#262321",
+        "content_background": "#f4f2f0",
+        "media_background": "#ebe7e3",
+        "button_background": "#262321",
+        "button_text_color": "#ffffff",
+        "button_hover_background": "#ffffff",
+        "button_hover_text_color": "#262321",
+        "padding_top": 64,
+        "padding_bottom": 64
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "premium_story"
   ]
 }

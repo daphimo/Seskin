@@ -283,6 +283,16 @@
   defer="defer"
 ></script>
 
+{% if settings.tab_title_switch_enabled and settings.tab_title_switch_message != blank %}
+  <script
+    src="{{ 'tab-title-switcher.js' | asset_url }}"
+    defer="defer"
+    data-tab-title-switcher
+    data-message="{{ settings.tab_title_switch_message | escape }}"
+    data-interval="{{ settings.tab_title_switch_interval | times: 1000 }}"
+  ></script>
+{% endif %}
+
 <script>
   const supportsNativePopover = 'popover' in HTMLElement.prototype;
   const Theme = {
