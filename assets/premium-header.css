@@ -149,6 +149,7 @@
 }
 
 .premium-header__actions a,
+.premium-header__actions .premium-header__cart,
 .premium-header__search-trigger,
 .premium-header__menu-button,
 .premium-header__mobile-search-trigger {
@@ -157,7 +158,8 @@
   border: 0;
 }
 
-.premium-header__actions a {
+.premium-header__actions a,
+.premium-header__actions .premium-header__cart {
   display: inline-flex;
   position: relative;
   align-items: center;

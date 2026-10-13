@@ -33,11 +33,14 @@
     if (!window.matchMedia('(min-width: 990px)').matches) return;
 
     var dialogs = [];
+    var layoutDrawerCount = 0;
     for (var i = 0; i < drawerIds.length; i++) {
       var drawer = document.getElementById(drawerIds[i]);
       if (!drawer) continue;
+      if (drawer.hasAttribute('overlay-only')) continue;
 
       drawer.setAttribute('open', '');
+      if (!drawer.hasAttribute('overlay-only')) layoutDrawerCount++;
 
       // Set [open] directly so the CSS slide-in applies without triggering
       // the browser's dialog focusing steps — on wide viewports the drawer is
@@ -62,7 +65,7 @@
     // Only squeeze if at least one drawer was actually restored — saved
     // drawer IDs may not exist on every page (e.g. cart-drawer on /cart).
     var pageWrapper = document.querySelector('.page-wrapper');
-    if (pageWrapper && dialogs.length > 0) {
+    if (pageWrapper && layoutDrawerCount > 0) {
       pageWrapper.style.transition = 'none';
       pageWrapper.classList.add('page-wrapper--drawer-open');
     }
@@ -87,21 +90,22 @@
 
   // ── Squeeze coordination ──
   // Listens to all drawers. Only squeezes on wide viewports.
-  document.addEventListener('theme-drawer:open', () => {
-    if (squeezeQuery.matches) {
+  document.addEventListener('theme-drawer:open', (event) => {
+    const drawer = event.target instanceof Element ? event.target.closest('theme-drawer') : null;
+    if (squeezeQuery.matches && !drawer?.hasAttribute('overlay-only')) {
       pageWrapper?.classList.add('page-wrapper--drawer-open');
     }
   });
 
   document.addEventListener('theme-drawer:close', () => {
-    const openDrawer = document.querySelector('theme-drawer[open]');
+    const openDrawer = document.querySelector('theme-drawer[open]:not([overlay-only])');
     if (!openDrawer) {
       pageWrapper?.classList.remove('page-wrapper--drawer-open');
     }
   });
 
   squeezeQuery.addEventListener('change', () => {
-    const openDrawer = document.querySelector('theme-drawer[open]');
+    const openDrawer = document.querySelector('theme-drawer[open]:not([overlay-only])');
     pageWrapper?.classList.toggle('page-wrapper--drawer-open', Boolean(openDrawer) && squeezeQuery.matches);
   });
 

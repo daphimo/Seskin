@@ -46,6 +46,10 @@ export class ThemeDrawer extends Component {
   /** @type {MediaQueryList} */
   #modalQuery = window.matchMedia(`(max-width: ${MODAL_BREAKPOINT - 1}px)`);
 
+  get #usesModalMode() {
+    return this.hasAttribute('overlay-only') || this.#modalQuery.matches;
+  }
+
   /**
    * @returns {boolean} Whether the drawer is currently open.
    */
@@ -79,7 +83,7 @@ export class ThemeDrawer extends Component {
    */
   #onRestore() {
     const { panel } = this.refs;
-    if (this.#modalQuery.matches) {
+    if (this.#usesModalMode) {
       lockScroll(panel);
     }
 
@@ -146,7 +150,7 @@ export class ThemeDrawer extends Component {
     panel.close();
     removeTrapFocus();
 
-    if (this.#modalQuery.matches) {
+    if (this.#usesModalMode) {
       lockScroll(panel);
       panel.showModal();
     } else {
@@ -216,7 +220,7 @@ export class ThemeDrawer extends Component {
 
     this.#previouslyFocused = /** @type {HTMLElement | null} */ (document.activeElement);
 
-    if (this.#modalQuery.matches) {
+    if (this.#usesModalMode) {
       lockScroll(panel);
       panel.showModal();
     } else {
@@ -252,7 +256,7 @@ export class ThemeDrawer extends Component {
     // In modal mode, dialogs live in the browser's top layer where z-index
     // is ignored — stacking follows showModal() call order. Re-calling
     // showModal() moves this dialog to the top of the stack.
-    if (this.#modalQuery.matches && panel.open) {
+    if (this.#usesModalMode && panel.open) {
       lockScroll(panel);
       panel.close();
       panel.showModal();
@@ -320,7 +324,7 @@ export class ThemeDrawer extends Component {
     // closing the dialog, and restoring focus can each move the root scroller,
     // leaving the shopper at the top of the page instead of where they were
     // browsing. Capture the offset up front and re-apply it once the drawer is gone.
-    const closingAsModal = this.#modalQuery.matches;
+    const closingAsModal = this.#usesModalMode;
     const scrollTopWhileLocked = closingAsModal ? getScrollTop() : null;
 
     this.removeAttribute('open');

@@ -229,6 +229,9 @@ class ProductFormComponent extends Component {
    */
   #pendingVariantChange = null;
 
+  /** @type {boolean} */
+  #isSubmitting = false;
+
   connectedCallback() {
     super.connectedCallback();
 
@@ -324,9 +327,11 @@ class ProductFormComponent extends Component {
   handleSubmit(event) {
     event.preventDefault();
 
+    if (this.#isSubmitting) return;
+
     if (this.#variantChangeInProgress) {
+      if (!this.#beginSubmission()) return;
       this.#addToCartQueue.push(this.#createQueuedAddToCartItem());
-      this.refs.addToCartButtonContainer?.animateAddToCart?.();
       return;
     }
 
@@ -336,6 +341,41 @@ class ProductFormComponent extends Component {
   /** @returns {number} */
   #getQuantity() {
     return Number(this.refs.quantitySelector?.getValue?.()) || Number(this.dataset.quantityDefault) || 1;
+  }
+
+  #beginSubmission() {
+    if (this.#isSubmitting) return false;
+
+    this.#isSubmitting = true;
+    for (const button of this.querySelectorAll('button[type="submit"][name="add"]')) {
+      if (!(button instanceof HTMLButtonElement)) continue;
+      button.dataset.submitWasDisabled = String(button.disabled);
+      button.disabled = true;
+      button.setAttribute('aria-busy', 'true');
+    }
+
+    return true;
+  }
+
+  #endSubmission() {
+    this.#isSubmitting = false;
+    for (const button of this.querySelectorAll('button[type="submit"][name="add"]')) {
+      if (!(button instanceof HTMLButtonElement)) continue;
+      button.disabled = button.dataset.submitWasDisabled === 'true';
+      button.removeAttribute('data-submit-was-disabled');
+      button.removeAttribute('aria-busy');
+    }
+  }
+
+  /** @param {{item_count?: number}} cart */
+  #syncSupplementalCartCounts(cart) {
+    const itemCount = Number(cart.item_count);
+    if (!Number.isFinite(itemCount)) return;
+
+    for (const count of document.querySelectorAll('[data-cart-count]')) {
+      count.textContent = String(itemCount);
+      count.toggleAttribute('hidden', itemCount === 0);
+    }
   }
 
   /** @returns {QueuedAddToCartItem} */
@@ -436,6 +476,7 @@ class ProductFormComponent extends Component {
     });
 
     const itemCount = Number(formData.get('quantity')) || Number(this.dataset.quantityDefault);
+    if (!this.#beginSubmission()) return;
     const deferredEventPromise = CartLinesUpdateEvent.createPromise();
 
     this.dispatchEvent(
@@ -559,6 +600,7 @@ class ProductFormComponent extends Component {
               if (this.#getVariantIdInput()) {
                 this.#updateCartQuantity(ajaxCart);
               }
+              this.#syncSupplementalCartCounts(ajaxCart);
 
               return ajaxCart;
             })
@@ -569,6 +611,9 @@ class ProductFormComponent extends Component {
         console.error(error);
         deferredEventPromise.reject(error);
 
+        this.#setLiveRegionText(Theme.translations.cart_error);
+        this.#timeout = setTimeout(() => this.#clearLiveRegionText(), ERROR_MESSAGE_DISPLAY_DURATION);
+
         this.dispatchEvent(
           new CartErrorEvent({
             error: error?.message || 'Network error during add to cart',
@@ -577,6 +622,7 @@ class ProductFormComponent extends Component {
         );
       })
       .finally(() => {
+        this.#endSubmission();
         if (event) {
           cartPerformance.measureFromEvent('add:user-action', event);
         }
@@ -585,7 +631,10 @@ class ProductFormComponent extends Component {
 
   /** @param {Array<{variantId: string, quantity: number}>} items */
   #processBatchAddToCart(items) {
-    if (items.length === 0) return;
+    if (items.length === 0) {
+      this.#endSubmission();
+      return;
+    }
 
     const { addToCartTextError } = this.refs;
 
@@ -695,6 +744,7 @@ class ProductFormComponent extends Component {
         }
 
         const cart = await this.#refreshCart();
+        this.#syncSupplementalCartCounts(cart);
         deferredEventPromise.resolve({
           cart: CartLinesUpdateEvent.createCartFromAjaxResponse(cart),
           detail: {
@@ -713,13 +763,17 @@ class ProductFormComponent extends Component {
         console.error(error);
         deferredEventPromise.reject(error);
 
+        this.#setLiveRegionText(Theme.translations.cart_error);
+        this.#timeout = setTimeout(() => this.#clearLiveRegionText(), ERROR_MESSAGE_DISPLAY_DURATION);
+
         this.dispatchEvent(
           new CartErrorEvent({
             error: error?.message || 'Network error during add to cart',
             code: 'SERVICE_UNAVAILABLE',
           })
         );
-      });
+      })
+      .finally(() => this.#endSubmission());
   }
 
   /**

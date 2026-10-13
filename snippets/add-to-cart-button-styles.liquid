@@ -39,6 +39,27 @@
     }
   }
 
+  .add-to-cart-button[aria-busy='true'] {
+    color: transparent;
+    cursor: wait;
+    opacity: 1;
+  }
+
+  .add-to-cart-button[aria-busy='true'] > * {
+    visibility: hidden;
+  }
+
+  .add-to-cart-button[aria-busy='true']::after {
+    position: absolute;
+    width: 1.25em;
+    height: 1.25em;
+    border: 2px solid rgb(var(--color-background-rgb) / var(--opacity-50));
+    border-block-start-color: var(--color-background);
+    border-radius: 50%;
+    content: '';
+    animation: add-to-cart-spin 700ms linear infinite;
+  }
+
   .add-to-cart-button .svg-wrapper .checkmark-burst {
     width: 30px;
     height: 30px;
@@ -201,6 +222,18 @@
     to {
       opacity: var(--atc-opacity, 1);
       translate: 0px var(--atc-destination, 0px);
+    }
+  }
+
+  @keyframes add-to-cart-spin {
+    to {
+      rotate: 1turn;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .add-to-cart-button[aria-busy='true']::after {
+      animation-duration: 1.4s;
     }
   }
 {% endstylesheet %}

@@ -11,6 +11,37 @@
   "sections": {
     "main_premium_product_eXczpC": {
       "type": "main-premium-product",
+      "blocks": {
+        "tab_wj9HaH": {
+          "type": "tab",
+          "settings": {
+            "heading": "Details",
+            "use_product_description": true,
+            "content": ""
+          }
+        },
+        "tab_9W6W84": {
+          "type": "tab",
+          "settings": {
+            "heading": "Fit & Fabric",
+            "use_product_description": false,
+            "content": "{{ product.metafields.custom.fit_fabric | metafield_tag }}"
+          }
+        },
+        "tab_9CJanq": {
+          "type": "tab",
+          "settings": {
+            "heading": "Shipping & Returns",
+            "use_product_description": false,
+            "content": "{{ product.metafields.custom.shipping_returns | metafield_tag }}"
+          }
+        }
+      },
+      "block_order": [
+        "tab_wj9HaH",
+        "tab_9W6W84",
+        "tab_9CJanq"
+      ],
       "name": "Main premium product",
       "settings": {
         "gallery_width": 50,

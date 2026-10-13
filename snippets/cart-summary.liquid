@@ -3,6 +3,7 @@
 
   @param {string} [accelerated_checkout_buttons_layout] - { 'vertical' } Forced layout of the additional checkout buttons, instead of relying on platform's layout.
   @param {string} [section_id] - The section ID for cart discount component.
+  @param {boolean} [show_checkout_total] - Shows the current cart total inside the checkout button.
 {%- enddoc -%}
 
 {% render 'text-component-shimmer-styles' %}
@@ -269,6 +270,10 @@
     form="cart-form"
   >
     <span class="button-text">
+      {% if show_checkout_total %}
+        <bdi>{{ total_price }}</bdi>
+        <span aria-hidden="true">–</span>
+      {% endif %}
       {{ 'content.checkout' | t }}
     </span>
   </button>
